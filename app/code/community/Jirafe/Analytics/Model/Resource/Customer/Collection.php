@@ -13,6 +13,6 @@ class Jirafe_Analytics_Model_Resource_Customer_Collection extends Mage_Core_Mode
 {
     protected function _construct()
     {
-        $this->_init('jirafe/customer');
+        $this->_init('jirafe_analytics/customer');
     }
 }

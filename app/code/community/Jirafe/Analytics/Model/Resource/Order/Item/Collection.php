@@ -13,6 +13,6 @@ class Jirafe_Analytics_Model_Resource_Order_Item_Collection extends Mage_Core_Mo
 {
     protected function _construct()
     {
-        $this->_init('jirafe/order_item');
+        $this->_init('jirafe_analytics/order_item');
     }
 }

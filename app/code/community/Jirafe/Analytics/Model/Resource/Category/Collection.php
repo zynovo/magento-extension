@@ -13,6 +13,6 @@ class Jirafe_Analytics_Model_Resource_Category_Collection extends Mage_Core_Mode
 {
     protected function _construct()
     {
-        $this->_init('jirafe/category');
+        $this->_init('jirafe_analytics/category');
     }
 }

@@ -14,12 +14,36 @@
             <jirafe_analytics_resource>
                 <class>Jirafe_Analytics_Model_Resource</class>
                 <entities>
-                    <session>
-                        <table>jirafe_analytics_session</table>
-                    </session>
+                    <cart>
+                        <table>jirafe_analytics_cart</table>
+                    </cart>
                     <cart_item>
                         <table>jirafe_analytics_cart_item</table>
                     </cart_item>
+                    <category>
+                        <table>jirafe_analytics_category</table>
+                    </category>
+                    <customer>
+                        <table>jirafe_analytics_customer</table>
+                    </customer>
+                    <order>
+                        <table>jirafe_analytics_order</table>
+                    </order>
+                    <order_item>
+                        <table>jirafe_analytics_order_item</table>
+                    </order_item>
+                    <product>
+                        <table>jirafe_analytics_product</table>
+                    </product>
+                    <session>
+                        <table>jirafe_analytics_session</table>
+                    </session>
+                    <status>
+                        <table>jirafe_analytics_status</table>
+                    </status>
+                    <user>
+                        <table>jirafe_analytics_user</table>
+                    </user>
                 </entities>
             </jirafe_analytics_resource>
         </models>

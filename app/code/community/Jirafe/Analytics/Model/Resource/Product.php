@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Session Resource Model
+ * Product Resource Model
  *
  * @category  Jirafe
  * @package   Jirafe_Analytics
@@ -9,10 +9,10 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Model_Resource_Session extends Mage_Core_Model_Resource_Db_Abstract
+class Jirafe_Analytics_Model_Resource_Product extends Mage_Core_Model_Resource_Db_Abstract
 {
     public function _construct()
     {
-        $this->_init('jirafe_analytics/session','id');
+        $this->_init('jirafe_analytics/product','id');
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Session Cart Item Resource Model
+ * Cart Item Resource Model
  *
  * @category  Jirafe
  * @package   Jirafe_Analytics

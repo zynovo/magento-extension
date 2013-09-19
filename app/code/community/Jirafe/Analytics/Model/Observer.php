@@ -12,8 +12,11 @@
 class Jirafe_Analytics_Model_Observer
 {
 
+    
+    protected $_magentoSession = null;
+    
     /**
-     * Capture add product to cart  event
+     * Capture add product to cart event
      *
      * @param Varien_Event_Observer $observer
      * @return mixed
@@ -21,11 +24,21 @@ class Jirafe_Analytics_Model_Observer
     
     public function cartProductAdd(Varien_Event_Observer $observer)
     {
-        $productId = $observer->getProduct()->getEntityId();
-        $event = $observer->getQuote();
-        $session = Mage::getSingleton('core/session');
-        $sessionId = $session->getVisitorId();
-        Mage::log('cartProductAdd',null,'observer.log');
+        try {
+            $this->_magentoSession = Mage::getSingleton('core/session');
+            $product = $observer->getProduct();
+            $item = Mage::getModel('jirafe_analytics/cart_item');
+            $item->setCartId($this->_getCartId($observer));
+            $item->setProductId($product->getEntityId());
+            $item->setSku($product->getSku());
+            $item->setQuantity($product->getCartQty());
+            $item->setPrice($product->getPrice());
+            $item->setSessionId($this->_getSessionId());
+            $item->save();
+        } catch (Exception $e) {
+            Mage::log('OBSERVER ERROR cartProductAdd: ' . $e->getMessage(),null,'jirafe_analytics.log');
+        }
+        
     }
     
     
@@ -185,5 +198,62 @@ class Jirafe_Analytics_Model_Observer
     public function customerAttributeSave(Varien_Event_Observer $observer) 
     {
         Mage::log('customerAttributeSave',null,'observer.log');
+    }
+    
+    /**
+     * Check for Jirafe session id 
+     * Create id and insert session data into table if doesn't exist
+     *
+     * @return string
+     */
+    
+    protected function _getSessionId() 
+    {
+        
+        
+       // if (!$_session_id = $this->_magentoSession->getJirafeSessionId()) {
+            $visitorData = $this->_magentoSession->getVisitorData();
+            $jirafeSession = Mage::getModel('jirafe_analytics/session');
+            $jirafeSession->setSessionKey($visitorData['session_id']);
+            $jirafeSession->setIpAddress($visitorData['remote_addr']);
+            
+            $store = Mage::app()->getStore();
+            $jirafeSession->setStoreId($store->getStoreId());
+            $jirafeSession->setStoreCurrencyCode(implode($store->getAvailableCurrencyCodes()));
+            
+            $customerSession = Mage::getSingleton('customer/session');
+            
+            if($customerSession->isLoggedIn()) {
+                $jirafeSession->setCustomerId($customerSession->getCustomer()->getId());
+            }
+           
+            $jirafeSession->save();
+            $_session_id = $jirafeSession->getId();
+            $this->_magentoSession->setJirafeSessionId($_session_id);
+       // }
+        
+        return $_session_id;
+    }
+    
+    /**
+     * Check for Jirafe cart id 
+     * Create id and insert cart data into table if doesn't exist
+     *
+     * @return string
+     */
+    
+    protected function _getCartId($observer)
+    {
+        //if (!$_cartId = $this->_magentoSession->getJirafeCartId()) {
+            $jirafeCart = Mage::getModel('jirafe_analytics/cart');
+            $jirafeCart->setSessionId($this->_magentoSession->getJirafeSessionId());
+            $jirafeCart->setQuoteId($observer->getQuoteItem()->getQuote()->getEntityId());
+            
+            $jirafeCart->save();
+            $_cartId = $jirafeCart->getId();
+            $this->_magentoSession->setJirafeCartId($_cartId);
+        // }
+        
+        return $_cartId;
     }
 }
