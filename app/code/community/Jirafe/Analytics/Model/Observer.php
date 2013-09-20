@@ -78,7 +78,21 @@ class Jirafe_Analytics_Model_Observer
     
     public function customerRegister(Varien_Event_Observer $observer) 
     {
-       // Mage::log('customerRegister',null,'observer.log');
+        try {
+            $this->_magentoSession = Mage::getSingleton('core/session');
+            $customer = Mage::getModel('jirafe_analytics/customer');
+            $customerId = $observer->getCustomer()->getEntityId();
+            $customer->setSessionId($this->_getSessionId($customerId));
+            $customer->setEntityId( $customerId);
+            $customer->setFirstName( $observer->getCustomer()->getFirstname());
+            $customer->setLastName( $observer->getCustomer()->getLastname());
+            $customer->setEmail( $observer->getCustomer()->getEmail());
+            $customer->save();
+            return true;
+        } catch (Exception $e) {
+            Mage::log('OBSERVER ERROR customerRegister(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            return false;
+        }
     }
     
     
@@ -213,8 +227,6 @@ class Jirafe_Analytics_Model_Observer
     
     public function productDelete(Varien_Event_Observer $observer) 
     {
-        Mage::log('productDelete',null,'jirafe_analytics.log');
-        Mage::log($observer,null,'jirafe_analytics.log');
         try {
             $product = Mage::getModel('jirafe_analytics/product');
             $product->setEntityId($observer->getProduct()->getId());
@@ -272,16 +284,19 @@ class Jirafe_Analytics_Model_Observer
      * @return boolean
      */
     
-    protected function _getSessionId() 
+    protected function _getSessionId( $customerId = null ) 
     {
         
         try {
-            if (!$_session_id = $this->_magentoSession->getJirafeSessionId()) {
+           $jirafeSessionId = $this->_magentoSession->getJirafeSessionId();
+           if (empty($jirafeSessionId)) {
                 $visitorData = $this->_magentoSession->getVisitorData();
                 $jirafeSession = Mage::getModel('jirafe_analytics/session');
                 $jirafeSession->setSessionKey($visitorData['session_id']);
                 $jirafeSession->setIpAddress($visitorData['remote_addr']);
-                
+                if ($customerId) {
+                    $jirafeSession->setCustomerId($customerId);
+                }
                 $store = Mage::app()->getStore();
                 $jirafeSession->setStoreId($store->getStoreId());
                 $jirafeSession->setStoreCurrencyCode(implode($store->getAvailableCurrencyCodes()));
@@ -293,11 +308,15 @@ class Jirafe_Analytics_Model_Observer
                 }
                
                 $jirafeSession->save();
-                $_session_id = $jirafeSession->getId();
-                $this->_magentoSession->setJirafeSessionId($_session_id);
-           }
+                $jirafeSessionId = $jirafeSession->getId();
+                $this->_magentoSession->setJirafeSessionId($jirafeSessionId);
+            } else {
+                /*
+                 * UPDATE EXISTING SESSION 
+                 */
+            }
             
-            return $_session_id;
+            return $jirafeSessionId;
         } catch (Exception $e) {
             Mage::log('OBSERVER ERROR _getSessionId(): ' . $e->getMessage(),null,'jirafe_analytics.log');
             return false;

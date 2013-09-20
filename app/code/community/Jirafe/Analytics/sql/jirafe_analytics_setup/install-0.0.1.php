@@ -43,14 +43,12 @@ $installer->run("
     DROP TABLE IF EXISTS {$this->getTable('jirafe_analytics/customer')};
     CREATE TABLE {$this->getTable('jirafe_analytics/customer')} (
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-        `customer_id` int(10) unsigned NOT NULL,
+        `entity_id` int(10) unsigned NOT NULL,
+        `session_id` int(10) unsigned NOT NULL,
         `first_name` varchar(64) DEFAULT NULL,
         `last_name` varchar(64) DEFAULT NULL,
         `email` varchar(256) DEFAULT NULL,
-        `phone` varchar(25) DEFAULT NULL,
-        `status_id` smallint(5) unsigned DEFAULT NULL,
         `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        `modified_dt` datetime DEFAULT NULL,
         PRIMARY KEY (`id`)
      ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
      
