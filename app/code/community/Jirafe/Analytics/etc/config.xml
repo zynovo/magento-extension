@@ -115,14 +115,14 @@
     </frontend>
     <adminhtml>
         <events>
-            <catalog_category_prepare_save>
+            <catalog_category_save_after>
                 <observers>
-                    <jirafe_analytics_action_category_save>
+                    <jirafe_analytics_action_catalog_category_save_after>
                         <class>Jirafe_Analytics_Model_Observer</class>
                         <method>categorySave</method>
-                    </jirafe_analytics_action_category_save>
+                    </jirafe_analytics_action_catalog_category_save_after>
                 </observers>
-            </catalog_category_prepare_save>
+            </catalog_category_save_after>
             <catalog_category_change_products>
                 <observers>
                     <jirafe_analytics_action_category_change_products>
@@ -139,14 +139,14 @@
                     </jirafe_analytics_action_category_delete>
                 </observers>
             </catalog_controller_category_delete>
-            <catalog_product_prepare_save>
+            <catalog_product_save_after>
                 <observers>
                     <jirafe_analytics_action_product_save>
                         <class>Jirafe_Analytics_Model_Observer</class>
                         <method>productSave</method>
                     </jirafe_analytics_action_product_save>
                 </observers>
-            </catalog_product_prepare_save>
+            </catalog_product_save_after>
             <catalog_product_status_update>
                 <observers>
                     <jirafe_analytics_action_product_status_update>
@@ -155,14 +155,14 @@
                     </jirafe_analytics_action_product_status_update>
                 </observers>
             </catalog_product_status_update>
-            <catalog_controller_product_delete>
+            <catalog_product_delete_before>
                 <observers>
-                    <jirafe_analytics_action_product_delete>
+                    <jirafe_analytics_action_catalog_product_delete_before>
                         <class>Jirafe_Analytics_Model_Observer</class>
                         <method>productDelete</method>
-                    </jirafe_analytics_action_product_delete>
+                    </jirafe_analytics_action_catalog_product_delete_before>
                 </observers>
-            </catalog_controller_product_delete>
+            </catalog_product_delete_before>
             <order_cancel_after>
                 <observers>
                     <jirafe_analytics_action_order_cancel>

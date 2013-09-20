@@ -19,7 +19,7 @@ class Jirafe_Analytics_Model_Observer
      * Capture add product to cart event
      *
      * @param Varien_Event_Observer $observer
-     * @return mixed
+     * @return boolean
      */
     
     public function cartProductAdd(Varien_Event_Observer $observer)
@@ -28,15 +28,18 @@ class Jirafe_Analytics_Model_Observer
             $this->_magentoSession = Mage::getSingleton('core/session');
             $product = $observer->getProduct();
             $item = Mage::getModel('jirafe_analytics/cart_item');
-            $item->setCartId($this->_getCartId($observer));
+            $item->setCartId($this->_getCartId($observer->getQuoteItem()->getQuote()->getEntityId()));
             $item->setProductId($product->getEntityId());
             $item->setSku($product->getSku());
             $item->setQuantity($product->getCartQty());
             $item->setPrice($product->getPrice());
             $item->setSessionId($this->_getSessionId());
+            $item->setStatusId(Jirafe_Analytics_Model_Status::ADD);
             $item->save();
+            return true;
         } catch (Exception $e) {
-            Mage::log('OBSERVER ERROR cartProductAdd: ' . $e->getMessage(),null,'jirafe_analytics.log');
+            Mage::log('OBSERVER ERROR cartProductAdd(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            return false;
         }
         
     }
@@ -58,7 +61,7 @@ class Jirafe_Analytics_Model_Observer
      * Capture cart save event
      * 
      * @param Varien_Event_Observer $observer
-     * @return mixed
+     * @return boolean
      */
     
     public function cartSaveAfter(Varien_Event_Observer $observer) 
@@ -70,7 +73,7 @@ class Jirafe_Analytics_Model_Observer
      * Capture customer registration event
      * 
      * @param Varien_Event_Observer $observer
-     * @return mixed
+     * @return boolean
      */
     
     public function customerRegister(Varien_Event_Observer $observer) 
@@ -101,14 +104,28 @@ class Jirafe_Analytics_Model_Observer
     
     public function categorySave(Varien_Event_Observer $observer) 
     {
-        Mage::log('categorySave',null,'observer.log');
+         try {
+            $category = Mage::getModel('jirafe_analytics/category');
+            $category->setEntityId($observer->getCategory()->getEntityId());
+            $category->setAdminUserId(Mage::getSingleton('admin/session')->getUser()->getUserId());
+            if ($observer->getCategory()->getCreatedAt() === $observer->getCategory()->getUpdatedAt()) {
+                $category->setStatusId(Jirafe_Analytics_Model_Status::ADD);
+            } else {
+                $category->setStatusId(Jirafe_Analytics_Model_Status::MODIFY);
+            }
+            $category->save();
+            return true;
+        } catch (Exception $e) {
+            Mage::log('OBSERVER ERROR categoryDelete(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            return false;
+        }
     }
     
     /**
      * Capture event for changes in products associated with a category
      * 
      * @param Varien_Event_Observer $observer
-     * @return mixed
+     * @return boolean
      */
     
     public function categoryChangeProducts(Varien_Event_Observer $observer) 
@@ -120,54 +137,102 @@ class Jirafe_Analytics_Model_Observer
      * Capture category delete event
      * 
      * @param Varien_Event_Observer $observer
-     * @return mixed
+     * @return boolean
      */
     
     public function categoryDelete(Varien_Event_Observer $observer) 
     {
-        Mage::log('categoryDelete',null,'observer.log');
+        try {
+            $category = Mage::getModel('jirafe_analytics/category');
+            $category->setEntityId($observer->getCategory()->getEntityId());
+            $category->setAdminUserId(Mage::getSingleton('admin/session')->getUser()->getUserId());
+            $category->setStatusId(Jirafe_Analytics_Model_Status::DELETE);
+            $category->save();
+            return true;
+        } catch (Exception $e) {
+            Mage::log('OBSERVER ERROR categoryDelete(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            return false;
+        }
     }
     
     /**
      *Capture product save event 
      * 
      * @param Varien_Event_Observer $observer
-     * @return mixed
+     * @return boolean
      */
     
     public function productSave(Varien_Event_Observer $observer) 
     {
-        Mage::log('productSave',null,'observer.log');
+        try {
+            $product = Mage::getModel('jirafe_analytics/product');
+            $product->setEntityId($observer->getProduct()->getId());
+            $product->setAdminUserId(Mage::getSingleton('admin/session')->getUser()->getUserId());
+            if ($observer->getProduct()->getCreatedAt() === $observer->getProduct()->getUpdatedAt()) {
+                $product->setStatusId(Jirafe_Analytics_Model_Status::ADD);
+            } else {
+                $product->setStatusId(Jirafe_Analytics_Model_Status::MODIFY);
+            }
+            $product->save();
+            return true;
+        } catch (Exception $e) {
+            Mage::log('OBSERVER ERROR productSave(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            return false;
+        }
+
     }
     
     /**
      * Capture product status change events
      * 
      * @param Varien_Event_Observer $observer
-     * @return mixed
+     * @return boolean
      */
     
     public function productStatusUpdate(Varien_Event_Observer $observer) 
     {
+        try {
+            $product = Mage::getModel('jirafe_analytics/product');
+            $product->setEntityId($observer->getProduct()->getId());
+            $product->setAdminUserId(Mage::getSingleton('admin/session')->getUser()->getUserId());
+            $product->setStatusId(Jirafe_Analytics_Model_Status::DELETE);
+            $product->save();
+            return true;
+        } catch (Exception $e) {
+            Mage::log('OBSERVER ERROR productStatusUpdate(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            return false;
+        }
     }
     
     /**
      * Capture product delete events
      * 
      * @param Varien_Event_Observer $observer
-     * @return mixed
+     * @return boolean
      */
     
     public function productDelete(Varien_Event_Observer $observer) 
     {
-        Mage::log('productDelete',null,'observer.log');
+        Mage::log('productDelete',null,'jirafe_analytics.log');
+        Mage::log($observer,null,'jirafe_analytics.log');
+        try {
+            $product = Mage::getModel('jirafe_analytics/product');
+            $product->setEntityId($observer->getProduct()->getId());
+            $product->setAdminUserId(Mage::getSingleton('admin/session')->getUser()->getUserId());
+            $product->setStatusId(Jirafe_Analytics_Model_Status::DELETE);
+            $product->save();
+            return true;
+        } catch (Exception $e) {
+            Mage::log('OBSERVER ERROR productDelete(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            return false;
+        }
     }
     
     /**
      * Capture order cancel events
      * 
      * @param Varien_Event_Observer $observer
-     * @return mixed
+     * @return boolean
      */
     
     public function orderCancel(Varien_Event_Observer $observer) 
@@ -179,7 +244,7 @@ class Jirafe_Analytics_Model_Observer
      * Capture customer attribute delete events
      * 
      * @param Varien_Event_Observer $observer
-     * @return mixed
+     * @return boolean
      */
     
     public function customerAttributeDelete(Varien_Event_Observer $observer) 
@@ -192,7 +257,7 @@ class Jirafe_Analytics_Model_Observer
      * Capture customer save events
      * 
      * @param Varien_Event_Observer $observer
-     * @return mixed
+     * @return boolean
      */
     
     public function customerAttributeSave(Varien_Event_Observer $observer) 
@@ -202,58 +267,70 @@ class Jirafe_Analytics_Model_Observer
     
     /**
      * Check for Jirafe session id 
-     * Create id and insert session data into table if doesn't exist
+     * Create id and create new Jirafe session if doesn't exist
      *
-     * @return string
+     * @return boolean
      */
     
     protected function _getSessionId() 
     {
         
-        
-       // if (!$_session_id = $this->_magentoSession->getJirafeSessionId()) {
-            $visitorData = $this->_magentoSession->getVisitorData();
-            $jirafeSession = Mage::getModel('jirafe_analytics/session');
-            $jirafeSession->setSessionKey($visitorData['session_id']);
-            $jirafeSession->setIpAddress($visitorData['remote_addr']);
+        try {
+            if (!$_session_id = $this->_magentoSession->getJirafeSessionId()) {
+                $visitorData = $this->_magentoSession->getVisitorData();
+                $jirafeSession = Mage::getModel('jirafe_analytics/session');
+                $jirafeSession->setSessionKey($visitorData['session_id']);
+                $jirafeSession->setIpAddress($visitorData['remote_addr']);
+                
+                $store = Mage::app()->getStore();
+                $jirafeSession->setStoreId($store->getStoreId());
+                $jirafeSession->setStoreCurrencyCode(implode($store->getAvailableCurrencyCodes()));
+                
+                $customerSession = Mage::getSingleton('customer/session');
+                
+                if($customerSession->isLoggedIn()) {
+                    $jirafeSession->setCustomerId($customerSession->getCustomer()->getId());
+                }
+               
+                $jirafeSession->save();
+                $_session_id = $jirafeSession->getId();
+                $this->_magentoSession->setJirafeSessionId($_session_id);
+           }
             
-            $store = Mage::app()->getStore();
-            $jirafeSession->setStoreId($store->getStoreId());
-            $jirafeSession->setStoreCurrencyCode(implode($store->getAvailableCurrencyCodes()));
-            
-            $customerSession = Mage::getSingleton('customer/session');
-            
-            if($customerSession->isLoggedIn()) {
-                $jirafeSession->setCustomerId($customerSession->getCustomer()->getId());
-            }
-           
-            $jirafeSession->save();
-            $_session_id = $jirafeSession->getId();
-            $this->_magentoSession->setJirafeSessionId($_session_id);
-       // }
-        
-        return $_session_id;
+            return $_session_id;
+        } catch (Exception $e) {
+            Mage::log('OBSERVER ERROR _getSessionId(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            return false;
+        }
     }
     
     /**
-     * Check for Jirafe cart id 
-     * Create id and insert cart data into table if doesn't exist
+     * Check for cart for current quote
+     * Create id and create new Jirafe cart if doesn't exist
      *
+     * @param string $_quoteId
      * @return string
      */
     
-    protected function _getCartId($observer)
+    protected function _getCartId($_quoteId)
     {
-        //if (!$_cartId = $this->_magentoSession->getJirafeCartId()) {
-            $jirafeCart = Mage::getModel('jirafe_analytics/cart');
-            $jirafeCart->setSessionId($this->_magentoSession->getJirafeSessionId());
-            $jirafeCart->setQuoteId($observer->getQuoteItem()->getQuote()->getEntityId());
-            
-            $jirafeCart->save();
-            $_cartId = $jirafeCart->getId();
-            $this->_magentoSession->setJirafeCartId($_cartId);
-        // }
         
-        return $_cartId;
+        try {
+            if (!$_quoteId = $this->_magentoSession->getJirafeQuoteId()) {
+                $jirafeCart = Mage::getModel('jirafe_analytics/cart');
+                $jirafeCart->setSessionId($this->_magentoSession->getJirafeSessionId());
+                $jirafeCart->setQuoteId($_quoteId);
+                $jirafeCart->save();
+                $_cartId = $jirafeCart->getId();
+                $this->_magentoSession->setJirafeCartId($_cartId);
+                $this->_magentoSession->setJirafeQuoteId($_quoteId);
+            }
+            return $_cartId;
+        } catch (Exception $e) {
+            Mage::log("OBSERVER ERROR _getCartId($_quoteId): " . $e->getMessage(),null,'jirafe_analytics.log');
+            return false;
+        }
+       
+       
     }
 }

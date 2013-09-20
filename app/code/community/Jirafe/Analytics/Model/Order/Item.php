@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Status Model
+ * Order Item Model
  *
  * @category  Jirafe
  * @package   Jirafe_Analytics
@@ -9,18 +9,11 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Model_Status extends Mage_Core_Model_Abstract
+class Jirafe_Analytics_Model_Order_Item extends Mage_Core_Model_Abstract
 {
-
-    const ADD = 1;
-    
-    const MODIFY = 2;
-    
-    const DELETE  = 3;
-    
     protected function _construct()
     {
-        $this->_init('jirafe_analytics/status');
+        $this->_init('jirafe_analytics/order_item');
     }
 
 }

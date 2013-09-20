@@ -13,7 +13,7 @@ class Jirafe_Analytics_Model_Order extends Mage_Core_Model_Abstract
 {
     protected function _construct()
     {
-        $this->_init('jirafe/order');
+        $this->_init('jirafe_analytics/order');
     }
 
 }
