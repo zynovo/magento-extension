@@ -289,22 +289,24 @@ class Jirafe_Analytics_Model_Observer
         
         try {
            $jirafeSessionId = $this->_magentoSession->getJirafeSessionId();
+           
            if (empty($jirafeSessionId)) {
                 $visitorData = $this->_magentoSession->getVisitorData();
                 $jirafeSession = Mage::getModel('jirafe_analytics/session');
                 $jirafeSession->setSessionKey($visitorData['session_id']);
                 $jirafeSession->setIpAddress($visitorData['remote_addr']);
-                if ($customerId) {
-                    $jirafeSession->setCustomerId($customerId);
-                }
+               
                 $store = Mage::app()->getStore();
                 $jirafeSession->setStoreId($store->getStoreId());
                 $jirafeSession->setStoreCurrencyCode(implode($store->getAvailableCurrencyCodes()));
                 
-                $customerSession = Mage::getSingleton('customer/session');
-                
-                if($customerSession->isLoggedIn()) {
-                    $jirafeSession->setCustomerId($customerSession->getCustomer()->getId());
+                if ($customerId) {
+                    $jirafeSession->setCustomerId($customerId);
+                } else {
+                    $customerSession = Mage::getSingleton('customer/session');
+                    if($customerSession->isLoggedIn()) {
+                        $jirafeSession->setCustomerId($customerSession->getCustomer()->getId());
+                    }
                 }
                
                 $jirafeSession->save();
