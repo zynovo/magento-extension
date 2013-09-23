@@ -48,6 +48,7 @@ $installer->run("
         `first_name` varchar(64) DEFAULT NULL,
         `last_name` varchar(64) DEFAULT NULL,
         `email` varchar(256) DEFAULT NULL,
+        `status_id` smallint(5) unsigned DEFAULT NULL,
         `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (`id`)
      ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
@@ -73,7 +74,6 @@ $installer->run("
     DROP TABLE IF EXISTS {$this->getTable('jirafe_analytics/order_item')};
     CREATE TABLE {$this->getTable('jirafe_analytics/order_item')} (
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-        `session_id` int(10) unsigned NOT NULL,
         `order_id` int(10) unsigned NOT NULL,
         `item_id` int(10) unsigned NOT NULL,
         `product_id` int(10) unsigned DEFAULT NULL,
@@ -113,15 +113,19 @@ $installer->run("
     
     DROP TABLE IF EXISTS {$this->getTable('jirafe_analytics/status')};
     CREATE TABLE {$this->getTable('jirafe_analytics/status')} (
-        `id` int(10) unsigned NOT NULL,
-        `description` varchar(16) NOT NULL,
+        `id` smallint(5) unsigned NOT NULL,
+        `description` varchar(32) NOT NULL,
         PRIMARY KEY (`id`)
      ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
      
     INSERT INTO {$this->getTable('jirafe_analytics/status')} VALUES
-        (1, 'added'),
-        (2, 'modified'),
-        (3, 'deleted');
+        (1, 'add'),
+        (2, 'modify'),
+        (3, 'delete'),
+        (4, 'cancel'),
+        (5, 'attribute_add'),
+        (6, 'attribute_modify'),
+        (7, 'attribute_delete');
 
     DROP TABLE IF EXISTS {$this->getTable('jirafe_analytics/user')};
     CREATE TABLE {$this->getTable('jirafe_analytics/user')} (

@@ -18,6 +18,14 @@ class Jirafe_Analytics_Model_Status extends Mage_Core_Model_Abstract
     
     const DELETE  = 3;
     
+    const CANCEL  = 4;
+    
+    const ATTRIBUTE_ADD  = 5;
+    
+    const ATTRIBUTE_MODIFY  = 6;
+    
+    const ATTRIBUTE_DELETE  = 6;
+    
     protected function _construct()
     {
         $this->_init('jirafe_analytics/status');

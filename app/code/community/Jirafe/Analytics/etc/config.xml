@@ -171,22 +171,22 @@
                     </jirafe_analytics_action_order_cancel>
                 </observers>
             </order_cancel_after>
-            <enterprise_customer_attribute_delete>
+            <customer_delete_after>
                 <observers>
-                    <jirafe_analytics_customer_attribute_delete>
+                    <jirafe_analytics_customer_delete_after>
                         <class>Jirafe_Analytics_Model_Observer</class>
-                        <method>customerAttributeDelete</method>
-                    </jirafe_analytics_customer_attribute_delete>
+                        <method>customerDelete</method>
+                    </jirafe_analytics_customer_delete_after>
                 </observers>
-            </enterprise_customer_attribute_delete>
-            <enterprise_customer_attribute_save>
+            </customer_delete_after>
+            <customer_save_after>
                 <observers>
-                    <jirafe_analytics_customer_attribute_save>
+                    <jirafe_analytics_customer_save_after>>
                         <class>Jirafe_Analytics_Model_Observer</class>
-                        <method>customerAttributeSave</method>
-                    </jirafe_analytics_customer_attribute_save>
+                        <method>customerSave></method>
+                    </jirafe_analytics_customer_save_after>
                 </observers>
-            </enterprise_customer_attribute_save>
+            </customer_save_after>
         </events>
         <acl>
             <resources>
