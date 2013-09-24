@@ -10,6 +10,7 @@ $installer->run("
         `session_id` int(10) unsigned NOT NULL,
         `quote_id` int(10) unsigned DEFAULT NULL,
         `status_id` smallint(5) unsigned NOT NULL,
+        `feed_id` int(10) unsigned DEFAULT NULL,
         `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `modified_dt` datetime  DEFAULT NULL,
         PRIMARY KEY (`id`)
@@ -24,6 +25,7 @@ $installer->run("
         `quantity` int(10) unsigned NOT NULL,
         `price` decimal(12,4) NOT NULL,
         `status_id` smallint(5) unsigned NOT NULL,
+        `feed_id` int(10) unsigned DEFAULT NULL,
         `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `modified_dt` datetime  DEFAULT NULL,
         PRIMARY KEY (`id`)
@@ -35,6 +37,7 @@ $installer->run("
         `admin_user_id`  int(10) unsigned NOT NULL,
         `entity_id` int(10) unsigned NOT NULL,
         `status_id` smallint(5) unsigned DEFAULT NULL,
+        `feed_id` int(10) unsigned DEFAULT NULL,
         `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `modified_dt` datetime DEFAULT NULL,
         PRIMARY KEY (`id`)
@@ -49,6 +52,7 @@ $installer->run("
         `last_name` varchar(64) DEFAULT NULL,
         `email` varchar(256) DEFAULT NULL,
         `status_id` smallint(5) unsigned DEFAULT NULL,
+        `feed_id` int(10) unsigned DEFAULT NULL,
         `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
         PRIMARY KEY (`id`)
      ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
@@ -66,6 +70,7 @@ $installer->run("
         `total_paid` decimal(12,4) DEFAULT NULL ,
         `discount_amount` decimal(12,4) DEFAULT NULL,
         `status_id` smallint(5) unsigned DEFAULT NULL,
+        `feed_id` int(10) unsigned DEFAULT NULL,
         `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `modified_dt` datetime DEFAULT NULL,
         PRIMARY KEY (`id`)
@@ -82,6 +87,7 @@ $installer->run("
         `tax_amount` decimal(12,4) DEFAULT NULL,
         `row_total` decimal(12,4)  DEFAULT NULL,
         `status_id` smallint(5) unsigned DEFAULT NULL,
+        `feed_id` int(10) unsigned DEFAULT NULL,
         `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `modified_dt` datetime DEFAULT NULL,
         PRIMARY KEY (`id`)
@@ -93,6 +99,7 @@ $installer->run("
         `admin_user_id`  int(10) unsigned NOT NULL,
         `entity_id` int(10) unsigned NOT NULL,
         `status_id` smallint(5) unsigned DEFAULT NULL,
+        `feed_id` int(10) unsigned DEFAULT NULL,
         `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `modified_dt` datetime DEFAULT NULL,
         PRIMARY KEY (`id`)
@@ -106,6 +113,7 @@ $installer->run("
         `ip_address` varchar(25) DEFAULT NULL,
         `store_id` smallint(5) unsigned DEFAULT NULL,
         `store_currency_code` varchar(64) DEFAULT NULL,
+        `feed_id` int(10) unsigned DEFAULT NULL,
         `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `modified_dt` DATETIME DEFAULT NULL,
         PRIMARY KEY (`id`)
@@ -122,11 +130,8 @@ $installer->run("
         (1, 'add'),
         (2, 'modify'),
         (3, 'delete'),
-        (4, 'cancel'),
-        (5, 'attribute_add'),
-        (6, 'attribute_modify'),
-        (7, 'attribute_delete');
-
+        (4, 'cancel');
+    
     DROP TABLE IF EXISTS {$this->getTable('jirafe_analytics/user')};
     CREATE TABLE {$this->getTable('jirafe_analytics/user')} (
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -134,10 +139,29 @@ $installer->run("
         `email` varchar(128) DEFAULT NULL,
         `username` varchar(40) DEFAULT NULL,
         `status_id` smallint(5) unsigned DEFAULT NULL,
+        `feed_id` int(10) unsigned DEFAULT NULL,
         `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `modified_dt` DATETIME DEFAULT NULL,
         PRIMARY KEY (`id`)
      ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
      
+    DROP TABLE IF EXISTS {$this->getTable('jirafe_analytics/feed')};
+    CREATE TABLE {$this->getTable('jirafe_analytics/feed')} (
+        `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+        `data` text DEFAULT NULL,
+        `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `transmission_dt` DATETIME DEFAULT NULL,
+        PRIMARY KEY (`id`)
+     ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+     
+    DROP TABLE IF EXISTS {$this->getTable('jirafe_analytics/queue')};
+    CREATE TABLE {$this->getTable('jirafe_analytics/queue')} (
+        `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+        `feed_id` int(10) unsigned NOT NULL,
+        `success` tinyint unsigned DEFAULT 0,
+        `response` TEXT DEFAULT NULL,
+        `created_ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (`id`)
+     ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 ");
 $installer->endSetup();

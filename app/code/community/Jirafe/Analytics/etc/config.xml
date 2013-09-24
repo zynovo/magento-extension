@@ -26,6 +26,9 @@
                     <customer>
                         <table>jirafe_analytics_customer</table>
                     </customer>
+                    <feed>
+                        <table>jirafe_analytics_feed</table>
+                    </feed>
                     <order>
                         <table>jirafe_analytics_order</table>
                     </order>
@@ -35,6 +38,9 @@
                     <product>
                         <table>jirafe_analytics_product</table>
                     </product>
+                    <queue>
+                        <table>jirafe_analytics_queue</table>
+                    </queue>
                     <session>
                         <table>jirafe_analytics_session</table>
                     </session>
