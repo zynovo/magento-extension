@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Session Collection Resource Model
+ * Queue Attempt Collection Resource Model
  *
  * @category  Jirafe
  * @package   Jirafe_Analytics
@@ -9,10 +9,10 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Model_Resource_Session_Collection extends Mage_Core_Model_Resource_Db_Collection_Abstract
+class Jirafe_Analytics_Model_Resource_Queue_Attempt_Collection extends Mage_Core_Model_Resource_Db_Collection_Abstract
 {
     protected function _construct()
     {
-        $this->_init('jirafe_analytics/session');
+        $this->_init('jirafe_analytics/queue_attempt');
     }
 }

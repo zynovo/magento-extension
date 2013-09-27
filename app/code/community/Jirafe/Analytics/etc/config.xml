@@ -14,44 +14,22 @@
             <jirafe_analytics_resource>
                 <class>Jirafe_Analytics_Model_Resource</class>
                 <entities>
-                    <cart>
-                        <table>jirafe_analytics_cart</table>
-                    </cart>
-                    <cart_item>
-                        <table>jirafe_analytics_cart_item</table>
-                    </cart_item>
-                    <category>
-                        <table>jirafe_analytics_category</table>
-                    </category>
-                    <customer>
-                        <table>jirafe_analytics_customer</table>
-                    </customer>
-                    <feed>
-                        <table>jirafe_analytics_feed</table>
-                    </feed>
-                    <order>
-                        <table>jirafe_analytics_order</table>
-                    </order>
-                    <order_item>
-                        <table>jirafe_analytics_order_item</table>
-                    </order_item>
-                    <product>
-                        <table>jirafe_analytics_product</table>
-                    </product>
                     <queue>
                         <table>jirafe_analytics_queue</table>
                     </queue>
-                    <session>
-                        <table>jirafe_analytics_session</table>
-                    </session>
-                    <status>
-                        <table>jirafe_analytics_status</table>
-                    </status>
-                    <user>
-                        <table>jirafe_analytics_user</table>
-                    </user>
+                    <queue_attempt>
+                        <table>jirafe_analytics_queue_attempt</table>
+                    </queue_attempt>
+                    <queue_type>
+                        <table>jirafe_analytics_queue_type</table>
+                    </queue_type>
                 </entities>
             </jirafe_analytics_resource>
+            <admin>
+                <rewrite>
+                    <user>Jirafe_Analytics_Model_Admin_User</user>
+                </rewrite>
+            </admin>
         </models>
         <resources>
             <jirafe_analytics_setup>
@@ -193,6 +171,24 @@
                     </jirafe_analytics_customer_save_after>
                 </observers>
             </customer_save_after>
+            <admin_user_save_after>
+                <observers>
+                    <jirafe_analytics_admin_user_save_after>
+                        <class>Jirafe_Analytics_Model_Observer</class>
+                        <method>adminUserSave</method>
+                    </jirafe_analytics_admin_user_save_after>
+                </observers>
+            </admin_user_save_after>
+            <admin_user_delete>
+                <observers>
+                    <jirafe_analytics_admin_user_delete>
+                        <class>Jirafe_Analytics_Model_Observer</class>
+                        <method>adminUserDelete</method>
+                    </jirafe_analytics_admin_user_delete>
+                </observers>
+            </admin_user_delete>
+            
+            
         </events>
         <acl>
             <resources>
@@ -214,6 +210,13 @@
             </resources>
         </acl>
     </adminhtml>
+    <default>
+        <jirafe_analytics>
+            <settings>
+                <base_url>http://events.jirafe.com/v2/</base_url>
+            </settings>
+        </jirafe_analytics>
+    </default>
     <phpunit>
         <suite>
             <modules>

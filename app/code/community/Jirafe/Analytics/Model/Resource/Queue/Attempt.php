@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Cart Resource Model
+ * Queue Attempt Resource Model
  *
  * @category  Jirafe
  * @package   Jirafe_Analytics
@@ -9,10 +9,10 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Model_Resource_Cart extends Mage_Core_Model_Resource_Db_Abstract
+class Jirafe_Analytics_Model_Resource_Queue_Attempt extends Mage_Core_Model_Resource_Db_Abstract
 {
     public function _construct()
     {
-        $this->_init('jirafe_analytics/cart','id');
+        $this->_init('jirafe_analytics/queue_attempt','id');
     }
 }

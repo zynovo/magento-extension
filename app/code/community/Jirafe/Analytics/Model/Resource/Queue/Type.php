@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Customer Resource Model
+ * Queue Type Resource Model
  *
  * @category  Jirafe
  * @package   Jirafe_Analytics
@@ -9,10 +9,11 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Model_Resource_Customer extends Mage_Core_Model_Resource_Db_Abstract
+class Jirafe_Analytics_Model_Resource_Queue_Type extends Mage_Core_Model_Resource_Db_Abstract
 {
+    
     public function _construct()
     {
-        $this->_init('jirafe_analytics/customer','id');
+        $this->_init('jirafe_analytics/queue_type','id');
     }
 }
