@@ -30,7 +30,7 @@ class Jirafe_Analytics_Model_Category extends Jirafe_Analytics_Model_Abstract
                 'create_date' => $this->_formatDate(($category->getCreatedAt()))
             );
             
-            return 'CATEGORY::getAddJson json=' . json_encode($data);
+            return json_encode($data);
         } catch (Exception $e) {
             Mage::log('ERROR Jirafe_Analytics_Model_Category::getAddJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
             return false;
@@ -54,7 +54,7 @@ class Jirafe_Analytics_Model_Category extends Jirafe_Analytics_Model_Abstract
                 'create_date' => $this->_formatDate(($category->getCreatedAt()))
             );
             
-            return 'CATEGORY::getModifyJson json=' . json_encode($data);
+            return json_encode($data);
         } catch (Exception $e) {
             Mage::log('ERROR Jirafe_Analytics_Model_Category::getModifyJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
             return false;
@@ -78,7 +78,7 @@ class Jirafe_Analytics_Model_Category extends Jirafe_Analytics_Model_Abstract
                 'create_date' => $this->_formatDate(($category->getCreatedAt()))
             );
             
-            return 'CATEGORY::getDeleteJson json=' . json_encode($data);
+            return json_encode($data);
         } catch (Exception $e) {
             Mage::log('ERROR Jirafe_Analytics_Model_Category::getDeleteJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
             return false;

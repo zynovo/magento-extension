@@ -33,7 +33,7 @@ class Jirafe_Analytics_Model_User extends Jirafe_Analytics_Model_Abstract
                 'create_date' => $this->_formatDate( $user->getCreated() )
             );
             
-            return 'USER::getAddJson json=' . json_encode($data);
+            return json_encode($data);
         } catch (Exception $e) {
             Mage::log('ERROR Jirafe_Analytics_Model_User::getAddJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
             return false;
@@ -61,7 +61,7 @@ class Jirafe_Analytics_Model_User extends Jirafe_Analytics_Model_Abstract
                 'create_date' => $this->_formatDate( $user->getCreated() )
             );
             
-            return 'USER::getModifyJson json=' . json_encode($data);
+            return json_encode($data);
         } catch (Exception $e) {
             Mage::log('ERROR Jirafe_Analytics_Model_User::getModifyJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
             return false;
@@ -89,7 +89,7 @@ class Jirafe_Analytics_Model_User extends Jirafe_Analytics_Model_Abstract
                 'create_date' => $this->_formatDate( $user->getCreated() )
             );
     
-            return 'USER::getDeleteJson json=' . json_encode($data);
+            return json_encode($data);
         } catch (Exception $e) {
             Mage::log('ERROR Jirafe_Analytics_Model_User::getDeleteJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
             return false;

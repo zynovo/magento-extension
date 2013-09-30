@@ -48,7 +48,7 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
                 'items' => $items
             );
             
-            return 'ORDER::getAddJson json=' . json_encode($data);
+            return json_encode($data);
         } catch (Exception $e) {
             Mage::log('ERROR Jirafe_Analytics_Model_Order::getAddJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
             return false;
@@ -73,7 +73,7 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
                 'create_date' => $this->_formatDate( $order->getCreatedAt() ),
             );
             
-            return 'ORDER::getCancelJson json=' . json_encode($data);
+            return json_encode($data);
         } catch (Exception $e) {
             Mage::log('ERROR Jirafe_Analytics_Model_Order::getCancelJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
             return false;

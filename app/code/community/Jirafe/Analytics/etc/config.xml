@@ -31,6 +31,11 @@
                 </rewrite>
             </admin>
         </models>
+        <helpers>
+            <jirafe_analytics>
+                <class>Jirafe_Analytics_Helper</class>
+            </jirafe_analytics>
+        </helpers>
         <resources>
             <jirafe_analytics_setup>
                 <setup>

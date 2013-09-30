@@ -34,7 +34,7 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
                 'create_date' => $this->_formatDate( $product->getCreatedAt() )
             );
             
-            return 'CART::getItemAddJson json=' . json_encode($data);
+            return json_encode($data);
         } catch (Exception $e) {
             Mage::log('ERROR Jirafe_Analytics_Model_Cart::getItemAddJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
             return false;
@@ -59,7 +59,7 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
                 'create_date' => $this->_formatDate( $product->getCreatedAt() )
             );
             
-            return 'CART::getItemUpdateJson json=' . json_encode($data);
+            return json_encode($data);
         } catch (Exception $e) {
             Mage::log('ERROR Jirafe_Analytics_Model_Cart::getItemUpdateJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
             return false;
