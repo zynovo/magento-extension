@@ -3,12 +3,12 @@
     <tabs>
         <jirafe translate="label" module="jirafe_analytics">
             <label>Jirafe</label>
-            <sort_order>99991</sort_order>
+            <sort_order>101</sort_order>
         </jirafe>
     </tabs>
     <sections>
         <jirafe_analytics translate="label">
-            <label>Analytics</label>
+            <label>Jirafe Analytics</label>
             <tab>jirafe</tab>
             <frontend_type>text</frontend_type>
             <sort_order>1</sort_order>
