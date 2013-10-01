@@ -1,0 +1,13 @@
+{
+    "name": "jirafe/magento",
+    "description": "Jirafe extension for Magento",
+    "authors": [
+        {
+            "name": "Dmitriy Bubra",
+            "email": "dbubra@speroteck.com"
+        }
+    ],
+    "require": {
+
+    }
+}
