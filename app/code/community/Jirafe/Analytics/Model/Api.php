@@ -59,7 +59,7 @@ class Jirafe_Analytics_Model_Api extends Mage_Core_Model_Abstract
         
         if ($this->debug) {
             Mage::log($response,null,'jirafe_api.log');
-        
+        }
         curl_close($ch);
         return $response;
     }
