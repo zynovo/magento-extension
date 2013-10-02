@@ -24,7 +24,6 @@ $installer->run("
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
         `content` text NOT NULL,
         `type_id` int(10) unsigned NOT NULL,
-        `status_id` int(11) unsigned NOT NULL DEFAULT '0',
         `created_dt` datetime NOT NULL,
         `completed_dt` datetime DEFAULT NULL,
         PRIMARY KEY (`id`),
@@ -36,8 +35,8 @@ $installer->run("
     CREATE TABLE {$this->getTable('jirafe_analytics/queue_attempt')} (
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
         `queue_id` int(10) unsigned NOT NULL,
-        `response` text,
-        `status_id` int(10) DEFAULT NULL,
+        `http_code` int(10) unsigned NOT NULL,
+        `total_time` FLOAT DEFAULT 0,
         `created_dt` datetime NOT NULL,
         PRIMARY KEY (`id`),
         KEY `queue_id` (`queue_id`),

@@ -99,6 +99,6 @@ Thumbs.db
 /js
 /skin
 .idea
-
+.htaccess
 /vendor/
 /test.php
