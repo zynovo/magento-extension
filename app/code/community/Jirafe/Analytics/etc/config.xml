@@ -192,8 +192,6 @@
                     </jirafe_analytics_admin_user_delete>
                 </observers>
             </admin_user_delete>
-            
-            
         </events>
         <acl>
             <resources>
@@ -215,18 +213,16 @@
             </resources>
         </acl>
     </adminhtml>
-    <default>
-        <jirafe_analytics>
-            <settings>
-                <base_url>http://events.jirafe.com/v2/</base_url>
-            </settings>
-        </jirafe_analytics>
-    </default>
-    <phpunit>
-        <suite>
-            <modules>
-                <Jirafe_Analytics />
-            </modules>
-        </suite>
-    </phpunit>
+     <crontab>
+        <jobs>
+            <jjirafe_analytics_process_queue>
+                <schedule>
+                    <cron_expr>*/5 * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>jirafe_analtyics/queue::process</model>
+                </run>
+            </jirafe_analytics_process_queue>
+        </jobs>
+    </crontab>
 </config>
