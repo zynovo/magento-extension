@@ -215,7 +215,7 @@
     </adminhtml>
      <crontab>
         <jobs>
-            <jjirafe_analytics_process_queue>
+            <jirafe_analytics_process_queue>
                 <schedule>
                     <cron_expr>*/5 * * * *</cron_expr>
                 </schedule>
