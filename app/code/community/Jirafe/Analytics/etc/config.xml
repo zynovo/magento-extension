@@ -223,7 +223,7 @@
                     <cron_expr>*/5 * * * *</cron_expr>
                 </schedule>
                 <run>
-                    <model>jirafe_analtyics/queue::process</model>
+                    <model>jirafe_analytics/queue::process</model>
                 </run>
             </jirafe_analytics_process_queue>
         </jobs>
