@@ -20,6 +20,9 @@
                     <queue_attempt>
                         <table>jirafe_analytics_queue_attempt</table>
                     </queue_attempt>
+                    <queue_error>
+                        <table>jirafe_analytics_queue_error</table>
+                    </queue_error>
                     <queue_type>
                         <table>jirafe_analytics_queue_type</table>
                     </queue_type>
@@ -192,8 +195,6 @@
                     </jirafe_analytics_admin_user_delete>
                 </observers>
             </admin_user_delete>
-            
-            
         </events>
         <acl>
             <resources>
@@ -215,18 +216,16 @@
             </resources>
         </acl>
     </adminhtml>
-    <default>
-        <jirafe_analytics>
-            <settings>
-                <base_url>http://events.jirafe.com/v2/</base_url>
-            </settings>
-        </jirafe_analytics>
-    </default>
-    <phpunit>
-        <suite>
-            <modules>
-                <Jirafe_Analytics />
-            </modules>
-        </suite>
-    </phpunit>
+     <crontab>
+        <jobs>
+            <jirafe_analytics_process_queue>
+                <schedule>
+                    <cron_expr>*/5 * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>jirafe_analytics/queue::process</model>
+                </run>
+            </jirafe_analytics_process_queue>
+        </jobs>
+    </crontab>
 </config>

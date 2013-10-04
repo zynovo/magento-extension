@@ -3,12 +3,12 @@
     <tabs>
         <jirafe translate="label" module="jirafe_analytics">
             <label>Jirafe</label>
-            <sort_order>99991</sort_order>
+            <sort_order>101</sort_order>
         </jirafe>
     </tabs>
     <sections>
         <jirafe_analytics translate="label">
-            <label>Analytics</label>
+            <label>Jirafe Analytics</label>
             <tab>jirafe</tab>
             <frontend_type>text</frontend_type>
             <sort_order>1</sort_order>
@@ -16,10 +16,10 @@
             <show_in_website>1</show_in_website>
             <show_in_store>1</show_in_store>
             <groups>
-                <settings translate="label">
-                    <label>General Settings</label>
+                <account translate="label">
+                    <label>Account Settings</label>
                     <frontend_type>text</frontend_type>
-                    <sort_order>1</sort_order>
+                    <sort_order>10</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
@@ -40,26 +40,8 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </site_id>
-                        <enable_sandbox translate="label">
-                            <label>Enable Sandbox</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>30</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </enable_sandbox>
-                        <debug translate="label">
-                            <label>DebugMode</label>
-                            <frontend_type>select</frontend_type>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <sort_order>40</sort_order>
-                            <show_in_default>1</show_in_default>
-                            <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </debug>
-                        </fields>
-                </settings>
+                    </fields>
+                </account>
                 <production translate="label">
                     <label>Production Settings</label>
                     <frontend_type>text</frontend_type>
@@ -94,6 +76,15 @@
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <fields>
+                        <enable translate="label">
+                            <label>Enable Sandbox</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enable>
                         <event_api_url translate="label">
                             <label>Event API URL</label>
                             <frontend_type>text</frontend_type>
@@ -112,6 +103,111 @@
                         </access_token>
                     </fields>
                 </sandbox>
+                <debug translate="label">
+                    <label>Debug Settings</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>40</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <logging translate="label">
+                            <label>Enable Logging</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </logging>
+                        <server_load translate="label">
+                            <label>Log Server Load Average</label>
+                            <frontend_type>select</frontend_type> 
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </server_load>
+                    </fields>
+                 </debug>
+                 <curl>
+                    <label>Performance Tuning: cURL Settings</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>50</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <threading translate="label">
+                            <label>cURL Method</label>
+                            <frontend_type>select</frontend_type>
+                            <source_model>jirafe_analytics/adminhtml_system_config_source_singlemulti</source_model>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </threading>
+                        <batch_size translate="label">
+                            <label>Batch Size (multi-threaded only)</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </batch_size>
+                        <max_attempts translate="label">
+                            <label>Max Attempts After Error</label>
+                             <frontend_type>text</frontend_type>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </max_attempts>
+                        <max_records translate="label">
+                            <label>Max Number of Records Per Attempt</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>70</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </max_records>
+                    </fields>
+                </curl>
+                 <php>
+                    <label>Performance Tuning: Override PHP Settings</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>60</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <max_execution_time translate="label">
+                            <label>max_execution_time</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </max_execution_time>
+                        <memory_limit translate="label">
+                            <label>memory_limit</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>20</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </memory_limit>
+                        <proc_nice translate="label">
+                            <label>proc_nice</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </proc_nice>
+                    </fields>
+                </php>
             </groups>
         </jirafe_analytics>
     </sections>
