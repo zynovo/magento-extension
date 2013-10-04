@@ -23,6 +23,10 @@ class Jirafe_Analytics_Model_Queue_Type extends Mage_Core_Model_Abstract
     
     const USER = 6;
     
+    /**
+     * Class construction & resource initialization
+     */
+    
     protected function _construct()
     {
         $this->_init('jirafe_analytics/queue_type');

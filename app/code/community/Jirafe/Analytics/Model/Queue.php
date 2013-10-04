@@ -39,7 +39,7 @@ class Jirafe_Analytics_Model_Queue extends Jirafe_Analytics_Model_Abstract
     public function process() 
     {
         $data = $this->getCollection()
-            ->addFieldToSelect(array('content'))
+            ->addFieldToSelect(array('content','store_id'))
             ->addFieldToFilter('`main_table`.`completed_dt`', array('is' => new Zend_Db_Expr('null')))
             ->addFieldToFilter('`main_table`.`content`', array('neq' => ''))
             ->getSelect()
