@@ -13,137 +13,106 @@
 class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
 {
     
-    
     /**
-     * Create JSON object for admin add product events
+     * Create product array of data required by Jirafe API
      *
-     * @param Mage_Catalog_Model_Product $product
+     * @param int $productId
+     * @param int $storeId
      * @return mixed
      */
     
-    public function getAddJson( $product )
+    public function getArray( $productId = null, $storeId = null )
     {
         try {
-            $data = array(
-                'id' => $product->getEntityId(),
-                'name' => $product->getName(),
-                'change_date' => $this->_formatDate( $product->getUpdatedAt() ),
-                'create_date' => $this->_formatDate( $product->getCreatedAt() )
-            );
-            
-            return json_encode($data);
+            if ($productId && $storeId) {
+                $product = Mage::getModel('catalog/product')->load( $productId );
+                return array(
+                    'id' => $product->getData('entity_id'),
+                    'create_date' => $this->_formatDate( $product->getData( 'created_at' ) ),
+                    'change_date' => $this->_formatDate( $product->getData( 'updated_at' ) ),
+                    'is_product' => true,
+                    'is_sku' => true,
+                    'catalog' => $this->_getCatalog( $storeId ),
+                    'name' => $product->getData('name'),
+                    'code' => $product->getData('sku'),
+                    'brand' => '',
+                    'categories' => $this->getCategories( $product ),
+                    'images' => $this->getImages( $product ));
+            } else {
+                return array();
+            }
         } catch (Exception $e) {
-            Mage::log('ERROR Jirafe_Analytics_Model_Product::getAddJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            Mage::log('ERROR Jirafe_Analytics_Model_Product::getProductData(): ' . $e->getMessage(),null,'jirafe_analytics.log');
             return false;
         }
     }
     
     /**
-     * Create JSON object for admin modify product events
+     * Create array of categories associated with product
      *
      * @param Mage_Catalog_Model_Product $product
      * @return mixed
      */
     
-    public function getModifyJson( $product )
+    public function getCategories( $product = null )
     {
         try {
-            $data = array(
-                'id' => $product->getEntityId(),
-                'name' => $product->getName(),
-                'change_date' => $this->_formatDate( $product->getUpdatedAt() ),
-                'create_date' => $this->_formatDate( $product->getCreatedAt() )
-            );
-            
-            return json_encode($data);
+            if ($product) {
+                $data = array();
+                $categories = $product->getCategoryIds();
+                foreach ($categories as $catId) {
+                    $category = Mage::getModel('catalog/category')->load( $catId ) ;
+                    $data[] = array(
+                        'id' => $catId,
+                        'name' => $category->getName());
+                }
+                return $data;
+            } else {
+                return array();
+            }
         } catch (Exception $e) {
-            Mage::log('ERROR Jirafe_Analytics_Model_Product::getModifyJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            Mage::log('ERROR Jirafe_Analytics_Model_Product::getCategories(): ' . $e->getMessage(),null,'jirafe_analytics.log');
             return false;
         }
     }
     
     /**
-     * Create JSON object for admin product status change events
+     * Create array of images associated with product
      *
      * @param Mage_Catalog_Model_Product $product
      * @return mixed
      */
     
-    public function getStatusChangeJson( $product )
+    public function getImages( $product = null )
     {
         try {
-            $data = array(
-                'id' => $product->getEntityId(),
-                'name' => $product->getName(),
-                'change_date' => $this->_formatDate( $product->getUpdatedAt() ),
-                'create_date' => $this->_formatDate( $product->getCreatedAt() )
-            );
-            
-            return json_encode($data);
+            if ( $product ) {
+                return array(
+                    array( 'url' => $product->getMediaConfig()->getMediaUrl( $product->getData( 'image' ) ) )
+                );
+            } else {
+                return array( 'url' => '' );
+            }
         } catch (Exception $e) {
-            Mage::log('ERROR Jirafe_Analytics_Model_Product::getStatusChangeJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            Mage::log('ERROR Jirafe_Analytics_Model_Product::getImages(): ' . $e->getMessage(),null,'jirafe_analytics.log');
             return false;
         }
     }
     
     /**
-     * Create JSON object for admin product delete events
+     * Convert product array into JSON object
      *
-     * @param Mage_Catalog_Model_Product $product
+     * @param  array $product
      * @return mixed
      */
     
-    public function getDeleteJson( $product )
+    public function getJson( $product = null )
     {
-        try {
-            $data = array(
-                    'id' => $product->getEntityId(),
-                    'name' => $product->getName(),
-                    'change_date' => $this->_formatDate( $product->getUpdatedAt() ),
-                    'create_date' => $this->_formatDate( $product->getCreatedAt() )
-            );
-            
-            return json_encode($data);
-          } catch (Exception $e) {
-            Mage::log('ERROR Jirafe_Analytics_Model_Product::getDeleteJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+        if ($quote) {
+            return json_encode( $this->getArray($product) );
+        } else {
             return false;
         }
     }
     
-    /*
-    protected function _getImages( $product ) 
-    {    
-        $thumbnail = Mage::helper('catalog/image')->init($product, 'thumbnail');
-        $smallImage = Mage::helper('catalog/image')->init($product, 'small_image');
-        $image = Mage::helper('catalog/image')->init($product, 'image');
-        return '[{"url":"' . $thumbnail .'"},{"url":"' . $smallImage .'"},{"url":"' . $image .'"}]';
-    }
-    
-    protected function _getJson( $product )
-    {
-      
-         $images = $this->_getImages( $product );
-       
-        $json = '{
-            "brand":"X",
-            "catalog":"",
-            "categories":"",
-            "change_date":"' . date(DATE_ISO8601, strtotime($product->getUpdatedAt())) . '",
-            "code":"6666",
-            "create_date":"' . date(DATE_ISO8601, strtotime($product->getCreatedAt())) . '",
-            "id":"' . $product->getEntityId() . '",
-            "images":' . $images . ',
-            "is_product":true,
-            "is_sku":true,
-            "name":"' . $product->getName() . ',
-            "rating":"5.0",
-            "vendors":""}';
-     
-        
-        return $json;
-    }
-    
-
-    */
-
 }

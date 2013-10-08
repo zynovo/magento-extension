@@ -19,12 +19,16 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
      * @return boolean
      */
     
-    public function cartProductAdd( Varien_Event_Observer $observer )
+    public function cartSave( Varien_Event_Observer $observer )
     {
         try {
+            $quote = Mage::getSingleton('checkout/session')->getQuote();
+            $json = Mage::getModel('jirafe_analytics/cart')->getJson( $quote );
+            
             $queue = Mage::getModel('jirafe_analytics/queue');
             $queue->setTypeId( Jirafe_Analytics_Model_Queue_Type::CART );
-            $queue->setContent( Mage::getModel('jirafe_analytics/cart')->getItemAddJson( $observer ) );
+            $queue->setContent( $json );
+            $queue->setStoreId( $quote->getStoreId() );
             $queue->setCreatedDt( $this->_getCreatedDt() );
             $queue->save();
             return true;
@@ -34,27 +38,9 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
         }
     }
     
-    /**
-     * Capture update cart event
-     *
-     * @param Varien_Event_Observer $observer
-     * @return boolean
-     */
     
-    public function cartUpdateItemComplete( Varien_Event_Observer $observer ) 
-    {
-        try {
-            $queue = Mage::getModel('jirafe_analytics/queue');
-            $queue->setTypeId( Jirafe_Analytics_Model_Queue_Type::CART );
-            $queue->setContent( Mage::getModel('jirafe_analytics/cart')->getItemUpdateJson( $observer ) );
-            $queue->setCreatedDt( $this->_getCreatedDt() );
-            $queue->save();
-            return true;
-        } catch (Exception $e) {
-            Mage::log('OBSERVER ERROR cartUpdateItemComplete(): ' . $e->getMessage(),null,'jirafe_analytics.log');
-            return false;
-        }
-    }
+  
+    
     
     /**
      * Capture customer registration event

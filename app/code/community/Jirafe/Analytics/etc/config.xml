@@ -63,30 +63,14 @@
     </global>
     <frontend>
         <events>
-            <checkout_cart_product_add_after>
+             <controller_action_postdispatch_checkout>
                 <observers>
-                    <jirafe_analytics_action_cart_product_add_after>
+                    <jirafe_analytics_controller_action_postdispatch_checkout>
                         <class>Jirafe_Analytics_Model_Observer</class>
-                        <method>cartProductAdd</method>
-                    </jirafe_analytics_action_cart_product_add_after>
+                        <method>cartSave</method>
+                    </jirafe_analytics_controller_action_postdispatch_checkout>
                 </observers>
-            </checkout_cart_product_add_after>
-            <checkout_cart_update_item_complete>
-                <observers>
-                    <jirafe_analytics_action_cart_update_item_complete>
-                        <class>Jirafe_Analytics_Model_Observer</class>
-                        <method>cartUpdateItemComplete</method>
-                    </jirafe_analytics_action_cart_update_item_complete>
-                </observers>
-            </checkout_cart_update_item_complete>
-             <checkout_cart_save_after>
-                <observers>
-                    <jirafe_analytics_action_cart_save_after>
-                        <class>Jirafe_Analytics_Model_Observer</class>
-                        <method>cartSaveAfter</method>
-                    </jirafe_analytics_action_cart_save_after>
-                </observers>
-            </checkout_cart_save_after>
+            </controller_action_postdispatch_checkout>
              <customer_register_success>
                 <observers>
                     <jirafe_analytics_customer_register_success>

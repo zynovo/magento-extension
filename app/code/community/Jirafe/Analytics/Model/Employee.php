@@ -1,7 +1,7 @@
 <?php
 
 /**
- * User Model
+ * Employee Model
  *
  * @category  Jirafe
  * @package   Jirafe_Analytics
@@ -9,7 +9,7 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Model_User extends Jirafe_Analytics_Model_Abstract
+class Jirafe_Analytics_Model_Employee extends Jirafe_Analytics_Model_Abstract
 {
 
     /**
@@ -35,7 +35,7 @@ class Jirafe_Analytics_Model_User extends Jirafe_Analytics_Model_Abstract
             
             return json_encode($data);
         } catch (Exception $e) {
-            Mage::log('ERROR Jirafe_Analytics_Model_User::getAddJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            Mage::log('ERROR Jirafe_Analytics_Model_Employee::getAddJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
             return false;
         }
     }
@@ -63,7 +63,7 @@ class Jirafe_Analytics_Model_User extends Jirafe_Analytics_Model_Abstract
             
             return json_encode($data);
         } catch (Exception $e) {
-            Mage::log('ERROR Jirafe_Analytics_Model_User::getModifyJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            Mage::log('ERROR Jirafe_Analytics_Model_Employee::getModifyJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
             return false;
         }
     }
@@ -91,7 +91,7 @@ class Jirafe_Analytics_Model_User extends Jirafe_Analytics_Model_Abstract
     
             return json_encode($data);
         } catch (Exception $e) {
-            Mage::log('ERROR Jirafe_Analytics_Model_User::getDeleteJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            Mage::log('ERROR Jirafe_Analytics_Model_Employee::getDeleteJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
             return false;
         }
     }

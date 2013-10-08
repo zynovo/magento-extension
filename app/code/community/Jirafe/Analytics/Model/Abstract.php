@@ -11,8 +11,62 @@
 
 abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
 {
+    
+    
     /**
-     * Format Data to Jirafe API requirements: UTC in the ISO 8601:2004 format
+     * Extract visit data from Jirafe cookie
+     *
+     * @return array
+     */
+    
+    protected function _getVisit()
+    {
+        try {
+            return array(
+                'visit_id' => '1234',
+                'visitor_id' => '4321',
+                'pageview_id' => '5678',
+                'last_pageview_id' => '8765'
+            );
+        } catch (Exception $e) {
+            Mage::log('ERROR Jirafe_Analytics_Model_Abstract::_getVisit(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            return false;
+        }
+    }
+    
+    /**
+     * Format customer data as array
+     *
+     * @param mixed $data    Mage_Sales_Model_Quote or Mage_Sales_Model_Order
+     * @return array
+     */
+    
+    protected function _getCustomer( $data = null )
+    {
+        if ( $data['customer_id'] ) {
+            $customer = Mage::getModel('customer/customer')->load( $data['customer_id'] );
+            return array(
+                'id' => $customer->getData('entity_id'),
+                'create_date' => $customer->getData('created_at'),
+                'change_date' => $customer->getData('updated_at'),
+                'email' => $customer->getData('email'),
+                'first_name' => $customer->getData('firstname'),
+                'last_name' => $customer->getData('lastname')
+            );
+        } else {
+            return array(
+                'id' => Mage::getModel('core/session')->getVisitorId(),
+                'create_date' => $data['created_at'],
+                'change_date' => '',
+                'email' => $data['customer_email'],
+                'first_name' => $data['customer_firstname'],
+                'last_name' => $data['customer_lastname']
+            );
+        }
+    }
+    
+    /**
+     * Format date to Jirafe API requirements: UTC in the ISO 8601:2004 format
      * 
      * @param datetime $date
      * @return datetime
@@ -24,11 +78,50 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
     }
     
     /**
-     * Use PHP generated UTC date to avoid MySQL possible timezone configuration issues
+     * Current DataTime in UTC/GMT to avoid MySQL possible timezone configuration issues
+     * 
+     * @return string
      */
     
     protected function _getCreatedDt() {
         return gmdate('Y-m-d H:i:s');
+    }
+    
+    /**
+     * Format currency values to DECIMAL(12,4) or return '' if null
+     * 
+     * @param string $number
+     * @return string
+     */
+    
+    protected function _formatCurrency( $number = null )
+    {
+        if (is_numeric( $number )) {
+            return number_format( $number, 4 );
+        } else {
+            return '';
+        }
+    }
+
+    /**
+     * Format store values as catalog array
+     * 
+     * @param int $storeId
+     * @return array
+     */
+    
+    protected function _getCatalog( $storeId = null )
+    {
+        if (is_numeric( $storeId )) {
+            return array(
+                'id' => $storeId,
+                'name' => Mage::getModel('core/store')->load( $storeId )->getName());
+        } else {
+            return array(
+                'id' => '',
+                'name' => '');
+        }
+
     }
     
     /**

@@ -11,72 +11,87 @@
 
 class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
 {
+    
     /**
-     * Create JSON object for order creation events
+     * Create order array of data required by Jirafe API
      *
-     * @param  Varien_Event_Observer $observer
+     * @param Mage_Sales_Model_Order $order
      * @return mixed
      */
     
-    public function getAddJson( $observer )
+    public function getArray( $order = null )
     {
         try {
-            
-            $order = $observer->getOrder();
-
-            $items = array();
-            foreach ($order->getAllItems() as $item) {
-                $items[] = array(
-                    'item_id' => $item->getItemId(),
-                    'product_id' => $item->getProductId(),
-                    'sku' => $item->getSku(),
-                    'price' => $item->getPrice(),
-                    'tax_amount' => $item->getTaxAmount(),
-                    'row_total' => $item->getRowTotal());
-            }
-            
+            $items = Mage::getModel('jirafe_analytics/order_item')->getItems( $order );
             $data = array(
-                'order_id' => $order->getEntityId(),
                 'order_number' => $order->getIncrementId(),
-                'grand_total' => $order->getGrandTotal(),
-                'shipping_amount' => $order->getShippingAmount(),
-                'tax_amount' => $order->getTaxAmount(),
-                'total_paid' => $order->getTotalPaid(),
-                'discount_amount' => $order->setDiscountAmount(),
-                'change_date' => $this->_formatDate( $order->getUpdatedAt() ),
-                'create_date' => $this->_formatDate( $order->getCreatedAt() ),
-                'items' => $items
+                'cart_id' => $order->getData('quote_id'),
+                'status' => $order->getData('status'),
+                'order_date' => $this->_formatDate( $order->getData('created_at') ),
+                'create_date' => $this->_formatDate( $order->getData('created_at') ),
+                'change_date' => $this->_formatDate( $order->getData('updated_at') ),
+                'subtotal' => $this->_formatCurrency( $order->getData('subtotal') ),
+                'total' => $this->_formatCurrency( $order->getData('grand_total') ),
+                'total_tax' => $this->_formatCurrency( $order->getData('tax_amount') ),
+                'total_shipping' => $this->_formatCurrency( $order->getData('shipping_amount') ),
+                'total_payment_cost' => $this->_formatCurrency( $order->getPayment()->getData('amount_paid') ),
+                'total_discounts' => $this->_formatCurrency( $order->getData('discount_amount') ),
+                'currency' => $order->getData('order_currency_code'),
+                'cookies' => null,
+                'items' => $items,
+                'previous_items' => $this->_getPreviousItems( $order->getData('entity_id') ),
+                'customer' => $this->_getCustomer( $order->getData() ),
+                'visit' => $this->_getVisit()
             );
             
-            return json_encode($data);
+            Mage::getSingleton('core/session')->setJirafePrevOrderId( $order->getData('entity_id') );
+            Mage::getSingleton('core/session')->setJirafePrevOrderItems( $items );
+            
+            return $data;
+            
         } catch (Exception $e) {
-            Mage::log('ERROR Jirafe_Analytics_Model_Order::getAddJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            Mage::log('ERROR Jirafe_Analytics_Model_Order::getOrder(): ' . $e->getMessage(),null,'jirafe_analytics.log');
             return false;
         }
     }
-
+    
+    
     /**
-     * Create JSON object for order cancel events
+     * Get items from previous instance of order from session
      *
-     * @param  Varien_Event_Observer $observer
+     * @param int $quoteId
+     * @return array
+     */
+    
+    protected function _getPreviousItems ( $orderId = null )
+    {
+        try {
+            if ($orderId == Mage::getSingleton('core/session')->getJirafePrevOrderId()) {
+                return Mage::getSingleton('core/session')->getJirafePrevOrderItems();
+            } else {
+                return array();
+            }
+        } catch (Exception $e) {
+            Mage::log('ERROR Jirafe_Analytics_Model_Order::_getPreviousItems(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            return false;
+        }
+    }
+    
+    
+    /**
+     * Convert order array into JSON object
+     *
+     * @param  array $order
      * @return mixed
      */
     
-    public function getCancelJson( $observer )
+    public function getJson( $order = null )
     {
-        try {
-            $order = $observer->getOrder();
-            $data = array(
-                'order_id' => $order->getEntityId(),
-                'order_number' => $order->getIncrementId(),
-                'change_date' => $this->_formatDate( $order->getUpdatedAt() ),
-                'create_date' => $this->_formatDate( $order->getCreatedAt() ),
-            );
-            
-            return json_encode($data);
-        } catch (Exception $e) {
-            Mage::log('ERROR Jirafe_Analytics_Model_Order::getCancelJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+        if ($order) {
+            return json_encode( $this->getArray( $order ) );
+        } else {
             return false;
         }
+        
     }
 }

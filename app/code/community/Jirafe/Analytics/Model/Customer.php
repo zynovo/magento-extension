@@ -11,6 +11,7 @@
 
 class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract
 {
+    
     /**
      * Create JSON object for customer registration events
      *
@@ -20,7 +21,7 @@ class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract
     
     public function getRegisterJson( $customer )
     {
-        Mage::log($customer);
+        
         try {
             $data = array(
                 'customer_id' => $customer->getEntityId(),
