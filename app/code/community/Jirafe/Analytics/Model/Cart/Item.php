@@ -25,7 +25,7 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
                 $count = 1;
                 $data = array();
                 foreach($quote->getAllItems() as $item) {
-                    $product = Mage::getModel('jirafe_analytics/product')->getProductData( $item->getProductId(), $quote->getStoreId()  );
+                    $product = Mage::getModel('jirafe_analytics/product')->getArray( $item->getProductId(), $quote->getStoreId()  );
                     $previousItems = null;
                     $customer = null;
                     $visit = null;

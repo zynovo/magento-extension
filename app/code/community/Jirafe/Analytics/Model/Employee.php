@@ -13,86 +13,48 @@ class Jirafe_Analytics_Model_Employee extends Jirafe_Analytics_Model_Abstract
 {
 
     /**
-     * Create JSON object for admin user add events
+     * Create user admin array of data required by Jirafe API
      *
-     * @param Varien_Event_Observer $customer
+     * @param Mage_Admin_Model_User $employee
      * @return mixed
      */
     
-    public function getAddJson( $user )
+    public function getArray( $employee = null )
     {
         try {
-            $data = array(
-                'user_id' => $user->getUserId(),
-                'username' => $user->getUsername(),
-                'first_name' => $user->getFirstName(),
-                'last_name' => $user->getLastName(),
-                'email' => $user->getEmail(),
-                'is_active' => $user->getIsActive(),
-                'change_date' => $this->_formatDate( $user->getModified() ),
-                'create_date' => $this->_formatDate( $user->getCreated() )
-            );
-            
-            return json_encode($data);
+            if ( $employee ) {
+                return array(
+                    'id' => $employee->getData('user_id'),
+                    'active_flag' => $employee->getData('is_active') ? true : false,
+                    'change_date' => $this->_formatDate( $employee->getData('modified') ),
+                    'create_date' => $this->_formatDate( $employee->getData('created') ),
+                    'first_name' => $employee->getData('firstname'),
+                    'last_name' => $employee->getData('lastname'),
+                    'email' => $employee->getData('email'),
+                );
+            } else {
+               return array();
+            }
         } catch (Exception $e) {
-            Mage::log('ERROR Jirafe_Analytics_Model_Employee::getAddJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            Mage::log('ERROR Jirafe_Analytics_Model_Employee::getArray(): ' . $e->getMessage(),null,'jirafe_analytics.log');
             return false;
         }
     }
     
-    /**
-     * Create JSON object for admin user modify events
+     /**
+     * Convert employee array into JSON object
      *
-     * @param Varien_Event_Observer $customer
+     * @param array $employee
      * @return mixed
      */
     
-    public function getModifyJson( $user )
+    public function getJson( $employee = null )
     {
-        try {
-            $data = array(
-                'user_id' => $user->getUserId(),
-                'username' => $user->getUsername(),
-                'first_name' => $user->getFirstName(),
-                'last_name' => $user->getLastName(),
-                'email' => $user->getEmail(),
-                'is_active' => $user->getIsActive(),
-                'change_date' => $this->_formatDate( $user->getModified() ),
-                'create_date' => $this->_formatDate( $user->getCreated() )
-            );
-            
-            return json_encode($data);
-        } catch (Exception $e) {
-            Mage::log('ERROR Jirafe_Analytics_Model_Employee::getModifyJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+        if ($employee) {
+            return json_encode( $this->getArray( $employee ) );
+        } else {
             return false;
         }
-    }
-    
-    /**
-     * Create JSON object for admin user delete events
-     *
-     * @param Varien_Event_Observer $customer
-     * @return mixed
-     */
-    
-    public function getDeleteJson( $user )
-    {
-        try {
-            $data = array(
-                'user_id' => $user->getUserId(),
-                'username' => $user->getUsername(),
-                'first_name' => $user->getFirstName(),
-                'last_name' => $user->getLastName(),
-                'email' => $user->getEmail(),
-                'is_active' => $user->getIsActive(),
-                'change_date' => $this->_formatDate( $user->getModified() ),
-                'create_date' => $this->_formatDate( $user->getCreated() )
-            );
-    
-            return json_encode($data);
-        } catch (Exception $e) {
-            Mage::log('ERROR Jirafe_Analytics_Model_Employee::getDeleteJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
-            return false;
-        }
+        
     }
 }

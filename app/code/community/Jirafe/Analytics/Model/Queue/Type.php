@@ -21,7 +21,7 @@ class Jirafe_Analytics_Model_Queue_Type extends Mage_Core_Model_Abstract
     
     const PRODUCT = 5;
     
-    const USER = 6;
+    const EMPLOYEE = 6;
     
     /**
      * Class construction & resource initialization

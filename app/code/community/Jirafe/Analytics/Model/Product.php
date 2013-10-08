@@ -42,7 +42,8 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                 return array();
             }
         } catch (Exception $e) {
-            Mage::log('ERROR Jirafe_Analytics_Model_Product::getProductData(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            Zend_Debug::dump($e);
+            Mage::log('ERROR Jirafe_Analytics_Model_Product::getArray(): ' . $e->getMessage(),null,'jirafe_analytics.log');
             return false;
         }
     }
@@ -103,13 +104,14 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
      * Convert product array into JSON object
      *
      * @param  array $product
+     * @param  int   $storeId
      * @return mixed
      */
     
-    public function getJson( $product = null )
+    public function getJson( $product = null, $storeId = null )
     {
-        if ($quote) {
-            return json_encode( $this->getArray($product) );
+        if ( $product && $storeId ) {
+            return json_encode( $this->getArray( $product, $storeId ) );
         } else {
             return false;
         }

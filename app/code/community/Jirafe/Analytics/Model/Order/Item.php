@@ -26,7 +26,7 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
                 $count = 1;
                 $data = array();
                 foreach($order->getAllItems() as $item) {
-                    $product = Mage::getModel('jirafe_analytics/product')->getProductData( $item->getProductId(), $order->getStoreId()  );
+                    $product = Mage::getModel('jirafe_analytics/product')->getArray( $item->getProductId(), $order->getStoreId()  );
                     $previousItems = null;
                     $customer = null;
                     $visit = null;

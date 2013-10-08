@@ -13,75 +13,45 @@ class Jirafe_Analytics_Model_Category extends Jirafe_Analytics_Model_Abstract
 {
 
     /**
-     * Create JSON object for add category events
+     * Create category array of data required by Jirafe API
      * 
      * @param Mage_Catalog_Model_Category $category
      * @return mixed
      */
     
-    public function getAddJson( $category ) 
+    public function getArray( $category = null ) 
     {
-        Mage::log($category);
         try {
-            $data = array(
-                'id' => $category->getEntityId(),
-                'name' => $category->getName(),
-                'change_date' => $this->_formatDate(($category->getUpdatedAt())),
-                'create_date' => $this->_formatDate(($category->getCreatedAt()))
-            );
-            
-            return json_encode($data);
+            if ($category) {
+                return array(
+                    'id' => $category->getData('entity_id'),
+                    'name' => $category->getData('name'),
+                    'change_date' => $this->_formatDate( $category->getData('updated_at') ),
+                    'create_date' => $this->_formatDate( $category->getData('created_at') )
+                );
+            } else {
+                return array();
+            }
         } catch (Exception $e) {
-            Mage::log('ERROR Jirafe_Analytics_Model_Category::getAddJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            Mage::log('ERROR Jirafe_Analytics_Model_Category::getArray(): ' . $e->getMessage(),null,'jirafe_analytics.log');
             return false;
         }
     }
     
     /**
-     * Create JSON object for modify category events
+     * Convert category array into JSON object
      *
-     * @param Mage_Catalog_Model_Category $category
+     * @param array $category
      * @return mixed
      */
     
-    public function getModifyJson( $category )
+    public function getJson( $category = null )
     {
-        try {
-            $data = array(
-                'id' => $category->getEntityId(),
-                'name' => $category->getName(),
-                'change_date' => $this->_formatDate(($category->getUpdatedAt())),
-                'create_date' => $this->_formatDate(($category->getCreatedAt()))
-            );
-            
-            return json_encode($data);
-        } catch (Exception $e) {
-            Mage::log('ERROR Jirafe_Analytics_Model_Category::getModifyJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+        if ($category) {
+            return json_encode( $this->getArray( $category ) );
+        } else {
             return false;
         }
-    }
-    
-    /**
-     * Create JSON object for delete category events
-     *
-     * @param Mage_Catalog_Model_Category $category
-     * @return mixed
-     */
-    
-    public function getDeleteJson( $category )
-    {
-        try {
-            $data = array(
-                'id' => $category->getEntityId(),
-                'name' => $category->getName(),
-                'change_date' => $this->_formatDate(($category->getUpdatedAt())),
-                'create_date' => $this->_formatDate(($category->getCreatedAt()))
-            );
-            
-            return json_encode($data);
-        } catch (Exception $e) {
-            Mage::log('ERROR Jirafe_Analytics_Model_Category::getDeleteJson(): ' . $e->getMessage(),null,'jirafe_analytics.log');
-            return false;
-        }
+        
     }
 }
