@@ -24,8 +24,12 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
     public function getArray( $productId = null, $storeId = null )
     {
         try {
-            if ($productId && $storeId) {
+            if ($productId) {
                 $product = Mage::getModel('catalog/product')->load( $productId );
+                
+                if (!$storeId) {
+                    $storeId = $product->getStoreId();
+                }
                 return array(
                     'id' => $product->getData('entity_id'),
                     'create_date' => $this->_formatDate( $product->getData( 'created_at' ) ),
@@ -108,10 +112,10 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
      * @return mixed
      */
     
-    public function getJson( $product = null, $storeId = null )
+    public function getJson( $productId = null, $storeId = null )
     {
-        if ( $product && $storeId ) {
-            return json_encode( $this->getArray( $product, $storeId ) );
+        if ( $productId ) {
+            return json_encode( $this->getArray( $productId, $storeId ) );
         } else {
             return false;
         }

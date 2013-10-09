@@ -253,7 +253,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
         try {
             $queue = Mage::getModel('jirafe_analytics/queue');
             $queue->setTypeId( Jirafe_Analytics_Model_Queue_Type::PRODUCT );
-            $queue->setContent( Mage::getModel('jirafe_analytics/product')->getJson( $observer->getProduct() ) );
+            $queue->setContent( Mage::getModel('jirafe_analytics/product')->getJson( $observer->getProduct()->getEntityId(), $observer->getProduct()->getStoreId() ) );
             $queue->setCreatedDt( $this->_getCreatedDt() );
             $queue->save();
             return true;
