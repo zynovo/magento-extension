@@ -43,8 +43,16 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
     
     protected function _getCustomer( $data = null )
     {
-        if ( $data['customer_id'] ) {
-            $customer = Mage::getModel('customer/customer')->load( $data['customer_id'] );
+        if ( is_numeric($data['customer_id']) ) {
+            $customerId = $data['customer_id'];
+        } else if ( Mage::getSingleton('customer/session')->isLoggedIn() ){
+            $customerId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+        } else {
+            $customerId = null;
+        }
+        
+        if ( $customerId ) {
+            $customer = Mage::getModel('customer/customer')->load( $customerId );
             return array(
                 'id' => $customer->getData('entity_id'),
                 'create_date' => $customer->getData('created_at'),
@@ -53,7 +61,7 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
                 'first_name' => $customer->getData('firstname'),
                 'last_name' => $customer->getData('lastname')
             );
-        } else {
+        } else if ( isset($data['created_at']) && isset($data['customer_email']) && isset($data['customer_firstname']) && isset($data['customer_lastname']) ) {
             return array(
                 'id' => Mage::getModel('core/session')->getVisitorId(),
                 'create_date' => $data['created_at'],
@@ -62,7 +70,16 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
                 'first_name' => $data['customer_firstname'],
                 'last_name' => $data['customer_lastname']
             );
-        }
+        } else {
+            return array(
+                'id' => '',
+                'create_date' => '',
+                'change_date' => '',
+                'email' => '',
+                'first_name' => '',
+                'last_name' => ''
+            );
+        } 
     }
     
     /**

@@ -63,17 +63,37 @@
     </global>
     <frontend>
         <events>
-             <controller_action_postdispatch_checkout>
+            <checkout_cart_save_after>
                 <observers>
-                    <jirafe_analytics_controller_action_postdispatch_checkout>
+                    <jirafe_analytics_checkout_cart_save_after>
+                        <type>singleton</type>
                         <class>Jirafe_Analytics_Model_Observer</class>
                         <method>cartSave</method>
-                    </jirafe_analytics_controller_action_postdispatch_checkout>
+                    </jirafe_analytics_checkout_cart_save_after>
                 </observers>
-            </controller_action_postdispatch_checkout>
-             <customer_register_success>
+            </checkout_cart_save_after>
+             <sales_quote_item_save_after>
+                <observers>
+                    <jirafe_analytics_sales_quote_item_save_after>
+                        <type>singleton</type>
+                        <class>Jirafe_Analytics_Model_Observer</class>
+                        <method>cartUpdateItem</method>
+                    </jirafe_analytics_sales_quote_item_save_after>
+                </observers>
+            </sales_quote_item_save_after>
+            <sales_quote_remove_item>
+                <observers>
+                    <jirafe_analytics_sales_quote_remove_item>
+                        <type>singleton</type>
+                        <class>Jirafe_Analytics_Model_Observer</class>
+                        <method>cartRemoveItem</method>
+                    </jirafe_analytics_sales_quote_remove_item>
+                </observers>
+            </sales_quote_remove_item>
+            <customer_register_success>
                 <observers>
                     <jirafe_analytics_customer_register_success>
+                        <type>singleton</type>
                         <class>Jirafe_Analytics_Model_Observer</class>
                         <method>customerRegister</method>
                     </jirafe_analytics_customer_register_success>
@@ -81,10 +101,11 @@
             </customer_register_success>
             <sales_order_place_after>
                 <observers>
-                    <jirafe_analytics_action_order_place_after>
+                    <jirafe_analytics_sales_order_place_after>
+                        <type>singleton</type>
                         <class>Jirafe_Analytics_Model_Observer</class>
-                        <method>orderPlaceAfter</method>
-                    </jirafe_analytics_action_order_place_after>
+                        <method>orderSave</method>
+                    </jirafe_analytics_sales_order_place_after>
                 </observers>
             </sales_order_place_after>
         </events>
@@ -94,6 +115,7 @@
             <catalog_category_save_after>
                 <observers>
                     <jirafe_analytics_action_catalog_category_save_after>
+                        <type>singleton</type>
                         <class>Jirafe_Analytics_Model_Observer</class>
                         <method>categorySave</method>
                     </jirafe_analytics_action_catalog_category_save_after>
@@ -102,6 +124,7 @@
             <catalog_category_change_products>
                 <observers>
                     <jirafe_analytics_action_category_change_products>
+                        <type>singleton</type>
                         <class>Jirafe_Analytics_Model_Observer</class>
                         <method>categoryChangeProducts</method>
                     </jirafe_analytics_action_category_change_products>
@@ -110,6 +133,7 @@
             <catalog_controller_category_delete>
                 <observers>
                     <jirafe_analytics_action_category_delete>
+                        <type>singleton</type>
                         <class>Jirafe_Analytics_Model_Observer</class>
                         <method>categoryDelete</method>
                     </jirafe_analytics_action_category_delete>
@@ -118,6 +142,7 @@
             <catalog_product_save_after>
                 <observers>
                     <jirafe_analytics_action_product_save>
+                        <type>singleton</type>
                         <class>Jirafe_Analytics_Model_Observer</class>
                         <method>productSave</method>
                     </jirafe_analytics_action_product_save>
@@ -126,6 +151,7 @@
             <catalog_product_status_update>
                 <observers>
                     <jirafe_analytics_action_product_status_update>
+                        <type>singleton</type>
                         <class>Jirafe_Analytics_Model_Observer</class>
                         <method>productStatusUpdate</method>
                     </jirafe_analytics_action_product_status_update>
@@ -134,6 +160,7 @@
             <catalog_product_delete_before>
                 <observers>
                     <jirafe_analytics_action_catalog_product_delete_before>
+                        <type>singleton</type>
                         <class>Jirafe_Analytics_Model_Observer</class>
                         <method>productDelete</method>
                     </jirafe_analytics_action_catalog_product_delete_before>
@@ -142,6 +169,7 @@
             <order_cancel_after>
                 <observers>
                     <jirafe_analytics_action_order_cancel>
+                        <type>singleton</type>
                         <class>Jirafe_Analytics_Model_Observer</class>
                         <method>orderCancel</method>
                     </jirafe_analytics_action_order_cancel>
@@ -150,6 +178,7 @@
             <customer_delete_after>
                 <observers>
                     <jirafe_analytics_customer_delete_after>
+                        <type>singleton</type>
                         <class>Jirafe_Analytics_Model_Observer</class>
                         <method>customerDelete</method>
                     </jirafe_analytics_customer_delete_after>
@@ -157,7 +186,8 @@
             </customer_delete_after>
             <customer_save_after>
                 <observers>
-                    <jirafe_analytics_customer_save_after>>
+                    <jirafe_analytics_customer_save_after>
+                        <type>singleton</type>
                         <class>Jirafe_Analytics_Model_Observer</class>
                         <method>customerSave></method>
                     </jirafe_analytics_customer_save_after>
@@ -166,6 +196,7 @@
             <admin_user_save_after>
                 <observers>
                     <jirafe_analytics_admin_user_save_after>
+                        <type>singleton</type>
                         <class>Jirafe_Analytics_Model_Observer</class>
                         <method>adminUserSave</method>
                     </jirafe_analytics_admin_user_save_after>
@@ -174,6 +205,7 @@
             <admin_user_delete>
                 <observers>
                     <jirafe_analytics_admin_user_delete>
+                        <type>singleton</type>
                         <class>Jirafe_Analytics_Model_Observer</class>
                         <method>adminUserDelete</method>
                     </jirafe_analytics_admin_user_delete>

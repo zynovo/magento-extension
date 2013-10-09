@@ -41,8 +41,8 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             } else {
                 return array();
             }
+            
         } catch (Exception $e) {
-            Zend_Debug::dump($e);
             Mage::log('ERROR Jirafe_Analytics_Model_Product::getArray(): ' . $e->getMessage(),null,'jirafe_analytics.log');
             return false;
         }

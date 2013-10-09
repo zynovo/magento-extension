@@ -15,7 +15,7 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
     /**
      * Create order array of data required by Jirafe API
      *
-     * @param Mage_Sales_Model_Order $order
+     * @param array $order
      * @return mixed
      */
     
@@ -24,27 +24,27 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
         try {
             $items = Mage::getModel('jirafe_analytics/order_item')->getItems( $order );
             $data = array(
-                'order_number' => $order->getIncrementId(),
-                'cart_id' => $order->getData('quote_id'),
-                'status' => $order->getData('status'),
-                'order_date' => $this->_formatDate( $order->getData('created_at') ),
-                'create_date' => $this->_formatDate( $order->getData('created_at') ),
-                'change_date' => $this->_formatDate( $order->getData('updated_at') ),
-                'subtotal' => $this->_formatCurrency( $order->getData('subtotal') ),
-                'total' => $this->_formatCurrency( $order->getData('grand_total') ),
-                'total_tax' => $this->_formatCurrency( $order->getData('tax_amount') ),
-                'total_shipping' => $this->_formatCurrency( $order->getData('shipping_amount') ),
-                'total_payment_cost' => $this->_formatCurrency( $order->getPayment()->getData('amount_paid') ),
-                'total_discounts' => $this->_formatCurrency( $order->getData('discount_amount') ),
-                'currency' => $order->getData('order_currency_code'),
+                'order_number' => $order['increment_id'],
+                'cart_id' => $order['quote_id'],
+                'status' => $order['status'],
+                'order_date' => $this->_formatDate( $order['created_at'] ),
+                'create_date' => $this->_formatDate( $order['created_at'] ),
+                'change_date' => $this->_formatDate( $order['updated_at'] ),
+                'subtotal' => $this->_formatCurrency( $order['subtotal'] ),
+                'total' => $this->_formatCurrency( $order['grand_total'] ),
+                'total_tax' => $this->_formatCurrency( $order['tax_amount'] ),
+                'total_shipping' => $this->_formatCurrency( $order['shipping_amount'] ),
+                'total_payment_cost' => $this->_formatCurrency( $order['payment']['amount_paid'] ),
+                'total_discounts' => $this->_formatCurrency( $order['discount_amount'] ),
+                'currency' => $order['order_currency_code'],
                 'cookies' => null,
                 'items' => $items,
-                'previous_items' => $this->_getPreviousItems( $order->getData('entity_id') ),
-                'customer' => $this->_getCustomer( $order->getData() ),
+                'previous_items' => $this->_getPreviousItems( $order['entity_id'] ),
+                'customer' => $this->_getCustomer( $order ),
                 'visit' => $this->_getVisit()
             );
             
-            Mage::getSingleton('core/session')->setJirafePrevOrderId( $order->getData('entity_id') );
+            Mage::getSingleton('core/session')->setJirafePrevOrderId( $order['entity_id'] );
             Mage::getSingleton('core/session')->setJirafePrevOrderItems( $items );
             
             return $data;

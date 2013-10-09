@@ -24,6 +24,7 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
         try {
             if ($quote) {
                 $items = Mage::getModel('jirafe_analytics/cart_item')->getItems( $quote );
+                Mage::log($items,null,'items.log');
                 $data = array(
                     'id' => $quote->getData('entity_id'),
                     'create_date' => $this->_formatDate( $quote->getData('created_at') ),
