@@ -95,7 +95,7 @@
                     <jirafe_analytics_customer_register_success>
                         <type>singleton</type>
                         <class>Jirafe_Analytics_Model_Observer</class>
-                        <method>customerSave</method>
+                        <method>customerRegister</method>
                     </jirafe_analytics_customer_register_success>
                 </observers>
             </customer_register_success>
@@ -108,6 +108,15 @@
                     </jirafe_analytics_customer_save_after>
                 </observers>
             </customer_save_after>
+            <customer_load_after>
+                <observers>
+                    <jirafe_analytics_customer_load_after>
+                        <type>singleton</type>
+                        <class>Jirafe_Analytics_Model_Observer</class>
+                        <method>customerLoad</method>
+                    </jirafe_analytics_customer_load_after>
+                </observers>
+            </customer_load_after>
             <sales_order_place_after>
                 <observers>
                     <jirafe_analytics_sales_order_place_after>
@@ -193,15 +202,24 @@
                     </jirafe_analytics_action_order_cancel>
                 </observers>
             </order_cancel_after>
-            <customer_save_after>
+            <customer_load_after>
+                <observers>
+                    <jirafe_analytics_customer_load_after>
+                        <type>singleton</type>
+                        <class>Jirafe_Analytics_Model_Observer</class>
+                        <method>customerLoad</method>
+                    </jirafe_analytics_customer_load_after>
+                </observers>
+            </customer_load_after>
+            <adminhtml_customer_save_after>
                 <observers>
                     <jirafe_analytics_customer_save_after>
                         <type>singleton</type>
                         <class>Jirafe_Analytics_Model_Observer</class>
-                        <method>customerSave</method>
+                        <method>adminCustomerSave</method>
                     </jirafe_analytics_customer_save_after>
                 </observers>
-            </customer_save_after>
+            </adminhtml_customer_save_after>
             <admin_user_save_after>
                 <observers>
                     <jirafe_analytics_admin_user_save_after>

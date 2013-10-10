@@ -55,8 +55,8 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
             $customer = Mage::getModel('customer/customer')->load( $customerId );
             return array(
                 'id' => $customer->getData('entity_id'),
-                'create_date' => $customer->getData('created_at'),
-                'change_date' => $customer->getData('updated_at'),
+                'create_date' => $this->_formatDate( $customer->getData('created_at') ),
+                'change_date' => $this->_formatDate( $customer->getData('updated_at') ),
                 'email' => $customer->getData('email'),
                 'first_name' => $customer->getData('firstname'),
                 'last_name' => $customer->getData('lastname')
@@ -64,7 +64,7 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
         } else if ( isset($data['created_at']) && isset($data['customer_email']) && isset($data['customer_firstname']) && isset($data['customer_lastname']) ) {
             return array(
                 'id' => Mage::getModel('core/session')->getVisitorId(),
-                'create_date' => $data['created_at'],
+                'create_date' => $this->_formatDate( $data['created_at'] ),
                 'change_date' => '',
                 'email' => $data['customer_email'],
                 'first_name' => $data['customer_firstname'],

@@ -46,11 +46,10 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
     /**
      * Capture update cart item event
      *
-     * @param Varien_Event_Observer $observer
      * @return boolean
      */
     
-    public function cartUpdateItem( Varien_Event_Observer $observer )
+    public function cartUpdateItem()
     {
         try {
             Mage::getSingleton('core/session')->setJirafeProcessCart( true );
@@ -63,38 +62,15 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
     /**
      * Capture remove item cart event
      *
-     * @param Varien_Event_Observer $observer
      * @return boolean
      */
     
-    public function cartRemoveItem( Varien_Event_Observer $observer )
+    public function cartRemoveItem()
     {
         try {
             Mage::getSingleton('core/session')->setJirafeProcessCart( true );
         } catch (Exception $e) {
             Mage::log('ERROR Jirafe_Analytics_Model_Observer::cartRemoveItem(): ' . $e->getMessage(),null,'jirafe_analytics.log');
-            return false;
-        }
-    }
-    
-    /**
-     * Capture customer save event
-     *
-     * @param Varien_Event_Observer $observer
-     * @return boolean
-     */
-    
-    public function customerSave( Varien_Event_Observer $observer ) 
-    {
-        try {
-            $queue = Mage::getModel('jirafe_analytics/queue');
-            $queue->setTypeId( Jirafe_Analytics_Model_Queue_Type::CUSTOMER );
-            $queue->setContent( Mage::getModel('jirafe_analytics/customer')->getJson( $observer->getCustomer() ) );
-            $queue->setCreatedDt( $this->_getCreatedDt() );
-            $queue->save();
-            return true;
-        } catch (Exception $e) {
-            Mage::log('ERROR Jirafe_Analytics_Model_Observer::customerSave(): ' . $e->getMessage(),null,'jirafe_analytics.log');
             return false;
         }
     }
@@ -144,6 +120,88 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
     }
     
    
+    /**
+     * Capture customer save event
+     *
+     * @param Varien_Event_Observer $observer
+     * @return boolean
+     */
+    
+    public function customerSave( Varien_Event_Observer $observer )
+    {
+        try {
+            if ( Mage::getSingleton('core/session')->getJirafeProcessCustomer() ) {
+                $queue = Mage::getModel('jirafe_analytics/queue');
+                $queue->setTypeId( Jirafe_Analytics_Model_Queue_Type::CUSTOMER );
+                $queue->setContent( Mage::getModel('jirafe_analytics/customer')->getJson( $observer->getCustomer() ) );
+                $queue->setCreatedDt( $this->_getCreatedDt() );
+                $queue->save();
+                Mage::getSingleton('core/session')->setJirafeProcessCustomer( false );
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception $e) {
+            Mage::log('ERROR Jirafe_Analytics_Model_Observer::customerSave(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            return false;
+        }
+    }
+    
+    /**
+     * Capture admin customer save event
+     *
+     * @param Varien_Event_Observer $observer
+     * @return boolean
+     */
+    
+    public function adminCustomerSave( Varien_Event_Observer $observer )
+    {
+        try {
+            Mage::getSingleton('core/session')->setJirafeProcessCustomer( true );
+            $this->customerSave( $observer );
+            return true;
+        } catch (Exception $e) {
+            Mage::log('ERROR Jirafe_Analytics_Model_Observer::customerSave(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            return false;
+        }
+    }
+    
+    
+    /**
+     * Capture customer load event
+     *
+     * @return boolean
+     */
+    
+    public function customerLoad()
+    {
+        try {
+            Mage::getSingleton('core/session')->setJirafeProcessCustomer( true );
+            return true;
+        } catch (Exception $e) {
+            Mage::log('ERROR Jirafe_Analytics_Model_Observer::customerLoad(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            return false;
+        }
+    }
+    
+    /**
+     * Capture customer register event
+     *
+     * @return boolean
+     */
+    
+    public function customerRegister()
+    {
+        try {
+            Mage::getSingleton('core/session')->setJirafeProcessCustomer( true );
+            return true;
+        } catch (Exception $e) {
+            Mage::log('ERROR Jirafe_Analytics_Model_Observer::customerRegister(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            return false;
+        }
+    }
+    
+    
     
     /**
      * Capture customer delete events
