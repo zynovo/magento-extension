@@ -178,18 +178,22 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
     {
         try {
             $order = $observer->getOrder()->getData();
-            $order['payment'] = $observer->getOrder()->getPayment()->getData();
-            $order['items'] = array();
-            foreach($observer->getOrder()->getAllVisibleItems() as $item) {
-                $order['items'][] = $item->getData();
+            if ($order['status'] == 'pending' || $order['status'] == 'cancelled' || $order['status'] == 'complete') {
+                $order['payment'] = $observer->getOrder()->getPayment()->getData();
+                $order['items'] = array();
+                foreach($observer->getOrder()->getAllVisibleItems() as $item) {
+                    $order['items'][] = $item->getData();
+                }
+                
+                $queue = Mage::getModel('jirafe_analytics/queue');
+                $queue->setTypeId( Jirafe_Analytics_Model_Queue_Type::ORDER );
+                $queue->setContent( Mage::getModel('jirafe_analytics/order')->getJson( $order ) );
+                $queue->setCreatedDt( $this->_getCreatedDt() );
+                $queue->save();
+                return true;
+            } else {
+                return false;
             }
-            
-            $queue = Mage::getModel('jirafe_analytics/queue');
-            $queue->setTypeId( Jirafe_Analytics_Model_Queue_Type::ORDER );
-            $queue->setContent( Mage::getModel('jirafe_analytics/order')->getJson( $order ) );
-            $queue->setCreatedDt( $this->_getCreatedDt() );
-            $queue->save();
-            return true;
         } catch (Exception $e) {
             Mage::log('ERROR Jirafe_Analytics_Model_Observer::orderPlaceAfter(): ' . $e->getMessage(),null,'jirafe_analytics.log');
             return false;
@@ -208,7 +212,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
         try {
             $queue = Mage::getModel('jirafe_analytics/queue');
             $queue->setTypeId( Jirafe_Analytics_Model_Queue_Type::ORDER );
-            $queue->setContent( Mage::getModel('jirafe_analytics/order')->getJson( $observer->getOrder()->getData(), true ) );
+            $queue->setContent( Mage::getModel('jirafe_analytics/order')->getJson( $observer->getOrder()->getData() ) );
             $queue->setCreatedDt( $this->_getCreatedDt() );
             $queue->save();
             return true;

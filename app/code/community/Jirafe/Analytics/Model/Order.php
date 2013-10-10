@@ -11,7 +11,7 @@
 
 class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
 {
-    
+   
     /**
      * Create order array of data required by Jirafe API
      *
@@ -19,14 +19,16 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
      * @return mixed
      */
     
-    public function getArray( $order = null, $cancelled = false )
+    public function getArray( $order = null )
     {
-       // Mage::log($order->getData(),null,'order.log');
         try {
-            if ($cancelled) {
+            
+            $status = $this->_mapOrderStatus( $order['status'] );
+            
+            if ($status == 'cancelled') {
                 $data = array(
                     'order_number' => $order['increment_id'],
-                    'status' => $order['status'],
+                    'status' => $status,
                     'cancel_date' => $this->_formatDate( $order['updated_at'] )
                 );
             } else {
@@ -34,7 +36,7 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
                 $data = array(
                     'order_number' => $order['increment_id'],
                     'cart_id' => $order['quote_id'],
-                    'status' => $order['status'],
+                    'status' => $status,
                     'order_date' => $this->_formatDate( $order['created_at'] ),
                     'create_date' => $this->_formatDate( $order['created_at'] ),
                     'change_date' => $this->_formatDate( $order['updated_at'] ),
@@ -92,13 +94,38 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
      * @return mixed
      */
     
-    public function getJson( $order = null, $cancelled = false )
+    public function getJson( $order = null )
     {
         if ($order) {
-            return json_encode( $this->getArray( $order, $cancelled ) );
+            return json_encode( $this->getArray( $order ) );
         } else {
             return false;
         }
         
+    }
+    
+    /**
+     * Map Magento order status values to Jirafe API values
+     *
+     * @param  string $status
+     * @return string
+     */
+    
+    protected function _mapOrderStatus( $status )
+    {
+        switch ( $status ) {
+            case 'pending':
+                return 'placed';
+                break;
+            case 'complete':
+                return 'accepted';
+                break;
+            case 'canceled':
+                return 'cancelled';
+                break; 
+            default:
+                return $status;
+                break;
+        }
     }
 }

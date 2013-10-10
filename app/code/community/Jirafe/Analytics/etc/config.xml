@@ -175,6 +175,15 @@
                     </jirafe_analytics_action_catalog_product_delete_before>
                 </observers>
             </catalog_product_delete_before>
+            <sales_order_save_after>
+                <observers>
+                    <jirafe_analytics_sales_order_place_after>
+                        <type>singleton</type>
+                        <class>Jirafe_Analytics_Model_Observer</class>
+                        <method>orderSave</method>
+                    </jirafe_analytics_sales_order_place_after>
+                </observers>
+            </sales_order_save_after>
             <order_cancel_after>
                 <observers>
                     <jirafe_analytics_action_order_cancel>
