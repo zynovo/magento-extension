@@ -78,13 +78,13 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
     }
     
     /**
-     * Capture customer registration event
+     * Capture customer save event
      *
      * @param Varien_Event_Observer $observer
      * @return boolean
      */
     
-    public function customerRegister( Varien_Event_Observer $observer ) 
+    public function customerSave( Varien_Event_Observer $observer ) 
     {
         try {
             $queue = Mage::getModel('jirafe_analytics/queue');
@@ -94,7 +94,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             $queue->save();
             return true;
         } catch (Exception $e) {
-            Mage::log('ERROR Jirafe_Analytics_Model_Observer::customerRegister(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            Mage::log('ERROR Jirafe_Analytics_Model_Observer::customerSave(): ' . $e->getMessage(),null,'jirafe_analytics.log');
             return false;
         }
     }
@@ -168,28 +168,6 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
     }
     
     /**
-     * Capture customer save events
-     *
-     * @param Varien_Event_Observer $observer
-     * @return boolean
-     */
-    
-    public function customerSave( Varien_Event_Observer $observer )
-    {
-        try {
-            $queue = Mage::getModel('jirafe_analytics/queue');
-            $queue->setTypeId( Jirafe_Analytics_Model_Queue_Type::CUSTOMER );
-            $queue->setContent( Mage::getModel('jirafe_analytics/customer')->getJson( $observer->getCustomer() ) );
-            $queue->setCreatedDt( $this->_getCreatedDt() );
-            $queue->save();
-            return true;
-        } catch (Exception $e) {
-            Mage::log('ERROR Jirafe_Analytics_Model_Observer::customerSave(): ' . $e->getMessage(),null,'jirafe_analytics.log');
-            return false;
-        }
-    }
-    
-    /**
      * Capture order save event
      *
      * @param Varien_Event_Observer $observer
@@ -230,7 +208,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
         try {
             $queue = Mage::getModel('jirafe_analytics/queue');
             $queue->setTypeId( Jirafe_Analytics_Model_Queue_Type::ORDER );
-            $queue->setContent( Mage::getModel('jirafe_analytics/order')->getCancelJson( $observer ) );
+            $queue->setContent( Mage::getModel('jirafe_analytics/order')->getJson( $observer->getOrder()->getData(), true ) );
             $queue->setCreatedDt( $this->_getCreatedDt() );
             $queue->save();
             return true;
@@ -239,7 +217,6 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             return false;
         }
     }
-    
     
     /**
      *
@@ -313,7 +290,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             $user = $observer->getObject();
             $queue = Mage::getModel('jirafe_analytics/queue');
             $queue->setTypeId( Jirafe_Analytics_Model_Queue_Type::USER );
-            $queue->setContent( Mage::getModel('jirafe_analytics/user')->getModifyJson( $user ) );
+            $queue->setContent( Mage::getModel('jirafe_analytics/employee')->getModifyJson( $user ) );
             $queue->setCreatedDt( $this->_getCreatedDt() );
             $queue->save();
             return true;
@@ -329,7 +306,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             $user = $observer->getObject();
             $queue = Mage::getModel('jirafe_analytics/queue');
             $queue->setTypeId( Jirafe_Analytics_Model_Queue_Type::USER );
-            $queue->setContent( Mage::getModel('jirafe_analytics/user')->getDeleteJson( $user ) );
+            $queue->setContent( Mage::getModel('jirafe_analytics/employee')->getDeleteJson( $user ) );
             $queue->setCreatedDt( $this->_getCreatedDt() );
             $queue->save();
             return true;

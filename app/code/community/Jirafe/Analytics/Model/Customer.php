@@ -25,7 +25,7 @@ class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract
             if ( $customer ) {
                 return array(
                     'id' => $customer->getData('entity_id'),
-                    'active_flag' => $customer->getData('is_active') ? true : false,
+                    'active_flag' => is_null($customer->getData('is_active')) ? true : ($customer->getData('is_active') == '1' ? true : false),
                     'change_date' => $this->_formatDate( $customer->getData('created_at') ),
                     'create_date' => $this->_formatDate( $customer->getData('updated_at') ),
                     'email' => $customer->getData('email'),
