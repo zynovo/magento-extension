@@ -25,7 +25,7 @@ class Jirafe_Analytics_Model_Employee extends Jirafe_Analytics_Model_Abstract
             if ( $employee ) {
                 return array(
                     'id' => $employee->getData('user_id'),
-                    'active_flag' => $employee->getData('is_active') ? true : false,
+                    'active_flag' => is_null($employee->getData('is_active')) ? true : ($employee->getData('is_active') == '1' ? true : false),
                     'change_date' => $this->_formatDate( $employee->getData('modified') ),
                     'create_date' => $this->_formatDate( $employee->getData('created') ),
                     'first_name' => $employee->getData('firstname'),

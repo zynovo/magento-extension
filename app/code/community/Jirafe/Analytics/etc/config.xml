@@ -99,6 +99,15 @@
                     </jirafe_analytics_customer_register_success>
                 </observers>
             </customer_register_success>
+            <customer_save_after>
+                <observers>
+                    <jirafe_analytics_customer_save_after>
+                        <type>singleton</type>
+                        <class>Jirafe_Analytics_Model_Observer</class>
+                        <method>customerSave</method>
+                    </jirafe_analytics_customer_save_after>
+                </observers>
+            </customer_save_after>
             <sales_order_place_after>
                 <observers>
                     <jirafe_analytics_sales_order_place_after>
@@ -189,19 +198,10 @@
                     <jirafe_analytics_admin_user_save_after>
                         <type>singleton</type>
                         <class>Jirafe_Analytics_Model_Observer</class>
-                        <method>adminUserSave</method>
+                        <method>employeeSave</method>
                     </jirafe_analytics_admin_user_save_after>
                 </observers>
             </admin_user_save_after>
-            <admin_user_delete>
-                <observers>
-                    <jirafe_analytics_admin_user_delete>
-                        <type>singleton</type>
-                        <class>Jirafe_Analytics_Model_Observer</class>
-                        <method>adminUserDelete</method>
-                    </jirafe_analytics_admin_user_delete>
-                </observers>
-            </admin_user_delete>
         </events>
         <acl>
             <resources>

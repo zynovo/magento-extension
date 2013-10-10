@@ -284,39 +284,26 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
         }
     }
     
-    public function adminUserSave( Varien_Event_Observer $observer )
+    /**
+     * Capture admin user add and modify events
+     *
+     * @param Varien_Event_Observer $observer
+     * @return boolean
+     */
+    
+    public function employeeSave( Varien_Event_Observer $observer )
     {
         try {
-            $user = $observer->getObject();
+            $employee = $observer->getObject();
             $queue = Mage::getModel('jirafe_analytics/queue');
-            $queue->setTypeId( Jirafe_Analytics_Model_Queue_Type::USER );
-            $queue->setContent( Mage::getModel('jirafe_analytics/employee')->getModifyJson( $user ) );
+            $queue->setTypeId( Jirafe_Analytics_Model_Queue_Type::EMPLOYEE );
+            $queue->setContent( Mage::getModel('jirafe_analytics/employee')->getJson( $employee ) );
             $queue->setCreatedDt( $this->_getCreatedDt() );
             $queue->save();
             return true;
         } catch (Exception $e) {
-            Mage::log('ERROR Jirafe_Analytics_Model_Observer::adminUserSave(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            Mage::log('ERROR Jirafe_Analytics_Model_Observer::employeeSave(): ' . $e->getMessage(),null,'jirafe_analytics.log');
             return false;
         }
     }
-    
-    public function adminUserDelete( Varien_Event_Observer $observer )
-    {
-        try {
-            $user = $observer->getObject();
-            $queue = Mage::getModel('jirafe_analytics/queue');
-            $queue->setTypeId( Jirafe_Analytics_Model_Queue_Type::USER );
-            $queue->setContent( Mage::getModel('jirafe_analytics/employee')->getDeleteJson( $user ) );
-            $queue->setCreatedDt( $this->_getCreatedDt() );
-            $queue->save();
-            return true;
-        } catch (Exception $e) {
-            Mage::log('ERROR Jirafe_Analytics_Model_Observer::adminUserDelete(): ' . $e->getMessage(),null,'jirafe_analytics.log');
-            return false;
-        }
-    }
-    
-   
-    
- 
 }
