@@ -33,10 +33,10 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
                         'id' => $item->getItemId(),
                         'create_date' => $this->_formatDate( $item->getCreatedAt() ),
                         'change_date' => $this->_formatDate( $item->getUpdatedAt() ),
-                        'cart_item_number' => $count,
-                        'quantity' => $item->getQty(),
-                        'price' => $this->_formatCurrency(  $item->getPrice() ),
-                        'discount_price' => $this->_formatCurrency(  $item->getDiscountAmount() ),
+                        'cart_item_number' => "$count",
+                        'quantity' => intval($item->getQty()),
+                        'price' => floatval($item->getPrice()),
+                        'discount_price' => floatval($item->getDiscountAmount()),
                         'product' => $product
                     );
                     $count++;

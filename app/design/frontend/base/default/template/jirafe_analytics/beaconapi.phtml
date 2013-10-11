@@ -1,1 +1,1 @@
-<script type="text/javascript" src="<?php echo Mage::getStoreConfig('jirafe_analytics/account/beacon_api') ?>"></script>
+<script type="text/javascript" src="<?php echo (Mage::app()->getStore()->isCurrentlySecure() ? 'https' : 'http') . '://' . Mage::getStoreConfig('jirafe_analytics/account/beacon_api') ?>"></script>

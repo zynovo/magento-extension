@@ -15,22 +15,23 @@ class Jirafe_Analytics_Model_Employee extends Jirafe_Analytics_Model_Abstract
     /**
      * Create user admin array of data required by Jirafe API
      *
-     * @param Mage_Admin_Model_User $employee
+     * @param string $userId
      * @return mixed
      */
     
-    public function getArray( $employee = null )
+    public function getArray( $userId = null )
     {
         try {
-            if ( $employee ) {
+            if ( $userId ) {
+                $user = Mage::getModel('admin/user')->load( $userId );
                 return array(
-                    'id' => $employee->getData('user_id'),
-                    'active_flag' => is_null($employee->getData('is_active')) ? true : ($employee->getData('is_active') == '1' ? true : false),
-                    'change_date' => $this->_formatDate( $employee->getData('modified') ),
-                    'create_date' => $this->_formatDate( $employee->getData('created') ),
-                    'first_name' => $employee->getData('firstname'),
-                    'last_name' => $employee->getData('lastname'),
-                    'email' => $employee->getData('email'),
+                    'id' => $user->getData('user_id'),
+                    'active_flag' => is_null($user->getData('is_active')) ? true : ($user->getData('is_active') == '1' ? true : false),
+                    'change_date' => $this->_formatDate( $user->getData('modified') ),
+                    'create_date' => $this->_formatDate( $user->getData('created') ),
+                    'first_name' => $user->getData('firstname'),
+                    'last_name' => $user->getData('lastname'),
+                    'email' => $user->getData('email'),
                 );
             } else {
                return array();
@@ -44,14 +45,14 @@ class Jirafe_Analytics_Model_Employee extends Jirafe_Analytics_Model_Abstract
      /**
      * Convert employee array into JSON object
      *
-     * @param array $employee
+     * @param string $userId
      * @return mixed
      */
     
-    public function getJson( $employee = null )
+    public function getJson( $userId = null )
     {
-        if ($employee) {
-            return json_encode( $this->getArray( $employee ) );
+        if ($userId) {
+            return json_encode( $this->getArray( $userId ) );
         } else {
             return false;
         }

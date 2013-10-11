@@ -356,10 +356,10 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
     public function employeeSave( Varien_Event_Observer $observer )
     {
         try {
-            $employee = $observer->getObject();
+            $userId = $observer->getObject()->getUserId();
             $queue = Mage::getModel('jirafe_analytics/queue');
             $queue->setTypeId( Jirafe_Analytics_Model_Queue_Type::EMPLOYEE );
-            $queue->setContent( Mage::getModel('jirafe_analytics/employee')->getJson( $employee ) );
+            $queue->setContent( Mage::getModel('jirafe_analytics/employee')->getJson( $userId ) );
             $queue->setCreatedDt( $this->_getCreatedDt() );
             $queue->save();
             return true;

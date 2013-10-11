@@ -50,6 +50,8 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
         } else {
             $customerId = null;
         }
+
+        Mage::log(Mage::getModel('core/session')->getVisitorData(),null,'visitor.log');
         
         if ( $customerId ) {
             $customer = Mage::getModel('customer/customer')->load( $customerId );
@@ -61,25 +63,29 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
                 'first_name' => $customer->getData('firstname'),
                 'last_name' => $customer->getData('lastname')
             );
-        } else if ( isset($data['created_at']) && isset($data['customer_email']) && isset($data['customer_firstname']) && isset($data['customer_lastname']) ) {
-            return array(
-                'id' => Mage::getModel('core/session')->getVisitorId(),
-                'create_date' => $this->_formatDate( $data['created_at'] ),
-                'change_date' => '',
-                'email' => $data['customer_email'],
-                'first_name' => $data['customer_firstname'],
-                'last_name' => $data['customer_lastname']
-            );
         } else {
-            return array(
-                'id' => '',
-                'create_date' => '',
-                'change_date' => '',
-                'email' => '',
-                'first_name' => '',
-                'last_name' => ''
-            );
-        } 
+            $customer = Mage::getModel('core/session')->getVisitorData();
+            $customerId = is_numeric( @$data['visitor_id'] ) ? $data['visitor_id'] : (is_numeric( @$customer['visitor_id'] ) ? $customer['visitor_id'] : 0 );
+            if ( isset($data['created_at']) && isset($data['customer_email']) && isset($data['customer_firstname']) && isset($data['customer_lastname']) ) {
+                return array(
+                    'id' =>  $customerId,
+                    'create_date' => $this->_formatDate( $data['created_at'] ),
+                    'change_date' => $this->_formatDate( $data['created_at'] ),
+                    'email' => $data['customer_email'],
+                    'first_name' => $data['customer_firstname'],
+                    'last_name' => $data['customer_lastname']
+                );
+            } else {
+                return array(
+                    'id' =>  $customerId,
+                    'create_date' => $this->_formatDate( $customer['first_visit_at'] ),
+                    'change_date' => $this->_formatDate( $customer['last_visit_at'] ),
+                    'email' => '',
+                    'first_name' => 'GUEST',
+                    'last_name' => 'USER'
+                );
+            }
+        }
     }
     
     /**
@@ -102,22 +108,6 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
     
     protected function _getCreatedDt() {
         return gmdate('Y-m-d H:i:s');
-    }
-    
-    /**
-     * Format currency values to DECIMAL(12,4) or return '' if null
-     * 
-     * @param string $number
-     * @return string
-     */
-    
-    protected function _formatCurrency( $number = null )
-    {
-        if (is_numeric( $number )) {
-            return number_format( $number, 4 );
-        } else {
-            return '';
-        }
     }
 
     /**

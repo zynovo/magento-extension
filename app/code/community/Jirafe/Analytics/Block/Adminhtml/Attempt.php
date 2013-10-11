@@ -1,0 +1,27 @@
+<?php
+
+/**
+ * Adminhtml Attempt Block
+ *
+ * @category  Jirafe
+ * @package   Jirafe_Analytics
+ * @copyright Copyright (c) 2013 Jirafe, Inc. (http://jirafe.com/)
+ * @author    Richard Loerzel (rloerzel@lyonscg.com)
+ */
+
+class Jirafe_Analytics_Block_Adminhtml_Attempt extends Mage_Adminhtml_Block_Widget_Grid_Container
+{
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->_blockGroup = 'jirafe_analytics';
+        $this->_controller = 'adminhtml_attempt';
+        $this->_headerText = Mage::helper('jirafe_analytics')->__('Jirafe Analytics: Data Transfer Attempts');
+        $this->removeButton('add');
+        parent::__construct();
+
+    }
+
+}

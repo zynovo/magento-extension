@@ -2,10 +2,15 @@
 <config>
     <modules>
         <Jirafe_Analytics>
-            <version>0.0.3</version>
+            <version>0.0.4</version>
         </Jirafe_Analytics>
     </modules>
     <global>
+        <blocks>
+            <jirafe_analytics>
+                <class>Jirafe_Analytics_Block</class>
+            </jirafe_analytics>
+        </blocks>
         <models>
             <jirafe_analytics>
                 <class>Jirafe_Analytics_Model</class>
@@ -26,6 +31,9 @@
                     <queue_type>
                         <table>jirafe_analytics_queue_type</table>
                     </queue_type>
+                    <log>
+                        <table>jirafe_analytics_log</table>
+                    </log>
                 </entities>
             </jirafe_analytics_resource>
             <admin>
@@ -135,6 +143,17 @@
             </sales_order_place_after>
         </events>
     </frontend>
+    <admin>
+        <routers>
+            <jirafe_analytics>
+                <use>admin</use>
+                <args>
+                    <module>Jirafe_Analytics</module>
+                    <frontName>jirafe_analytics</frontName>
+                </args>
+            </jirafe_analytics>
+        </routers>
+    </admin>
     <adminhtml>
         <events>
             <catalog_category_save_after>

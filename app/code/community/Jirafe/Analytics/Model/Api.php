@@ -77,11 +77,11 @@ class Jirafe_Analytics_Model_Api extends Jirafe_Analytics_Model_Abstract
         $this->logging = Mage::getStoreConfig('jirafe_analytics/debug/logging');
         
         /**
-         * Set authentication properties to Mage::getStoreConfig() values
+         * Set api URL property to Mage::getStoreConfig() values
          */
         
-        $this->eventApiUrl = Mage::getStoreConfig('jirafe_analytics/account/event_api_url');
-        $this->accessToken = Mage::getStoreConfig('jirafe_analytics/sandbox/access_token');
+        $this->eventApiUrl = 'https://' . Mage::getStoreConfig('jirafe_analytics/account/event_api_url');
+        
         
         /**
          * Set PHP override properties to Mage::getStoreConfig() values
@@ -96,8 +96,8 @@ class Jirafe_Analytics_Model_Api extends Jirafe_Analytics_Model_Abstract
          */
         
         $this->threading  = Mage::getStoreConfig('jirafe_analytics/curl/threading');
-        $this->batchSize = Mage::getStoreConfig('jirafe_analytics/tuning/batch_size');
-        $this->maxAttempts = Mage::getStoreConfig('jirafe_analytics/tuning/max_attempts');
+        $this->batchSize = Mage::getStoreConfig('jirafe_analytics/curl/batch_size');
+        $this->maxAttempts = Mage::getStoreConfig('jirafe_analytics/curl/max_attempts');
         
         /**
          * If batchSize not supplied by user, set to default
@@ -148,6 +148,10 @@ class Jirafe_Analytics_Model_Api extends Jirafe_Analytics_Model_Abstract
                 
                 $this->_overridePhpSettings();
                 
+                /**
+                 * Determine CURL method
+                 */
+                
                 if ( $this->threading === 'multi') {
                     
                     /**
@@ -172,7 +176,8 @@ class Jirafe_Analytics_Model_Api extends Jirafe_Analytics_Model_Abstract
                         
                        $item = array(
                             'queue_id' => $row['id'],
-                            'url' => $this->eventApiUrl . $this->_getSiteId($row['store_id']) . '/' . $row['type'],
+                            'url' => $this->eventApiUrl . $this->_getSiteId( $row['store_id'] ) . '/' . $row['type'],
+                            'token' => $this->_getAccessToken( $row['store_id'] ),
                             'json' =>  $row['content'] );
                         
                         if ( $this->logging ) {
@@ -202,6 +207,7 @@ class Jirafe_Analytics_Model_Api extends Jirafe_Analytics_Model_Abstract
                         $item = array(
                             'queue_id' => $row['id'],
                             'url' => $this->eventApiUrl . $this->_getSiteId($row['store_id']) . '/' . $row['type'],
+                            'token' => $this->_getAccessToken( $row['store_id'] ),
                             'json' =>  $row['content'] );
                         
                         if ( $this->logging ) {
@@ -258,7 +264,7 @@ class Jirafe_Analytics_Model_Api extends Jirafe_Analytics_Model_Abstract
             $thread = curl_init();
             curl_setopt( $thread, CURLOPT_URL, $item['url'] );
             curl_setopt( $thread, CURLOPT_HTTPHEADER, array(
-                'Authorization: Bearer ' . $this->accessToken,
+                'Authorization: Bearer ' . $item['token'],
                 'Content-Type: application/json',
                 'Content-Length: ' . strlen($item['json'])) );
             curl_setopt( $thread, CURLOPT_RETURNTRANSFER, true );
@@ -340,7 +346,7 @@ class Jirafe_Analytics_Model_Api extends Jirafe_Analytics_Model_Abstract
                     $thread = curl_init();
                     curl_setopt($thread, CURLOPT_URL, $batch[$i]['url']);
                     curl_setopt($thread, CURLOPT_HTTPHEADER, array(
-                        'Authorization: Bearer ' . $this->accessToken,
+                        'Authorization: Bearer ' . $batch[$i]['token'],
                         'Content-Type: application/json',
                         'Content-Length: ' . strlen($batch[$i]['json'])));
                     curl_setopt($thread, CURLOPT_RETURNTRANSFER, true);
@@ -416,6 +422,7 @@ class Jirafe_Analytics_Model_Api extends Jirafe_Analytics_Model_Abstract
         /**
          * @var int $rv    A cURL code defined in the cURL Predefined Constants.
          */
+        
         try {
             do {
                 $rv = curl_multi_exec( $mh, $still_running );
@@ -435,14 +442,14 @@ class Jirafe_Analytics_Model_Api extends Jirafe_Analytics_Model_Abstract
      * @return int
      * @throws Exception if unable to determine site id
      */
-    protected function _getSiteId( $storeID = null ) 
+    protected function _getSiteId( $storeId = null ) 
     {
         /**
          * @var int $siteId    Jirafe SiteId
          */
         
         try {
-            $siteId = Mage::getStoreConfig( 'jirafe_analytics/account/site_id', $storeID );
+            $siteId = Mage::getStoreConfig( 'jirafe_analytics/account/site_id', $storeId );
             if (!is_numeric($siteId)) {
                 $siteId = 0;
             }
@@ -451,6 +458,23 @@ class Jirafe_Analytics_Model_Api extends Jirafe_Analytics_Model_Abstract
             Mage::throwException('API ERROR: Jirafe_Analytics_Model_Api::_getSiteId(): ' . $e->getMessage());
         }
     }
+    
+    /**
+     * Determine access token by store Id
+     *
+     * @param int $storeID    Magento store id from core_store
+     * @return string
+     * @throws Exception if unable to return access token
+     */
+    protected function _getAccessToken( $storeId = null )
+    {
+        try {
+            return Mage::getStoreConfig( 'jirafe_analytics/account/access_token', $storeId );
+        } catch (Exception $e) {
+            Mage::throwException('API ERROR: Jirafe_Analytics_Model_Api::_getAccessToken(): ' . $e->getMessage());
+        }
+    }
+    
     /**
      * Override PHP settings in php.ini with user configurable values set in the admin
      * 
@@ -483,9 +507,9 @@ class Jirafe_Analytics_Model_Api extends Jirafe_Analytics_Model_Abstract
              */
             
             if (strlen($this->memoryLimit) > 1) {
-            
+                
                 ini_set("memory_limit", $this->memoryLimit);
-            
+                
                 if ($this->logging) {
                     Mage::log('----- PHP SETTING OVERRIDE: memory_limit = ' . $this->memoryLimit,null,'jirafe_analytics.log');
                 }

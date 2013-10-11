@@ -34,10 +34,10 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
                         'id' => $item['item_id'],
                         'create_date' => $this->_formatDate( $item['created_at'] ),
                         'change_date' => $this->_formatDate( $item['updated_at'] ),
-                        'order_item_number' => $count,
-                        'quantity' => $item['qty_ordered'],
-                        'price' => $this->_formatCurrency( $item['price'] ),
-                        'discount_price' => $this->_formatCurrency( $item['discount_amount'] ),
+                        'order_item_number' => "$count",
+                        'quantity' => intval( $item['qty_ordered'] ),
+                        'price' => floatval( $item['price'] ),
+                        'discount_price' => floatval( $item['discount_amount'] ),
                         'product' => $product
                     );
                     $count++;
