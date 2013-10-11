@@ -50,8 +50,6 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
         } else {
             $customerId = null;
         }
-
-        Mage::log(Mage::getModel('core/session')->getVisitorData(),null,'visitor.log');
         
         if ( $customerId ) {
             $customer = Mage::getModel('customer/customer')->load( $customerId );

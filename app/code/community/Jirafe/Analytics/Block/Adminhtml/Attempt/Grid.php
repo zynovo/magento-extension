@@ -34,7 +34,6 @@ class Jirafe_Analytics_Block_Adminhtml_Attempt_Grid extends Mage_Adminhtml_Block
         $collection->getSelect()->join( array('q'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/queue')), 'main_table.queue_id = q.id', array('q.content'), array());
         $collection->getSelect()->join( array('t'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/queue_type')), 'q.type_id = t.id', array('t.description'), array());
         $collection->getSelect()->joinLeft( array('e'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/queue_error')), 'main_table.id = e.queue_attempt_id', array('e.response'), array());
-        Mage::log($collection->getSelect()->__toString(),null,'sql.log');
         $this->setCollection($collection);
         $collection->addFilterToMap('id', 'main_table.id');
         $collection->addFilterToMap('created_dt', 'main_table.created_dt');
