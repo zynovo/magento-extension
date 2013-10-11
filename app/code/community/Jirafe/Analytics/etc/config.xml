@@ -256,25 +256,6 @@
                 </observers>
             </admin_user_save_after>
         </events>
-        <acl>
-            <resources>
-                <admin>
-                    <children>
-                        <system>
-                            <children>
-                                <config>
-                                    <children>
-                                        <jirafe>
-                                            <title>Jirafe Analytics Section</title>
-                                        </jirafe>
-                                    </children>
-                                </config>
-                            </children>
-                        </system>
-                    </children>
-                </admin>
-            </resources>
-        </acl>
     </adminhtml>
      <crontab>
         <jobs>

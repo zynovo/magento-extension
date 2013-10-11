@@ -8,11 +8,11 @@
                     <sort_order>99999</sort_order>
                     <children>
                         <adminhtml_queue translate="title" module="jirafe_analytics">
-                            <title>Data Captured By Observers</title>
+                            <title>Data Captured</title>
                             <action>jirafe_analytics/adminhtml_queue</action>
                         </adminhtml_queue>
                         <adminhtml_attempt translate="title" module="jirafe_analytics">
-                            <title>Data Transfer Attempts</title>
+                            <title>Data Transfered</title>
                             <action>jirafe_analytics/adminhtml_attempt</action>
                         </adminhtml_attempt>
                     </children>
@@ -20,4 +20,31 @@
             </children>
         </report>
     </menu>
+    <acl>
+        <resources>
+            <admin>
+                <children>
+                    <report>
+                        <children>
+                            <jirafe_analytics translate="title" module="jirafe_analytics">
+                                <title>Jirafe Analytics</title>
+                                <sort_order>1000</sort_order>
+                            </jirafe_analytics>
+                        </children>
+                    </report>
+                    <system>
+                        <children>
+                            <config>
+                                <children>
+                                    <jirafe_analytics>
+                                        <title>Jirafe Analytics Section</title>
+                                    </jirafe_analytics>
+                                </children>
+                            </config>
+                        </children>
+                    </system>
+                </children>
+            </admin>
+        </resources>
+    </acl>
 </config>
