@@ -34,6 +34,9 @@
                     <log>
                         <table>jirafe_analytics_log</table>
                     </log>
+                    <map>
+                        <table>jirafe_analytics_map</table>
+                    </map>
                 </entities>
             </jirafe_analytics_resource>
             <admin>

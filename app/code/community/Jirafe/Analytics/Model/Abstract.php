@@ -12,7 +12,30 @@
 abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
 {
     
+    protected $map = array();
     
+    /**
+     * Constructor
+     *
+     * Load field mapping structure
+     *
+     */
+    
+    public function __construct()
+    {
+        parent::__construct();
+        
+        try {
+            if (isset(Mage::registry('jirafe_analytics_map'))) {
+                $this->_fieldMap = Mage::registry('jirafe_analytics_map');
+            } else {
+                $this->_map = Mage::getModel('jirafe_analytics/map')->get();
+                Mage::register('jirafe_analytics_map', $this->_map);
+            }
+        } catch (Exception $e) {
+            Mage::throwException('FIELD MAPPING ERROR Jirafe_Analytics_Model_Abstract::__construct(): ' . $e->getMessage());
+        }
+    }
     /**
      * Extract visit data from Jirafe cookie
      *
