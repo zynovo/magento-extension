@@ -33,7 +33,7 @@ class Jirafe_Analytics_Model_Category extends Jirafe_Analytics_Model_Abstract
                 return array();
             }
         } catch (Exception $e) {
-            Mage::log('ERROR Jirafe_Analytics_Model_Category::getArray(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            $this->_log('ERROR', 'Jirafe_Analytics_Model_Category::getArray()', $e->getMessage());
             return false;
         }
     }

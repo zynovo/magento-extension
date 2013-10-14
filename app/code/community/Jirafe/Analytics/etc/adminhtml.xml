@@ -15,6 +15,10 @@
                             <title>Data Transfered</title>
                             <action>jirafe_analytics/adminhtml_attempt</action>
                         </adminhtml_attempt>
+                        <adminhtml_log translate="title" module="jirafe_analytics">
+                            <title>Log</title>
+                            <action>jirafe_analytics/adminhtml_log</action>
+                        </adminhtml_log>
                     </children>
                 </jirafe_analytics>
             </children>

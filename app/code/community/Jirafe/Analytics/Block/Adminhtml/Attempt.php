@@ -19,9 +19,8 @@ class Jirafe_Analytics_Block_Adminhtml_Attempt extends Mage_Adminhtml_Block_Widg
         $this->_blockGroup = 'jirafe_analytics';
         $this->_controller = 'adminhtml_attempt';
         $this->_headerText = Mage::helper('jirafe_analytics')->__('Jirafe Analytics: Data Transfer Attempts');
-        $this->removeButton('add');
         parent::__construct();
-
+        $this->removeButton('add');
     }
 
 }

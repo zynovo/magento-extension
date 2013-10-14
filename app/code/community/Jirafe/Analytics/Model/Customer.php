@@ -38,7 +38,7 @@ class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract
                return array();
             }
         } catch (Exception $e) {
-            Mage::log('ERROR Jirafe_Analytics_Model_Customer::getArray(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            $this->_log('ERROR', 'Jirafe_Analytics_Model_Customer::getArray()', $e->getMessage());
             return false;
         }
     }

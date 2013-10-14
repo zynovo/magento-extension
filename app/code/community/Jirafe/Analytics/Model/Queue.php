@@ -81,7 +81,7 @@ class Jirafe_Analytics_Model_Queue extends Jirafe_Analytics_Model_Abstract
             
             return true;
         } catch (Exception $e) {
-            Mage::throwException('ERROR Jirafe_Analytics_Model_Queue::process(): ' . $e->getMessage());
+            Mage::throwException('ERROR', 'Jirafe_Analytics_Model_Queue::process()', $e->getMessage());
         }
     }
     
@@ -112,11 +112,11 @@ class Jirafe_Analytics_Model_Queue extends Jirafe_Analytics_Model_Abstract
                 $queue->save();
                 return true;
             } else {
-                Mage::log('ERROR Jirafe_Analytics_Model_Queue::updateQueue(): attempt object null',null,'jirafe_analytics.log');
+                $this->_log( 'ERROR', 'Jirafe_Analytics_Model_Queue::updateQueue()' ,'attempt object null');
                 return false;
             }
         } catch (Exception $e) {
-             Mage::throwException('ERROR Jirafe_Analytics_Model_Queue::updateQueue(): ' . $e->getMessage());
+             Mage::throwException('ERROR', 'Jirafe_Analytics_Model_Queue::updateQueue()', $e->getMessage());
         }
     }
 }

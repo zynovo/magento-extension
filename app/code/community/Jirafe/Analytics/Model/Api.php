@@ -138,12 +138,11 @@ class Jirafe_Analytics_Model_Api extends Jirafe_Analytics_Model_Abstract
             if (count( $data )) {
                 if ( $this->logging ) {
                     $startTime = time();
-                    Mage::log('BEGIN Jirafe_Analytics_Model_Api::send()',null,'jirafe_analytics.log');
-                    $this->_logServerLoad('BEGIN Jirafe_Analytics_Model_Api::send');
-                    Mage::log('----- START TIME = ' . date("H:i:s", $startTime) . ' UTC',null,'jirafe_analytics.log');
-                    Mage::log('----- EVENT API URL = ' . $this->eventApiUrl,null,'jirafe_analytics.log');
-                    Mage::log('----- ACCESS TOKEN = ' .  $this->accessToken,null,'jirafe_analytics.log');
-                    Mage::log('----- BATCH SIZE = ' . $this->batchSize,null,'jirafe_analytics.log');
+                    $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Api::send()', 'BEGIN');
+                    $this->_logServerLoad( 'Jirafe_Analytics_Model_Api::send');
+                    $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Api::send()', 'START TIME = ' . date("H:i:s", $startTime) . ' UTC');
+                    $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Api::send()', 'EVENT API URL = ' . $this->eventApiUrl);
+                    $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Api::send()', 'BATCH SIZE = ' . $this->batchSize);
                 }
                 
                 $this->_overridePhpSettings();
@@ -157,6 +156,10 @@ class Jirafe_Analytics_Model_Api extends Jirafe_Analytics_Model_Abstract
                     /**
                      * Process using multithreaded cURL
                      */
+                    
+                    if ( $this->logging ) {
+                        $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Api::send()', 'CURL: MULTITHREADED' );
+                    }
                     
                     $count = 1;
                     $batch = array();
@@ -179,9 +182,12 @@ class Jirafe_Analytics_Model_Api extends Jirafe_Analytics_Model_Abstract
                             'url' => $this->eventApiUrl . $this->_getSiteId( $row['store_id'] ) . '/' . $row['type'],
                             'token' => $this->_getAccessToken( $row['store_id'] ),
                             'json' =>  $row['content'] );
-                        
-                        if ( $this->logging ) {
-                           Mage::log($item ,null,'jirafe_analytics.log');
+                       
+                       if ( $this->logging ) {
+                           $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Api::send()', 'QUEUE ID = ' . $item['queue_id'] );
+                           $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Api::send()', 'ACCESS TOKEN = ' . $item['token'] );
+                           $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Api::send()', 'EVENT API URL = ' . $item['url'] );
+                           $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Api::send()', 'JSON = ' . $item['json'] );
                         }
                         
                         $batch[] = $item;
@@ -198,6 +204,10 @@ class Jirafe_Analytics_Model_Api extends Jirafe_Analytics_Model_Abstract
                     }
                 } else {
                     
+                    if ( $this->logging ) {
+                        $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Api::send()', 'CURL: SINGLETHREADED' );
+                    }
+                    
                     /**
                      * Process using standard single threaded cURL
                      */
@@ -208,11 +218,15 @@ class Jirafe_Analytics_Model_Api extends Jirafe_Analytics_Model_Abstract
                             'queue_id' => $row['id'],
                             'url' => $this->eventApiUrl . $this->_getSiteId($row['store_id']) . '/' . $row['type'],
                             'token' => $this->_getAccessToken( $row['store_id'] ),
-                            'json' =>  $row['content'] );
+                            'json' =>  $json );
                         
                         if ( $this->logging ) {
-                            Mage::log($item ,null,'jirafe_analytics.log');
+                           $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Api::send()', 'QUEUE ID = ' . $item['queue_id'] );
+                           $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Api::send()', 'ACCESS TOKEN = ' . $item['token'] );
+                           $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Api::send()', 'EVENT API URL = ' . $item['url'] );
+                           $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Api::send()', 'JSON = ' . $item['json'] );
                         }
+                        
                         $resource[] = $this->_processSingle( $item );
                     }
                 }
@@ -226,18 +240,16 @@ class Jirafe_Analytics_Model_Api extends Jirafe_Analytics_Model_Abstract
                     $endTime = time();
                     $totalTime = $endTime - $startTime;
                     
-                    Mage::log('----- END TIME = ' . date("H:i:s", $endTime) . ' UTC',null,'jirafe_analytics.log');
-                    Mage::log("----- TOTAL PROCESSING TIME = $totalTime seconds",null,'jirafe_analytics.log');
-                    $this->_logServerLoad('END Jirafe_Analytics_Model_Api::send');
-                    Mage::log('END Jirafe_Analytics_Model_Api::send()',null,'jirafe_analytics.log');
-                    Mage::log('',null,'jirafe_analytics.log');
+                    $this->_logServerLoad( 'Jirafe_Analytics_Model_Api::send');
+                    $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Api::send()', "TOTAL PROCESSING TIME = $totalTime seconds");
+                    $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Api::send()', 'END TIME = ' . date("H:i:s", $endTime) . ' UTC');
                    
                 }
             }
             
             return $resource;
         } catch (Exception $e) {
-            Mage::throwException('CURL ERROR: Jirafe_Analytics_Model_Api::send(): ' . $e->getMessage());
+            Mage::throwException('CURL ERROR: Jirafe_Analytics_ModelJirafe_Analytics_Model_Api::send(): ' . $e->getMessage());
         }
     }
     
@@ -260,7 +272,9 @@ class Jirafe_Analytics_Model_Api extends Jirafe_Analytics_Model_Abstract
          */
         
         try {
-            $this->_logServerLoad('BEGIN Jirafe_Analytics_Model_Api::_processSingle');
+            
+            $this->_logServerLoad('Jirafe_Analytics_Model_Api::_processSingle');
+            
             $thread = curl_init();
             curl_setopt( $thread, CURLOPT_URL, $item['url'] );
             curl_setopt( $thread, CURLOPT_HTTPHEADER, array(
@@ -276,6 +290,7 @@ class Jirafe_Analytics_Model_Api extends Jirafe_Analytics_Model_Abstract
             if ($this->logging) {
                 curl_setopt($thread, CURLOPT_VERBOSE, true);
             }
+            
             $resourceId = intval($thread);
             $resource[ $resourceId ]['created_dt'] = $this->_getCreatedDt();
             $resource[ $resourceId ]['queue_id'] = $item['queue_id'];
@@ -288,7 +303,7 @@ class Jirafe_Analytics_Model_Api extends Jirafe_Analytics_Model_Abstract
             $resource[ $resourceId ]['total_time'] = $info['total_time'];
             
             curl_close($thread);
-             $this->_logServerLoad('END Jirafe_Analytics_Model_Api::_processSingle');
+             $this->_logServerLoad('Jirafe_Analytics_Model_Api::_processSingle');
             return $resource;
         } catch (Exception $e) {
            Mage::throwException('CURL ERROR: Jirafe_Analytics_Model_Api::_processSingle(): ' . $e->getMessage());
@@ -316,7 +331,7 @@ class Jirafe_Analytics_Model_Api extends Jirafe_Analytics_Model_Abstract
         
         try {
             
-            $this->_logServerLoad('BEGIN Jirafe_Analytics_Model_Api::_processMulti');
+            $this->_logServerLoad('Jirafe_Analytics_Model_Api::_processMulti');
             
              /**
               * Initialize multithreaded cURL handle
@@ -400,7 +415,7 @@ class Jirafe_Analytics_Model_Api extends Jirafe_Analytics_Model_Abstract
              */
             
             curl_multi_close($mh);
-            $this->_logServerLoad('END Jirafe_Analytics_Model_Api::_processMulti');
+            $this->_logServerLoad('Jirafe_Analytics_Model_Api::_processMulti');
             return $resource;
         } catch (Exception $e) {
             Mage::throwException('CURL ERROR: Jirafe_Analytics_Model_Api::_processMulti(): ' . $e->getMessage());
@@ -492,11 +507,11 @@ class Jirafe_Analytics_Model_Api extends Jirafe_Analytics_Model_Abstract
              */
             
             if (is_numeric($this->maxExecutionTime)) {
-            
-                ini_set("max_execution_time", $this->maxExecutionTime);
-            
+                
+                ini_set('max_execution_time', $this->maxExecutionTime);
+                
                 if ($this->logging) {
-                    Mage::log('----- PHP SETTING OVERRIDE: max_execution_time = ' . $this->maxExecutionTime,null,'jirafe_analytics.log');
+                    $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Api::_overridePhpSettings()', 'max_execution_time = ' . $this->maxExecutionTime);
                 }
             }
             
@@ -511,7 +526,7 @@ class Jirafe_Analytics_Model_Api extends Jirafe_Analytics_Model_Abstract
                 ini_set("memory_limit", $this->memoryLimit);
                 
                 if ($this->logging) {
-                    Mage::log('----- PHP SETTING OVERRIDE: memory_limit = ' . $this->memoryLimit,null,'jirafe_analytics.log');
+                    $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Api::_overridePhpSettings()', 'memory_limit = ' . $this->memoryLimit);
                 }
             }
             
@@ -525,16 +540,13 @@ class Jirafe_Analytics_Model_Api extends Jirafe_Analytics_Model_Abstract
                 proc_nice($this->procNice);
             
                 if ($this->logging) {
-                    Mage::log('----- PHP SETTING OVERRIDE: proc_nice = ' . $this->procNice,null,'jirafe_analytics.log');
+                    $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Api::_overridePhpSettings()', 'proc_nice = ' . $this->procNice);
                 }
             }
             
             return true;
-        
         } catch (Exception $e) {
-            Mage::log('ERROR unable to override php settings: ' . $e->getMessage(),null,'jirafe_analytics.log');
-            
-            return false;
+            Mage::throwException('PHP CONFIGURATION ERROR: Jirafe_Analytics_Model_Api::_overridePhpSettings(): ' . $e->getMessage());
         }
     }
 }

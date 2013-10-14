@@ -19,7 +19,7 @@ class Jirafe_Analytics_Block_Adminhtml_Queue_Grid extends Mage_Adminhtml_Block_W
         parent::__construct();
         $this->setId('queueId');
         $this->setDefaultSort('created_dt');
-        $this->setDefaultDir('ASC');
+        $this->setDefaultDir('DESC');
         $this->setSaveParametersInSession(true);
     }
 

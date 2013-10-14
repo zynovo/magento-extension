@@ -19,7 +19,7 @@ class Jirafe_Analytics_Block_Adminhtml_Attempt_Grid extends Mage_Adminhtml_Block
         parent::__construct();
         $this->setId('queueId');
         $this->setDefaultSort('created_dt');
-        $this->setDefaultDir('ASC');
+        $this->setDefaultDir('DESC');
         $this->setSaveParametersInSession(true);
     }
 

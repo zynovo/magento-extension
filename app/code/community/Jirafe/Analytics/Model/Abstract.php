@@ -29,7 +29,7 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
                 'last_pageview_id' => '8765'
             );
         } catch (Exception $e) {
-            Mage::log('ERROR Jirafe_Analytics_Model_Abstract::_getVisit(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+            $this->_log('ERROR', 'Jirafe_Analytics_Model_Abstract::_getVisit()', $e->getMessage());
             return false;
         }
     }
@@ -43,46 +43,51 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
     
     protected function _getCustomer( $data = null )
     {
-        if ( is_numeric($data['customer_id']) ) {
-            $customerId = $data['customer_id'];
-        } else if ( Mage::getSingleton('customer/session')->isLoggedIn() ){
-            $customerId = Mage::getSingleton('customer/session')->getCustomer()->getId();
-        } else {
-            $customerId = null;
-        }
-        
-        if ( $customerId ) {
-            $customer = Mage::getModel('customer/customer')->load( $customerId );
-            return array(
-                'id' => $customer->getData('entity_id'),
-                'create_date' => $this->_formatDate( $customer->getData('created_at') ),
-                'change_date' => $this->_formatDate( $customer->getData('updated_at') ),
-                'email' => $customer->getData('email'),
-                'first_name' => $customer->getData('firstname'),
-                'last_name' => $customer->getData('lastname')
-            );
-        } else {
-            $customer = Mage::getModel('core/session')->getVisitorData();
-            $customerId = is_numeric( @$data['visitor_id'] ) ? $data['visitor_id'] : (is_numeric( @$customer['visitor_id'] ) ? $customer['visitor_id'] : 0 );
-            if ( isset($data['created_at']) && isset($data['customer_email']) && isset($data['customer_firstname']) && isset($data['customer_lastname']) ) {
+        try {
+            if ( is_numeric($data['customer_id']) ) {
+                $customerId = $data['customer_id'];
+            } else if ( Mage::getSingleton('customer/session')->isLoggedIn() ){
+                $customerId = Mage::getSingleton('customer/session')->getCustomer()->getId();
+            } else {
+                $customerId = null;
+            }
+            
+            if ( $customerId ) {
+                $customer = Mage::getModel('customer/customer')->load( $customerId );
                 return array(
-                    'id' =>  $customerId,
-                    'create_date' => $this->_formatDate( $data['created_at'] ),
-                    'change_date' => $this->_formatDate( $data['created_at'] ),
-                    'email' => $data['customer_email'],
-                    'first_name' => $data['customer_firstname'],
-                    'last_name' => $data['customer_lastname']
+                    'id' => $customer->getData('entity_id'),
+                    'create_date' => $this->_formatDate( $customer->getData('created_at') ),
+                    'change_date' => $this->_formatDate( $customer->getData('updated_at') ),
+                    'email' => $customer->getData('email'),
+                    'first_name' => $customer->getData('firstname'),
+                    'last_name' => $customer->getData('lastname')
                 );
             } else {
-                return array(
-                    'id' =>  $customerId,
-                    'create_date' => $this->_formatDate( $customer['first_visit_at'] ),
-                    'change_date' => $this->_formatDate( $customer['last_visit_at'] ),
-                    'email' => '',
-                    'first_name' => 'GUEST',
-                    'last_name' => 'USER'
-                );
+                $customer = Mage::getModel('core/session')->getVisitorData();
+                $customerId = is_numeric( @$data['visitor_id'] ) ? $data['visitor_id'] : (is_numeric( @$customer['visitor_id'] ) ? $customer['visitor_id'] : 0 );
+                if ( isset($data['created_at']) && isset($data['customer_email']) && isset($data['customer_firstname']) && isset($data['customer_lastname']) ) {
+                    return array(
+                        'id' =>  $customerId,
+                        'create_date' => $this->_formatDate( $data['created_at'] ),
+                        'change_date' => $this->_formatDate( $data['created_at'] ),
+                        'email' => $data['customer_email'],
+                        'first_name' => $data['customer_firstname'],
+                        'last_name' => $data['customer_lastname']
+                    );
+                } else {
+                    return array(
+                        'id' =>  $customerId,
+                        'create_date' => $this->_formatDate( $customer['first_visit_at'] ),
+                        'change_date' => $this->_formatDate( $customer['last_visit_at'] ),
+                        'email' => '',
+                        'first_name' => 'GUEST',
+                        'last_name' => 'USER'
+                    );
+                }
             }
+        } catch (Exception $e) {
+            $this->_log('ERROR', 'Jirafe_Analytics_Model_Abstract::_getCustomer()', $e->getMessage());
+            return false;
         }
     }
     
@@ -130,6 +135,28 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
     }
     
     /**
+     * Write log messages to db
+     *
+     * @param  string $message 
+     * @return boolean
+     */
+    
+    protected function _log( $type = null, $location = null, $message = null )
+    {
+        try {
+            $log = Mage::getModel('jirafe_analytics/log');
+            $log->setType( $type );
+            $log->setLocation( $location );
+            $log->setMessage( $message );
+            $log->setCreatedDt( $this->_getCreatedDt() );
+            $log->save();
+            return true;
+        } catch (Exception $e) {
+            Mage::throwException('LOGGING ERROR Jirafe_Analytics_Model_Abstract::_log(): ' . $e->getMessage());
+        }
+    }
+    
+    /**
      * Log server load averages
      *
      * @param  string $message    message to add to log file
@@ -137,7 +164,7 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
      * @throws Exception if sys_getloadavg() fails
      */
     
-    protected function _logServerLoad( $message = null )
+    protected function _logServerLoad( $location = null )
     {
         /**
          * @var array $load    set of three sampled server load averages
@@ -147,14 +174,14 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
             try {
                 $load = sys_getloadavg();
                 if (is_numeric($load[0]) && is_numeric($load[1]) && is_numeric($load[2])) {
-                    Mage::log('SERVER LOAD AVG (' . $message . '): ' . number_format($load[0],2) . ' ' . number_format($load[1],2) . ' '. number_format($load[2],2),null,'jirafe_analytics.log');
+                    $this->_log('DEBUG', $location, 'SERVER LOAD AVG: ' . number_format($load[0],2) . ' ' . number_format($load[1],2) . ' '. number_format($load[2],2));
                     return true;
                 } else {
-                    Mage::log('ERROR logging server load average. Invalid data returned by sys_getloadavg().',null,'jirafe_analytics.log');
+                    $this->_log('ERROR', 'Jirafe_Analytics_Model_Abstract::_logServerLoad()', $e->getMessage());
                     return false;
                 }
             } catch (Exception $e) {
-                Mage::log('ERROR logging server load average: ' . $e->getMessage(),null,'jirafe_analytics.log');
+                $this->_log('ERROR', 'Jirafe_Analytics_Model_Abstract::_logServerLoad()', $e->getMessage());
             }
         }
     }
