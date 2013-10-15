@@ -25,20 +25,23 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
     {
         try {
             if ($productId) {
+                
                 $product = Mage::getModel('catalog/product')->load( $productId );
                 
-                if (!$storeId) {
-                    $storeId = $product->getStoreId();
-                }
+                /**
+                 * Get field map array
+                 */
+                $fieldMap = $this->_getFieldMap( 'product', $product->getData() );
+                
                 return array(
-                    'id' => $product->getData('entity_id'),
-                    'create_date' => $this->_formatDate( $product->getData( 'created_at' ) ),
-                    'change_date' => $this->_formatDate( $product->getData( 'updated_at' ) ),
+                    $fieldMap['id']['api'] => $fieldMap['id']['magento'],
+                    $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento'],
+                    $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
                     'is_product' => true,
                     'is_sku' => true,
-                    'catalog' => $this->_getCatalog( $storeId ),
-                    'name' => $product->getData('name'),
-                    'code' => $product->getData('sku'),
+                    'catalog' => $this->_getCatalog( is_numeric($storeId) ? $storeId : $product->getStoreId() ),
+                    $fieldMap['name']['api'] => $fieldMap['name']['magento'],
+                    $fieldMap['code']['api'] => $fieldMap['code']['magento'],
                     'brand' => '',
                     'categories' => $this->getCategories( $product ),
                     'images' => $this->getImages( $product ));

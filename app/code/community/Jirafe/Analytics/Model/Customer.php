@@ -23,16 +23,23 @@ class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract
     {
         try {
             if ( $customer ) {
+                
+                   
+                /**
+                 * Get field map array
+                 */
+                
+                $fieldMap = $this->_getFieldMap( 'customer', $customer->getData() );
+                
                 return array(
-                    'id' => $customer->getData('entity_id'),
-                    'active_flag' => is_null($customer->getData('is_active')) ? true : ($customer->getData('is_active') == '1' ? true : false),
-                    'change_date' => $this->_formatDate( $customer->getData('created_at') ),
-                    'create_date' => $this->_formatDate( $customer->getData('updated_at') ),
-                    'email' => $customer->getData('email'),
-                    'first_name' => $customer->getData('firstname'),
-                    'last_name' => $customer->getData('lastname'),
-                    'name' => $customer->getData('firstname') . ' ' .$customer->getData('lastname')
-                    ,
+                    $fieldMap['id']['api'] => $fieldMap['id']['magento'],
+                    $fieldMap['active_flag']['api'] => $fieldMap['active_flag']['magento'] ,
+                    $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
+                    $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento'],
+                    $fieldMap['email']['api'] => $fieldMap['email']['magento'],
+                    $fieldMap['first_name']['api'] => $fieldMap['first_name']['magento'],
+                    $fieldMap['last_name']['api'] => $fieldMap['last_name']['magento'],
+                    $fieldMap['name']['api'] => $customer->getData('firstname') . ' ' .$customer->getData('lastname')
                 );
             } else {
                return array();
@@ -43,7 +50,7 @@ class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract
         }
     }
     
-     /**
+    /**
      * Convert customer array into JSON object
      *
      * @param array $customer
@@ -58,5 +65,17 @@ class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract
             return false;
         }
         
+    }
+    
+    /**
+     * Get customer array for beacon api javascript
+     *
+     * @return array
+     */
+    
+    public function getCustomer()
+    {
+        return $this->_getCustomer();
+    
     }
 }

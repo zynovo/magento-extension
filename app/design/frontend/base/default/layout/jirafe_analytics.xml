@@ -2,7 +2,7 @@
 <layout>
     <default>
         <reference name="head">
-            <block type="core/template" name="jirafe_beacon_api" template="jirafe_analytics/beaconapi.phtml" />
+            <block type="jirafe_analytics/beaconapi"  name="jirafe_beacon_api" template="jirafe_analytics/beaconapi.phtml" />
         </reference>
     </default>
 </layout>

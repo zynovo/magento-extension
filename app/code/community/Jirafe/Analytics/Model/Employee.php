@@ -24,14 +24,21 @@ class Jirafe_Analytics_Model_Employee extends Jirafe_Analytics_Model_Abstract
         try {
             if ( $userId ) {
                 $user = Mage::getModel('admin/user')->load( $userId );
+                
+                /**
+                 * Get field map array
+                 */
+                
+                $fieldMap = $this->_getFieldMap( 'employee', $user->getData() );
+                
                 return array(
-                    'id' => $user->getData('user_id'),
-                    'active_flag' => is_null($user->getData('is_active')) ? true : ($user->getData('is_active') == '1' ? true : false),
-                    'change_date' => $this->_formatDate( $user->getData('modified') ),
-                    'create_date' => $this->_formatDate( $user->getData('created') ),
-                    'first_name' => $user->getData('firstname'),
-                    'last_name' => $user->getData('lastname'),
-                    'email' => $user->getData('email'),
+                    $fieldMap['id']['api'] => $fieldMap['id']['magento'],
+                    $fieldMap['active_flag']['api'] => $fieldMap['active_flag']['magento'] ,
+                    $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
+                    $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento'],
+                    $fieldMap['email']['api'] => $fieldMap['email']['magento'],
+                    $fieldMap['first_name']['api'] => $fieldMap['first_name']['magento'],
+                    $fieldMap['last_name']['api'] => $fieldMap['last_name']['magento']
                 );
             } else {
                return array();

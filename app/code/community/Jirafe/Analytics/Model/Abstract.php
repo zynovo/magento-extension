@@ -11,31 +11,76 @@
 
 abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
 {
-    
-    protected $map = array();
+    protected $_rootMap = null;
     
     /**
-     * Constructor
+     * Get API to Magento field map array
      *
-     * Load field mapping structure
-     *
+     * @return void
+     * @throws Exception if unable to load or create field map array
      */
     
-    public function __construct()
+    protected function _setRootMap()
     {
-        parent::__construct();
-        
         try {
-            if (isset(Mage::registry('jirafe_analytics_map'))) {
-                $this->_fieldMap = Mage::registry('jirafe_analytics_map');
-            } else {
-                $this->_map = Mage::getModel('jirafe_analytics/map')->get();
-                Mage::register('jirafe_analytics_map', $this->_map);
-            }
+           // $this->_rootMap = Mage::registry('jirafe_analytics_map');
+            
+           // if (!$this->_rootMap) {
+                $this->_rootMap = Mage::getModel('jirafe_analytics/map')->getArray();
+          //      Mage::register('jirafe_analytics_map', $this->_rootMap);
+          //  }
+            
         } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR Jirafe_Analytics_Model_Abstract::__construct(): ' . $e->getMessage());
+            Mage::throwException('FIELD MAPPING ERROR Jirafe_Analytics_Model_Abstract::_getMap(): ' . $e->getMessage());
         }
     }
+    
+    /**
+     * Map fields in API to Magento using rootMap
+     *
+     * @return array
+     * @throws Exception if unable to load or create field map array
+     */
+    
+    protected function _getFieldMap( $element, $data )
+    {
+        try {
+            if (!$this->_rootMap) {
+                $this->_setRootMap();
+            }
+            
+            $fieldMap = array();
+            
+            foreach ( $this->_rootMap[ $element ] as $key => $row ) {
+               
+                    switch ( $row['type'] ) {
+                        case 'float':
+                            $value = floatval( $data[ $row['magento'] ] );
+                            break;
+                        case 'int':
+                            $value = intval( $data[ $row['magento'] ] );
+                            break;
+                         case 'datetime':
+                            $value = $this->_formatDate( $data[ $row['magento'] ] );
+                            break;
+                         case 'boolean':
+                            $value = $data[ $row['magento'] ]  ? true : false;
+                            break;
+                        default:
+                            $value = strval( $data[ $row['magento'] ]);
+                            break;
+                    }   
+                    $fieldMap[ $key ] = array( 'api' => $row['api'], 'magento' => $value );
+                
+            }
+            
+            return $fieldMap;
+            
+        } catch (Exception $e) {
+            Mage::throwException('FIELD MAPPING ERROR Jirafe_Analytics_Model_Abstract::_getFieldMap(): ' . $e->getMessage());
+        }
+    }
+    
     /**
      * Extract visit data from Jirafe cookie
      *

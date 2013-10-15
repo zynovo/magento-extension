@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Jirafe_Analytics>
-            <version>0.0.4</version>
+            <version>0.0.5</version>
         </Jirafe_Analytics>
     </modules>
     <global>

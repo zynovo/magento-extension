@@ -63,6 +63,7 @@ $installer->run("
         ('order', 'total_payment_cost', 'total_payment_cost', 'amount_paid', 'float'),
         ('order', 'total_discounts', 'total_discounts', 'discount_amount', 'float'),
         ('order', 'currency', 'currency', 'order_currency_code', 'string'),
+        ('order', 'cancel_date', 'cancel_date', 'updated_at', 'datetime'),
         ('order_item', 'id', 'id' ,'item_id', 'int'),
         ('order_item', 'create_date', 'create_date', 'created_at', 'datetime'),
         ('order_item', 'change_date', 'change_date', 'updated_at', 'datetime'),

@@ -23,11 +23,18 @@ class Jirafe_Analytics_Model_Category extends Jirafe_Analytics_Model_Abstract
     {
         try {
             if ($category) {
+                
+                /**
+                 * Get field map array
+                 */
+                
+                $fieldMap = $this->_getFieldMap( 'category', $category );
+                
                 return array(
-                    'id' => $category->getData('entity_id'),
-                    'name' => $category->getData('name'),
-                    'change_date' => $this->_formatDate( $category->getData('updated_at') ),
-                    'create_date' => $this->_formatDate( $category->getData('created_at') )
+                    $fieldMap['id']['api'] => $fieldMap['id']['magento'],
+                    $fieldMap['name']['api'] => $fieldMap['name']['magento'],
+                    $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
+                    $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento']
                 );
             } else {
                 return array();

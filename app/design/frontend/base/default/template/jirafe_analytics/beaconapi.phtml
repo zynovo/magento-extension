@@ -1,1 +1,16 @@
-<script type="text/javascript" src="<?php echo (Mage::app()->getStore()->isCurrentlySecure() ? 'https' : 'http') . '://' . Mage::getStoreConfig('jirafe_analytics/account/beacon_api') ?>"></script>
+<script type="text/javascript">
+/* Jirafe */
+(function(){
+    var d=document,g=d.createElement('script'),s=d.getElementsByTagName('script')[0];
+        g.type='text/javascript';g.defer=g.async=true;g.src=d.location.protocol+'<?php echo $this->_beaconApiUrl ?>';
+        s.parentNode.insertBefore(g,s);
+})();
+ 
+var jirafe_site_id = "<?php echo $this->_siteId ?>";
+var jirafe_org_id = "<?php echo $this->_orgId ?>";
+ 
+function jirafe_deferred(jirafe_api){
+    jirafe_api.pageview(jirafe_org_id, jirafe_site_id, "<?php echo $this->getLayout()->getBlock('head')->getTitle(); ?>");
+}
+
+</script>
