@@ -21,7 +21,7 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
     public function getArray() 
     {
         try {
-           
+           return $this->getCollection();
         } catch (Exception $e) {
             $this->_log( 'ERROR', 'Jirafe_Analytics_Model_Map::getArray()', $e->getMessage());
             return false;
