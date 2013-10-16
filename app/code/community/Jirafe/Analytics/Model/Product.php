@@ -50,7 +50,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                     'base_product' => $baseProduct,
                     'vendors' => (object) null,
                     'urls' => (object) null,
-                    'attributes' => (object) null
+                    'attributes' => $this->getAttributes( $product )
                     );
             } else {
                 return array();
@@ -209,6 +209,35 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
         }
     }
     
+    /**
+     * Create array of product attributes
+     *
+     * @param Mage_Catalog_Model_Product $product
+     * @return mixed
+     */
+    
+    public function getAttributes( $product = null )
+    {
+        try {
+            $obj = (object) null;
+            if ( $product ) {
+                $attributes = $product->getAttributes();
+                $obj = array();
+                foreach ( $attributes as $attribute ) {
+                    if ( $value = $attribute->getFrontend()->getValue( $product ) ) {
+                        $obj[] = array( 'id' => $attribute->getAttributeId(), 
+                                        'name' => $attribute->getAttributeCode(),
+                                        'value' => $value);
+                   }
+                }
+            }
+            
+            return $obj;
+        } catch (Exception $e) {
+            $this->_log('ERROR', 'Jirafe_Analytics_Model_Product::getAttributes()', $e->getMessage());
+            return false;
+        }
+    }
     /**
      * Create array of images associated with product
      *
