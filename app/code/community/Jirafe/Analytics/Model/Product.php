@@ -32,19 +32,26 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                  * Get field map array
                  */
                 $fieldMap = $this->_getFieldMap( 'product', $product->getData() );
-                
+                $baseProduct = $this->getBaseProduct( $product );
                 return array(
                     $fieldMap['id']['api'] => $fieldMap['id']['magento'],
                     $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento'],
                     $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
-                    'is_product' => $this->_isProduct( $product->getTypeId() ) ,
+                    'is_product' => $this->_isProduct( $product->getTypeId(), $baseProduct ) ,
                     'is_sku' => $this->_isSku( $product->getTypeId() ),
                     'catalog' => $this->_getCatalog( $product->getStoreId() ),
                     $fieldMap['name']['api'] => $fieldMap['name']['magento'],
                     $fieldMap['code']['api'] => $fieldMap['code']['magento'],
                     'brand' => '',
+                    'rating' => '',
                     'categories' => $this->getCategories( $product ),
-                    'images' => $this->getImages( $product ));
+                    'images' => $this->getImages( $product ),
+                    'ancestors' => (object) null,
+                    'base_product' => $baseProduct,
+                    'vendors' => (object) null,
+                    'urls' => (object) null,
+                    'attributes' => (object) null
+                    );
             } else {
                 return array();
             }
@@ -59,12 +66,16 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
      * Use Magento product type to determine whether this is an API product
      * 
      * @param string $type_id
+     * @param string $baseProduct
      * @return boolean
      */
     
-    protected function _isProduct ( $type_id = null )
+    protected function _isProduct ( $type_id = null, $baseProduct = null )
     {
-        switch ($type_id) {
+        if ( $baseProduct ) {
+            return false;
+        } else {
+            switch ( $type_id ) {
             case 'simple':
                 return true;
                 break;
@@ -89,6 +100,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             default:
                 return false;
                 break;
+            }
         }
     }
     
@@ -153,6 +165,46 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             }
         } catch (Exception $e) {
             $this->_log('ERROR', 'Jirafe_Analytics_Model_Product::getCategories()', $e->getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Create array of parent product
+     *
+     * @param Mage_Catalog_Model_Product $product
+     * @return mixed
+     */
+    
+    public function getBaseProduct( $product = null )
+    {
+        try {
+            
+            $obj = (object) null;
+            
+            if ( $product ) {
+                $parentIds = null; 
+                if ( $product->getTypeId() == "simple" ){
+                    $parentIds = Mage::getModel('catalog/product_type_grouped')->getParentIdsByChild( $product->getId() ); 
+                    if ( !$parentIds ) {
+                        $parentIds = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild( $product->getId() ); 
+                    }
+                }
+                if ($parentIds) {
+                    $obj = array();
+                    foreach( $parentIds as $parentId ) {
+                        $parent = Mage::getModel('catalog/product')->load( $parentId );
+                        $fieldMap = $this->_getFieldMap( 'product', $parent->getData() );
+                        $obj[] = array( $fieldMap['id']['api'] => $fieldMap['id']['magento'],
+                                        $fieldMap['name']['api'] => $fieldMap['name']['magento'],
+                                        $fieldMap['code']['api'] => $fieldMap['code']['magento']);
+                    }
+                 }
+            }
+            
+            return $obj;
+        } catch (Exception $e) {
+            $this->_log('ERROR', 'Jirafe_Analytics_Model_Product::getBaseProduct()', $e->getMessage());
             return false;
         }
     }
