@@ -23,13 +23,12 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
     protected function _setRootMap()
     {
         try {
-           // $this->_rootMap = Mage::registry('jirafe_analytics_map');
+            $this->_rootMap = Mage::registry('jirafe_analytics_map');
             
-           // if (!$this->_rootMap) {
+            if (!$this->_rootMap) {
                 $this->_rootMap = Mage::getModel('jirafe_analytics/map')->getArray();
-          //      Mage::register('jirafe_analytics_map', $this->_rootMap);
-          //  }
-            
+                Mage::register('jirafe_analytics_map', $this->_rootMap);
+            }
         } catch (Exception $e) {
             Mage::throwException('FIELD MAPPING ERROR Jirafe_Analytics_Model_Abstract::_getMap(): ' . $e->getMessage());
         }
@@ -124,10 +123,10 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
     {
         try {
             return array(
-                'visit_id' => '1234',
-                'visitor_id' => '4321',
-                'pageview_id' => '5678',
-                'last_pageview_id' => '8765'
+                'visit_id' => isset($_COOKIE['jirafe_vid']) ? $_COOKIE['jirafe_vid'] : '',
+                'visitor_id' => isset($_COOKIE['jirafe_vis']) ? $_COOKIE['jirafe_vis'] : '',
+                'pageview_id' => isset($_COOKIE['jirafe_pvid']) ? $_COOKIE['jirafe_pvid'] : '',
+                'last_pageview_id' => isset($_COOKIE['jirafe_lpvid']) ? $_COOKIE['jirafe_lpvid'] : ''
             );
         } catch (Exception $e) {
             $this->_log('ERROR', 'Jirafe_Analytics_Model_Abstract::_getVisit()', $e->getMessage());

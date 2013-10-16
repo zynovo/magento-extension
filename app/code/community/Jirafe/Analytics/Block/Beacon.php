@@ -11,7 +11,7 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Block_Beaconapi extends Mage_Core_Block_Template
+class Jirafe_Analytics_Block_Beacon extends Mage_Core_Block_Template
 {
     protected $_beaconApiUrl = null;
     protected $_siteId = null;
@@ -24,6 +24,10 @@ class Jirafe_Analytics_Block_Beaconapi extends Mage_Core_Block_Template
         $this->_orgId = Mage::getStoreConfig('jirafe_analytics/account/org_id');
         
     }
+    
+    /**
+     * Map Magneto page name to Beacon API value
+     */
     
     protected function _getPage()
     {
@@ -41,6 +45,9 @@ class Jirafe_Analytics_Block_Beaconapi extends Mage_Core_Block_Template
                 }
                 break;
             case 'catalog':
+                /**
+                 * returns 'product' or 'category' in default Magneto
+                 */
                 return $controller;
                 break;
             case 'checkout':
