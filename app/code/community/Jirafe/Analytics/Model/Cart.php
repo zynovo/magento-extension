@@ -23,18 +23,25 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
     {
         try {
             if ($quote) {
+                
                 $items = Mage::getModel('jirafe_analytics/cart_item')->getItems( $quote );
+                /**
+                 * Get field map array
+                 */
+                
+                $fieldMap = $this->_getFieldMap( 'cart', $quote->getData() );
+                
                 $data = array(
-                    'id' => $quote->getData('entity_id'),
-                    'create_date' => $this->_formatDate( $quote->getData('created_at') ),
-                    'change_date' => $this->_formatDate( $quote->getData('updated_at') ),
-                    'subtotal' => floatval($quote->getData('subtotal')),
-                    'total' => floatval($quote->getData('grand_total')),
-                    'total_tax' => floatval(0),
-                    'total_shipping' => floatval(0),
-                    'total_payment_cost' => floatval($quote->getData('grand_total')),
-                    'total_discounts' => floatval(0),
-                    'currency' => $quote->getData('quote_currency_code'),
+                     $fieldMap['id']['api'] => $fieldMap['id']['magento'],
+                     $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento'],
+                     $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
+                     $fieldMap['subtotal']['api'] => $fieldMap['subtotal']['magento'],
+                     $fieldMap['total']['api'] => $fieldMap['total']['magento'] ,
+                     $fieldMap['total_tax']['api'] => $fieldMap['total_tax']['magento'],
+                     $fieldMap['total_shipping']['api'] => $fieldMap['total_shipping']['magento'],
+                     $fieldMap['total_payment_cost']['api'] => $fieldMap['total_payment_cost']['magento'],
+                     $fieldMap['total_discounts']['api'] => $fieldMap['total_discounts']['magento'],
+                     $fieldMap['currency']['api'] => $fieldMap['currency']['magento'],
                     'cookies' => (object) null,
                     'items' => $items,
                     'previous_items' => $this->_getPreviousItems( $quote->getData('entity_id') ),

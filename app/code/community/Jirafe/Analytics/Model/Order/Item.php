@@ -15,7 +15,7 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
     /**
      * Create array of items in order
      *
-     * @param array $order
+     * @param array $items
      * @return mixed
      */
     
@@ -23,23 +23,29 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
     {
         try {
             if ($order) {
+                
                 $count = 1;
                 $data = array();
+                
                 foreach( $order['items'] as $item ) {
-                    $product = Mage::getModel('jirafe_analytics/product')->getArray( $item['product_id'], $order['store_id']  );
-                    $previousItems = null;
-                    $customer = null;
-                    $visit = null;
+                    
+                    /**
+                     * Get field map array
+                     */
+                    
+                    $fieldMap = $this->_getFieldMap( 'order_item', $item );
+                    
                     $data[] = array(
-                        'id' => $item['item_id'],
-                        'create_date' => $this->_formatDate( $item['created_at'] ),
-                        'change_date' => $this->_formatDate( $item['updated_at'] ),
+                        $fieldMap['id']['api'] => $fieldMap['id']['magento'],
+                        $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento'],
+                        $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
                         'order_item_number' => "$count",
-                        'quantity' => intval( $item['qty_ordered'] ),
-                        'price' => floatval( $item['price'] ),
-                        'discount_price' => floatval( $item['discount_amount'] ),
-                        'product' => $product
+                        $fieldMap['quantity']['api'] => $fieldMap['quantity']['magento'],
+                        $fieldMap['price']['api'] => $fieldMap['price']['magento'],
+                        $fieldMap['discount_price']['api'] => $fieldMap['discount_price']['magento'],
+                        'product' => Mage::getModel('jirafe_analytics/product')->getArray( $item['product_id'], $order['store_id']  )
                     );
+                    
                     $count++;
                 }
                 return $data;

@@ -24,29 +24,36 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
         try {
             
             $status = $this->_mapOrderStatus( $order['status'] );
+            /**
+             * Get field map array
+             */
+            
+            $fieldMap = $this->_getFieldMap( 'order', $order );
             
             if ($status == 'cancelled') {
                 $data = array(
-                    'order_number' => $order['increment_id'],
+                    $fieldMap['order_number']['api'] => $order['increment_id'],
                     'status' => $status,
-                    'cancel_date' => $this->_formatDate( $order['updated_at'] )
+                    $fieldMap['cancel_date']['api'] => $this->_formatDate( $order['updated_at'] )
                 );
             } else {
+                
                 $items = Mage::getModel('jirafe_analytics/order_item')->getItems( $order );
+                
                 $data = array(
-                    'order_number' => $order['increment_id'],
-                    'cart_id' => $order['quote_id'],
+                    $fieldMap['order_number']['api'] => $fieldMap['order_number']['magento'],
+                    $fieldMap['cart_id']['api'] => $fieldMap['cart_id']['magento'],
                     'status' => $status,
-                    'order_date' => $this->_formatDate( $order['created_at'] ),
-                    'create_date' => $this->_formatDate( $order['created_at'] ),
-                    'change_date' => $this->_formatDate( $order['updated_at'] ),
-                    'subtotal' => floatval( $order['subtotal'] ),
-                    'total' => floatval( $order['grand_total'] ),
-                    'total_tax' => floatval( $order['tax_amount'] ),
-                    'total_shipping' => floatval( $order['shipping_amount'] ),
-                    'total_payment_cost' => floatval( $order['payment']['amount_paid'] ),
-                    'total_discounts' => floatval( $order['discount_amount'] ),
-                    'currency' => $order['order_currency_code'],
+                    $fieldMap['order_date']['api'] => $fieldMap['order_date']['magento'],
+                    $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento'],
+                    $fieldMap['change_date']['api'] =>$fieldMap['change_date']['magento'],
+                    $fieldMap['subtotal']['api'] => $fieldMap['subtotal']['magento'],
+                    $fieldMap['total']['api'] => $fieldMap['total']['magento'],
+                    $fieldMap['total_tax']['api'] => $fieldMap['total_tax']['magento'],
+                    $fieldMap['total_shipping']['api'] => $fieldMap['total_shipping']['magento'],
+                    $fieldMap['total_payment_cost']['api'] => $fieldMap['total_payment_cost']['magento'],
+                    $fieldMap['total_discounts']['api'] => $fieldMap['total_discounts']['magento'],
+                    $fieldMap['currency']['api'] => $fieldMap['currency']['magento'],
                     'cookies' => (object) null,
                     'items' => $items,
                     'previous_items' => $this->_getPreviousItems( $order['entity_id'] ),

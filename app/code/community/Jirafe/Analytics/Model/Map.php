@@ -32,12 +32,12 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
     {
         try {
            $map = array();
-           $collection = $this->getCollection()->setOrder('object', 'ASC');
+           $collection = $this->getCollection()->setOrder( 'element', 'ASC' );
            $last = null;
            $group = array();
            
            foreach ( $collection as $field ) {
-               $current = $field->getObject();
+               $current = $field->getElement();
                
                if (!$last) {
                    $last = $current;
@@ -48,11 +48,12 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
                }
                
                $group[ $field->getKey() ] =  array(
-                   'object' => $field->getObject(),
+                   'element' => $field->getElement(),
                    'key' => $field->getKey(),
                    'api' => $field->getApi(), 
                    'magento' => $field->getMagento(), 
-                   'type' => $field->getType() ) ;
+                   'type' => $field->getType(),
+                   'default' => $field->getDefault() ) ;
               
                $last = $current;
            }

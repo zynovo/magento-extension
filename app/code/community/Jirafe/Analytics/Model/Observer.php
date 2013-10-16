@@ -134,6 +134,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 $queue = Mage::getModel('jirafe_analytics/queue');
                 $queue->setTypeId( Jirafe_Analytics_Model_Queue_Type::CUSTOMER );
                 $queue->setContent( Mage::getModel('jirafe_analytics/customer')->getJson( $observer->getCustomer() ) );
+                $queue->setStoreId( $observer->getCustomer()->getStoreId() );
                 $queue->setCreatedDt( $this->_getCreatedDt() );
                 $queue->save();
                 Mage::getSingleton('core/session')->setJirafeProcessCustomer( false );
@@ -201,30 +202,6 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
         }
     }
     
-    
-    
-    /**
-     * Capture customer delete events
-     *
-     * @param Varien_Event_Observer $observer
-     * @return boolean
-     */
-    
-    public function customerDelete( Varien_Event_Observer $observer )
-    {
-        try {
-            $queue = Mage::getModel('jirafe_analytics/queue');
-            $queue->setTypeId( Jirafe_Analytics_Model_Queue_Type::CUSTOMER );
-            $queue->setContent( Mage::getModel('jirafe_analytics/customer')->getDeleteJson( $observer->getCustomer() ) );
-            $queue->setCreatedDt( $this->_getCreatedDt() );
-            $queue->save();
-            return true;
-        } catch (Exception $e) {
-            $this->_log('ERROR', 'Jirafe_Analytics_Model_Observer::customerDelete()', $e->getMessage());
-            return false;
-        }
-    }
-    
     /**
      * Capture order save event
      *
@@ -246,6 +223,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 $queue = Mage::getModel('jirafe_analytics/queue');
                 $queue->setTypeId( Jirafe_Analytics_Model_Queue_Type::ORDER );
                 $queue->setContent( Mage::getModel('jirafe_analytics/order')->getJson( $order ) );
+                $queue->setStoreId( $order['store_id'] );
                 $queue->setCreatedDt( $this->_getCreatedDt() );
                 $queue->save();
                 return true;
@@ -268,9 +246,11 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
     public function orderCancel( Varien_Event_Observer $observer ) 
     {
         try {
+            $order = $observer->getOrder()->getData();
             $queue = Mage::getModel('jirafe_analytics/queue');
             $queue->setTypeId( Jirafe_Analytics_Model_Queue_Type::ORDER );
-            $queue->setContent( Mage::getModel('jirafe_analytics/order')->getJson( $observer->getOrder()->getData() ) );
+            $queue->setContent( Mage::getModel('jirafe_analytics/order')->getJson( $order ) );
+            $queue->setStoreId( $order['store_id'] );
             $queue->setCreatedDt( $this->_getCreatedDt() );
             $queue->save();
             return true;
@@ -290,53 +270,11 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
     public function productSave( Varien_Event_Observer $observer )
     {
         try {
+            $product = $observer->getProduct();
             $queue = Mage::getModel('jirafe_analytics/queue');
             $queue->setTypeId( Jirafe_Analytics_Model_Queue_Type::PRODUCT );
-            $queue->setContent( Mage::getModel('jirafe_analytics/product')->getJson( $observer->getProduct()->getEntityId(), $observer->getProduct()->getStoreId() ) );
-            $queue->setCreatedDt( $this->_getCreatedDt() );
-            $queue->save();
-            return true;
-        } catch (Exception $e) {
-            $this->_log('ERROR', 'Jirafe_Analytics_Model_Observer::productSave()', $e->getMessage());
-            return false;
-        }
-    }
-    
-    /**
-     * Capture product status change events
-     *
-     * @param Varien_Event_Observer $observer
-     * @return boolean
-     */
-    
-    public function productStatusUpdate( Varien_Event_Observer $observer )
-    {
-        try {
-            $queue = Mage::getModel('jirafe_analytics/queue');
-            $queue->setTypeId( Jirafe_Analytics_Model_Queue_Type::PRODUCT );
-            $queue->setContent( Mage::getModel('jirafe_analytics/product')->getStatusChangeJson( $observer->getProduct() ) );
-            $queue->setCreatedDt( $this->_getCreatedDt() );
-            $queue->save();
-            return true;
-        } catch (Exception $e) {
-            $this->_log('ERROR', 'Jirafe_Analytics_Model_Observer::productStatusUpdate()', $e->getMessage());
-            return false;
-        }
-    }
-    
-    /**
-     * Capture product delete events
-     *
-     * @param Varien_Event_Observer $observer
-     * @return boolean
-     */
-    
-    public function productDelete( Varien_Event_Observer $observer )
-    {
-        try {
-            $queue = Mage::getModel('jirafe_analytics/queue');
-            $queue->setTypeId( Jirafe_Analytics_Model_Queue_Type::PRODUCT );
-            $queue->setContent( Mage::getModel('jirafe_analytics/product')->getDeleteJson( $observer->getProduct() ) );
+            $queue->setContent( Mage::getModel('jirafe_analytics/product')->getJson( $product->getEntityId() ) );
+            $queue->setStoreId( $product->getStoreId() );
             $queue->setCreatedDt( $this->_getCreatedDt() );
             $queue->save();
             return true;

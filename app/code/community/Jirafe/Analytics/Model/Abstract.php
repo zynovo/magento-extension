@@ -52,24 +52,57 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
             $fieldMap = array();
             
             foreach ( $this->_rootMap[ $element ] as $key => $row ) {
-               
+                    
+                    /**
+                     * Check for multi-dimensional array mapping
+                     * i.e. $order['payment']['amount_paid']
+                     * @var array  $multitkey
+                     * @var string $value
+                     */
+                    
+                    $multitkey = explode( '|', $row['magento'] );
+                    
+                    if ( count( $multitkey ) == 2 ) {
+                        $value = @$data[ $multitkey[0] ][ $multitkey[1] ];
+                    } else {
+                        $value = @$data[ $row['magento'] ];
+                    }
+                    
+                    /**
+                     * If value is empty, replace with default value from mapping table
+                     */
+                    
+                    if ( strval( $value ) === '' ) {
+                        $value = $row['default'];
+                    }
+                    
+                    /**
+                     * Convert value to proper type according to API requirements
+                     */
+                    
                     switch ( $row['type'] ) {
                         case 'float':
-                            $value = floatval( $data[ $row['magento'] ] );
+                            $value = floatval( $value );
                             break;
                         case 'int':
-                            $value = intval( $data[ $row['magento'] ] );
+                            $value = intval( $value );
                             break;
                          case 'datetime':
-                            $value = $this->_formatDate( $data[ $row['magento'] ] );
+                            $value = $this->_formatDate( $value );
                             break;
                          case 'boolean':
-                            $value = $data[ $row['magento'] ]  ? true : false;
+                            $value = (boolean) $value;
                             break;
                         default:
-                            $value = strval( $data[ $row['magento'] ]);
+                            $value = strval( $value );
                             break;
-                    }   
+                    }
+                    
+                    /**
+                     * Separate data into multi-dimensional array 
+                     * for use in creating model json objects
+                     * 
+                     */
                     $fieldMap[ $key ] = array( 'api' => $row['api'], 'magento' => $value );
                 
             }

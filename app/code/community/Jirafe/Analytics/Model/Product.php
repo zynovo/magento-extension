@@ -21,7 +21,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
      * @return mixed
      */
     
-    public function getArray( $productId = null, $storeId = null )
+    public function getArray( $productId = null )
     {
         try {
             if ($productId) {
@@ -37,9 +37,9 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                     $fieldMap['id']['api'] => $fieldMap['id']['magento'],
                     $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento'],
                     $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
-                    'is_product' => true,
-                    'is_sku' => true,
-                    'catalog' => $this->_getCatalog( is_numeric($storeId) ? $storeId : $product->getStoreId() ),
+                    'is_product' => $this->_isProduct( $product->getTypeId() ) ,
+                    'is_sku' => $this->_isSku( $product->getTypeId() ),
+                    'catalog' => $this->_getCatalog( $product->getStoreId() ),
                     $fieldMap['name']['api'] => $fieldMap['name']['magento'],
                     $fieldMap['code']['api'] => $fieldMap['code']['magento'],
                     'brand' => '',
@@ -55,6 +55,79 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
         }
     }
     
+    /**
+     * Use Magento product type to determine whether this is an API product
+     * 
+     * @param string $type_id
+     * @return boolean
+     */
+    
+    protected function _isProduct ( $type_id = null )
+    {
+        switch ($type_id) {
+            case 'simple':
+                return true;
+                break;
+            case 'grouped':
+                return false;
+                break;
+            case 'configurable':
+                return false;
+                break;
+            case 'virtual':
+                return true;
+                break;
+            case 'bundle':
+                return false;
+                break;
+            case 'downloadable':
+                return true;
+                break;
+            case 'giftcard':
+                return true;
+                break;
+            default:
+                return false;
+                break;
+        }
+    }
+    
+    /**
+     * Use Magento product type to determine whether this is an API SKU
+     *
+     * @param string $type_id
+     * @return boolean
+     */
+    
+    protected function _isSku ( $type_id = null )
+    {
+        switch ($type_id) {
+            case 'simple':
+                return true;
+                break;
+            case 'grouped':
+                return false;
+                break;
+            case 'configurable':
+                return false;
+                break;
+            case 'virtual':
+                return true;
+                break;
+            case 'bundle':
+                return false;
+                break;
+            case 'downloadable':
+                return true;
+                break;
+            case 'giftcard':
+                return true;
+                break;
+            default:
+                return false;
+                break;
+        }
+    }
     /**
      * Create array of categories associated with product
      *
@@ -115,10 +188,10 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
      * @return mixed
      */
     
-    public function getJson( $productId = null, $storeId = null )
+    public function getJson( $productId = null )
     {
         if ( $productId ) {
-            return json_encode( $this->getArray( $productId, $storeId ) );
+            return json_encode( $this->getArray( $productId ) );
         } else {
             return false;
         }

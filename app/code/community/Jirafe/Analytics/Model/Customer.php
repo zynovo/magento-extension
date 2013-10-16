@@ -39,7 +39,7 @@ class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract
                     $fieldMap['email']['api'] => $fieldMap['email']['magento'],
                     $fieldMap['first_name']['api'] => $fieldMap['first_name']['magento'],
                     $fieldMap['last_name']['api'] => $fieldMap['last_name']['magento'],
-                    $fieldMap['name']['api'] => $customer->getData('firstname') . ' ' .$customer->getData('lastname')
+                    'name' => $fieldMap['first_name']['magento'] . ' ' . $fieldMap['last_name']['magento']
                 );
             } else {
                return array();

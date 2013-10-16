@@ -25,19 +25,22 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
                 $count = 1;
                 $data = array();
                 foreach($quote->getAllItems() as $item) {
-                    $product = Mage::getModel('jirafe_analytics/product')->getArray( $item->getProductId(), $quote->getStoreId()  );
-                    $previousItems = null;
-                    $customer = null;
-                    $visit = null;
+                    
+                    /**
+                     * Get field map array
+                     */
+                    
+                    $fieldMap = $this->_getFieldMap( 'cart_item', $item->getData() );
+                    
                     $data[] = array(
-                        'id' => $item->getItemId(),
-                        'create_date' => $this->_formatDate( $item->getCreatedAt() ),
-                        'change_date' => $this->_formatDate( $item->getUpdatedAt() ),
+                        $fieldMap['id']['api'] => $fieldMap['id']['magento'],
+                        $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento'],
+                        $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
                         'cart_item_number' => "$count",
-                        'quantity' => intval($item->getQty()),
-                        'price' => floatval($item->getPrice()),
-                        'discount_price' => floatval($item->getDiscountAmount()),
-                        'product' => $product
+                        $fieldMap['quantity']['api'] => $fieldMap['quantity']['magento'],
+                        $fieldMap['price']['api'] => $fieldMap['price']['magento'],
+                        $fieldMap['discount_price']['api'] => $fieldMap['discount_price']['magento'],
+                        'product' => Mage::getModel('jirafe_analytics/product')->getArray( $item->getProductId(), $quote->getStoreId()  )
                     );
                     $count++;
                 }
