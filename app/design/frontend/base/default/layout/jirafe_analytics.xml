@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <layout>
     <default>
-        <reference name="head">
+        <reference name="before_body_end">
             <block type="jirafe_analytics/beaconapi"  name="jirafe_beacon_api" template="jirafe_analytics/beaconapi.phtml" />
         </reference>
     </default>
