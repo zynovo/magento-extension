@@ -54,7 +54,7 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
                     $fieldMap['total_payment_cost']['api'] => $fieldMap['total_payment_cost']['magento'],
                     $fieldMap['total_discounts']['api'] => $fieldMap['total_discounts']['magento'],
                     $fieldMap['currency']['api'] => $fieldMap['currency']['magento'],
-                    'cookies' => (object) null,
+                    'cookies' => $this->_getCookies(),
                     'items' => $items,
                     'previous_items' => $this->_getPreviousItems( $order['entity_id'] ),
                     'customer' => $this->_getCustomer( $order ),

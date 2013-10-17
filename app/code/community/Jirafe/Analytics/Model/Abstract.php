@@ -13,6 +13,9 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
 {
     protected $_rootMap = null;
     
+    protected $_mappedFields = null;
+    
+    
     /**
      * Get API to Magento field map array
      *
@@ -23,9 +26,8 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
     protected function _setRootMap()
     {
         try {
-            $this->_rootMap = Mage::registry('jirafe_analytics_map');
             
-            if (!$this->_rootMap) {
+            if (!$this->_rootMap = Mage::registry('jirafe_analytics_map')) {
                 $this->_rootMap = Mage::getModel('jirafe_analytics/map')->getArray();
                 Mage::register('jirafe_analytics_map', $this->_rootMap);
             }
@@ -113,6 +115,28 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
         }
     }
     
+    protected function _getElementMagentoFields( $element )
+    {
+        try {
+            if ($element) {
+                $data = array();
+                $magentoFields = Mage::getModel('jirafe_analytics/map')
+                                                ->getCollection()
+                                                ->addFieldToSelect('magento')
+                                                ->addFilter('element',$element)
+                                                ->getData();
+                
+                $flat = new RecursiveIteratorIterator(new RecursiveArrayIterator($magentoFields));
+                
+                foreach($flat as $field) {
+                    $data[] = $field;
+                }
+            }
+            return $data;
+        } catch (Exception $e) {
+            Mage::throwException('FIELD MAPPING ERROR Jirafe_Analytics_Model_Abstract::_getFieldMap(): ' . $e->getMessage());
+        }
+    }
     /**
      * Extract visit data from Jirafe cookie
      *
@@ -125,8 +149,8 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
             return array(
                 'visit_id' => isset($_COOKIE['jirafe_vid']) ? $_COOKIE['jirafe_vid'] : '',
                 'visitor_id' => isset($_COOKIE['jirafe_vis']) ? $_COOKIE['jirafe_vis'] : '',
-                'pageview_id' => isset($_COOKIE['jirafe_pvid']) ? $_COOKIE['jirafe_pvid'] : '',
-                'last_pageview_id' => isset($_COOKIE['jirafe_lpvid']) ? $_COOKIE['jirafe_lpvid'] : ''
+                'pageview_id' => '',
+                'last_pageview_id' => ''
             );
         } catch (Exception $e) {
             $this->_log('ERROR', 'Jirafe_Analytics_Model_Abstract::_getVisit()', $e->getMessage());
@@ -134,6 +158,29 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
         }
     }
     
+    /**
+     * Get all Jirafe cookie data
+     *
+     * @return array
+     */
+    
+    protected function _getCookies()
+    {
+        try {
+            return array(
+                'jirafe_ratr' => isset($_COOKIE['jirafe_ratr']) ? $_COOKIE['jirafe_ratr'] : '',
+                'jirafe_lnd' => isset($_COOKIE['jirafe_lnd']) ? $_COOKIE['jirafe_lnd'] : '',
+                'jirafe_ref' => isset($_COOKIE['jirafe_ref']) ? $_COOKIE['jirafe_ref'] : '',
+                'jirafe_vis' => isset($_COOKIE['jirafe_vis']) ? $_COOKIE['jirafe_vis'] : '',
+                'jirafe_reftyp' => isset($_COOKIE['jirafe_reftyp']) ? $_COOKIE['jirafe_reftyp'] : '',
+                'jirafe_typ' => isset($_COOKIE['jirafe_typ']) ? $_COOKIE['jirafe_typ'] : '',
+                'jirafe_vid' => isset($_COOKIE['jirafe_vid']) ? $_COOKIE['jirafe_vid'] : '' 
+            );
+        } catch (Exception $e) {
+            $this->_log('ERROR', 'Jirafe_Analytics_Model_Abstract::_getCookies()', $e->getMessage());
+            return false;
+        }
+    }
     /**
      * Format customer data as array
      *
@@ -192,28 +239,6 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
     }
     
     /**
-     * Format date to Jirafe API requirements: UTC in the ISO 8601:2004 format
-     * 
-     * @param datetime $date
-     * @return datetime
-     */
-    
-    protected function _formatDate( $date )
-    {
-        return date( DATE_ISO8601, strtotime( $date) );
-    }
-    
-    /**
-     * Current DataTime in UTC/GMT to avoid MySQL possible timezone configuration issues
-     * 
-     * @return string
-     */
-    
-    protected function _getCreatedDt() {
-        return gmdate('Y-m-d H:i:s');
-    }
-
-    /**
      * Format store values as catalog array
      * 
      * @param int $storeId
@@ -231,7 +256,7 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
                 'id' => '',
                 'name' => '');
         }
-
+    
     }
     
     /**
@@ -285,5 +310,26 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
             }
         }
     }
-
+    
+    /**
+     * Format date to Jirafe API requirements: UTC in the ISO 8601:2004 format
+     *
+     * @param datetime $date
+     * @return datetime
+     */
+    
+    protected function _formatDate( $date )
+    {
+        return date( DATE_ISO8601, strtotime( $date) );
+    }
+    
+    /**
+     * Current DataTime in UTC/GMT to avoid MySQL possible timezone configuration issues
+     *
+     * @return string
+     */
+    
+    protected function _getCreatedDt() {
+        return gmdate('Y-m-d H:i:s');
+    }
 }

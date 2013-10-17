@@ -40,7 +40,7 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
                         $fieldMap['quantity']['api'] => $fieldMap['quantity']['magento'],
                         $fieldMap['price']['api'] => $fieldMap['price']['magento'],
                         $fieldMap['discount_price']['api'] => $fieldMap['discount_price']['magento'],
-                        'product' => Mage::getModel('jirafe_analytics/product')->getArray( $item->getProductId(), $quote->getStoreId()  )
+                        'product' => Mage::getModel('jirafe_analytics/product')->getArray( $item->getProductId(), false )
                     );
                     $count++;
                 }

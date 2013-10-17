@@ -21,37 +21,41 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
      * @return mixed
      */
     
-    public function getArray( $productId = null )
+    public function getArray( $productId = null, $isRoot = true )
     {
         try {
             if ($productId) {
                 
                 $product = Mage::getModel('catalog/product')->load( $productId );
+                $parentIds = $this->_getParentIds( $product );
                 
                 /**
                  * Get field map array
                  */
                 $fieldMap = $this->_getFieldMap( 'product', $product->getData() );
-                $baseProduct = $this->getBaseProduct( $product );
-                return array(
+                
+                $element = array(
                     $fieldMap['id']['api'] => $fieldMap['id']['magento'],
                     $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento'],
                     $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
-                    'is_product' => $this->_isProduct( $product->getTypeId(), $baseProduct ) ,
+                    'is_product' => $this->_isProduct( $product->getTypeId(), $parentIds ) ,
                     'is_sku' => $this->_isSku( $product->getTypeId() ),
                     'catalog' => $this->_getCatalog( $product->getStoreId() ),
                     $fieldMap['name']['api'] => $fieldMap['name']['magento'],
                     $fieldMap['code']['api'] => $fieldMap['code']['magento'],
-                    'brand' => '',
-                    'rating' => '',
-                    'categories' => $this->getCategories( $product ),
-                    'images' => $this->getImages( $product ),
-                    'ancestors' => (object) null,
-                    'base_product' => $baseProduct,
-                    'vendors' => (object) null,
-                    'urls' => (object) null,
-                    'attributes' => $this->getAttributes( $product )
+                    'categories' => $this->_getCategories( $product ),
+                    'images' => $this->_getImages( $product )
                     );
+                
+                if ($isRoot) {
+                    $element['base_product'] = $this->_getBaseProducts( $parentIds );
+                    $element['attributes'] = $this->_getAttributes( $product, $fieldMap );
+                    //$element['ancestors'] = array();
+                    //$element['vendors'] = (object) null;
+                    //$element['urls'] = (object) null;
+                }
+                
+                return $element;
             } else {
                 return array();
             }
@@ -70,9 +74,9 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
      * @return boolean
      */
     
-    protected function _isProduct ( $type_id = null, $baseProduct = null )
+    protected function _isProduct ( $type_id = null, $isChild = null )
     {
-        if ( $baseProduct ) {
+        if ( $isChild ) {
             return false;
         } else {
             switch ( $type_id ) {
@@ -147,7 +151,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
      * @return mixed
      */
     
-    public function getCategories( $product = null )
+    protected function _getCategories( $product = null )
     {
         try {
             if ($product) {
@@ -164,47 +168,67 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                 return array();
             }
         } catch (Exception $e) {
-            $this->_log('ERROR', 'Jirafe_Analytics_Model_Product::getCategories()', $e->getMessage());
+            $this->_log('ERROR', 'Jirafe_Analytics_Model_Product::_getCategories()', $e->getMessage());
             return false;
         }
     }
     
     /**
-     * Create array of parent product
+     * Create array of parent products
      *
-     * @param Mage_Catalog_Model_Product $product
+     * @param array $parentIds
      * @return mixed
      */
     
-    public function getBaseProduct( $product = null )
+    protected function _getBaseProducts( $parentIds = null )
     {
         try {
             
             $obj = (object) null;
             
-            if ( $product ) {
-                $parentIds = null; 
-                if ( $product->getTypeId() == "simple" ){
-                    $parentIds = Mage::getModel('catalog/product_type_grouped')->getParentIdsByChild( $product->getId() ); 
-                    if ( !$parentIds ) {
-                        $parentIds = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild( $product->getId() ); 
-                    }
+            if ( $parentIds ) {
+                $obj = array();
+                foreach( $parentIds as $parentId ) {
+                    $parent = Mage::getModel('catalog/product')->load( $parentId );
+                    $fieldMap = $this->_getFieldMap( 'product', $parent->getData() );
+                    $obj[] = array( $fieldMap['id']['api'] => $fieldMap['id']['magento'],
+                                    $fieldMap['name']['api'] => $fieldMap['name']['magento'],
+                                    $fieldMap['code']['api'] => $fieldMap['code']['magento']);
                 }
-                if ($parentIds) {
-                    $obj = array();
-                    foreach( $parentIds as $parentId ) {
-                        $parent = Mage::getModel('catalog/product')->load( $parentId );
-                        $fieldMap = $this->_getFieldMap( 'product', $parent->getData() );
-                        $obj[] = array( $fieldMap['id']['api'] => $fieldMap['id']['magento'],
-                                        $fieldMap['name']['api'] => $fieldMap['name']['magento'],
-                                        $fieldMap['code']['api'] => $fieldMap['code']['magento']);
-                    }
-                 }
             }
             
             return $obj;
         } catch (Exception $e) {
-            $this->_log('ERROR', 'Jirafe_Analytics_Model_Product::getBaseProduct()', $e->getMessage());
+            $this->_log('ERROR', 'Jirafe_Analytics_Model_Product::_getBaseProducts()', $e->getMessage());
+            return false;
+        }
+    }
+    
+    /**
+     * Get product parent ids
+     *
+     * @param Mage_Catalog_Model_Product $product
+     * @return mixed
+     */
+    
+    protected function _getParentIds( $product = null )
+    {
+        try {
+            if ( $product ) {
+                $parentIds = null;
+                if ( $product->getTypeId() == "simple" ){
+                    $parentIds = Mage::getModel('catalog/product_type_grouped')->getParentIdsByChild( $product->getId() );
+                    if ( !$parentIds ) {
+                        $parentIds = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild( $product->getId() );
+                    }
+                }
+                if ($parentIds) {
+                    return $parentIds;
+                }
+            }
+            
+        } catch (Exception $e) {
+            $this->_log('ERROR', 'Jirafe_Analytics_Model_Product::_getParentIds()', $e->getMessage());
             return false;
         }
     }
@@ -216,25 +240,27 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
      * @return mixed
      */
     
-    public function getAttributes( $product = null )
+    protected function _getAttributes( $product = null )
     {
         try {
             $obj = (object) null;
             if ( $product ) {
                 $attributes = $product->getAttributes();
+                $magnetoFields = $this->_getElementMagentoFields( 'product' );
                 $obj = array();
                 foreach ( $attributes as $attribute ) {
-                    if ( $value = $attribute->getFrontend()->getValue( $product ) ) {
+                    if ( $attribute->getAttributeId() && $value = $attribute->getFrontend()->getValue( $product ) && !array_search($attribute->getAttributeCode(), $magnetoFields)) {
                         $obj[] = array( 'id' => $attribute->getAttributeId(), 
                                         'name' => $attribute->getAttributeCode(),
-                                        'value' => $value);
+                                        'value' => strval( $value ) 
+                                      );
                    }
                 }
             }
             
             return $obj;
         } catch (Exception $e) {
-            $this->_log('ERROR', 'Jirafe_Analytics_Model_Product::getAttributes()', $e->getMessage());
+            $this->_log('ERROR', 'Jirafe_Analytics_Model_Product::_getAttributes()', $e->getMessage());
             return false;
         }
     }
@@ -245,7 +271,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
      * @return mixed
      */
     
-    public function getImages( $product = null )
+    protected function _getImages( $product = null )
     {
         try {
             if ( $product ) {
@@ -256,7 +282,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                 return array( 'url' => '' );
             }
         } catch (Exception $e) {
-            $this->_log('ERROR', 'Jirafe_Analytics_Model_Product::getImages()', $e->getMessage());
+            $this->_log('ERROR', 'Jirafe_Analytics_Model_Product::_getImages()', $e->getMessage());
             return false;
         }
     }
@@ -269,10 +295,10 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
      * @return mixed
      */
     
-    public function getJson( $productId = null )
+    public function getJson( $productId = null, $isRoot = true )
     {
         if ( $productId ) {
-            return json_encode( $this->getArray( $productId ) );
+            return json_encode( $this->getArray( $productId, $isRoot ) );
         } else {
             return false;
         }

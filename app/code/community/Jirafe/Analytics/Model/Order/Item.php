@@ -43,7 +43,7 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
                         $fieldMap['quantity']['api'] => $fieldMap['quantity']['magento'],
                         $fieldMap['price']['api'] => $fieldMap['price']['magento'],
                         $fieldMap['discount_price']['api'] => $fieldMap['discount_price']['magento'],
-                        'product' => Mage::getModel('jirafe_analytics/product')->getArray( $item['product_id'], $order['store_id']  )
+                        'product' => Mage::getModel('jirafe_analytics/product')->getArray( $item['product_id'], false )
                     );
                     
                     $count++;
