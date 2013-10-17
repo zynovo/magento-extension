@@ -270,6 +270,14 @@
                     <model>jirafe_analytics/queue::process</model>
                 </run>
             </jirafe_analytics_process_queue>
+            <jirafe_analytics_heartbeat>
+                <schedule>
+                    <cron_expr>0 */1 * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>jirafe_analytics/heartbeat::send</model>
+                </run>
+            </jirafe_analytics_heartbeat>
         </jobs>
     </crontab>
 </config>
