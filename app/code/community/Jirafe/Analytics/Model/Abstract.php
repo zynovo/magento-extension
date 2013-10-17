@@ -15,7 +15,6 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
     
     protected $_mappedFields = null;
     
-    
     /**
      * Get API to Magento field map array
      *
@@ -115,32 +114,69 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
         }
     }
     
-    protected function _getElementMagentoFields( $element )
+    /**
+     * Return array of mapped Magento fields by element
+     *
+     * @param string  $element
+     * @return array
+     * 
+     */
+    
+    protected function _getMagentoFieldsByElement( $element )
     {
         try {
             if ($element) {
-                $data = array();
+                
                 $magentoFields = Mage::getModel('jirafe_analytics/map')
                                                 ->getCollection()
                                                 ->addFieldToSelect('magento')
                                                 ->addFilter('element',$element)
                                                 ->getData();
                 
-                $flat = new RecursiveIteratorIterator(new RecursiveArrayIterator($magentoFields));
-                
-                foreach($flat as $field) {
-                    $data[] = $field;
-                }
+                return $this->_flattenArray( $magentoFields );
+            } else {
+                return array();
             }
-            return $data;
+            
         } catch (Exception $e) {
             Mage::throwException('FIELD MAPPING ERROR Jirafe_Analytics_Model_Abstract::_getFieldMap(): ' . $e->getMessage());
         }
     }
+    
+    /**
+     * Flatten arrays structure recursively
+     * 
+     * @param array   $inArray
+     * @param string  $subkey
+     * @return array
+     * @throws Exception if unable to flatten array
+     */
+    
+    protected function _flattenArray( $inArray = null, $subkey = null )
+    {
+        try {
+            $outArray = array();
+           
+            if ($inArray) {
+                $flatArray = new RecursiveIteratorIterator(new RecursiveArrayIterator($inArray));
+                
+                
+                foreach($flatArray as $field) {
+                    $outArray[] = ($subkey ? $subkey . '|' : '' ) . $field;
+                }
+            }
+            
+            return $outArray;
+        } catch (Exception $e) {
+            Mage::throwException('UTILITY FUNCTION ERROR Jirafe_Analytics_Model_Abstract::_flattenArray(): ' . $e->getMessage());
+        }
+    }
+    
     /**
      * Extract visit data from Jirafe cookie
      *
      * @return array
+     * @throws Exception if unable to access $_COOKIE data
      */
     
     protected function _getVisit()
@@ -153,8 +189,7 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
                 'last_pageview_id' => ''
             );
         } catch (Exception $e) {
-            $this->_log('ERROR', 'Jirafe_Analytics_Model_Abstract::_getVisit()', $e->getMessage());
-            return false;
+            Mage::throwException('VISIT OBJECT ERROR Jirafe_Analytics_Model_Abstract::_getVisit(): ' . $e->getMessage());
         }
     }
     
@@ -162,6 +197,7 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
      * Get all Jirafe cookie data
      *
      * @return array
+     * @throws Exception if unable to access $_COOKIE data
      */
     
     protected function _getCookies()
@@ -177,8 +213,7 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
                 'jirafe_vid' => isset($_COOKIE['jirafe_vid']) ? $_COOKIE['jirafe_vid'] : '' 
             );
         } catch (Exception $e) {
-            $this->_log('ERROR', 'Jirafe_Analytics_Model_Abstract::_getCookies()', $e->getMessage());
-            return false;
+             Mage::throwException('COOKIE OBJECT ERROR Jirafe_Analytics_Model_Abstract::_getCookies(): ' . $e->getMessage());
         }
     }
     /**
@@ -186,6 +221,7 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
      *
      * @param mixed $data    Mage_Sales_Model_Quote or Mage_Sales_Model_Order
      * @return array
+     * @throws Exception if unable to generate customer object
      */
     
     protected function _getCustomer( $data = null )
@@ -233,8 +269,7 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
                 }
             }
         } catch (Exception $e) {
-            $this->_log('ERROR', 'Jirafe_Analytics_Model_Abstract::_getCustomer()', $e->getMessage());
-            return false;
+             Mage::throwException('CUSTOMER OBJECT ERROR Jirafe_Analytics_Model_Abstract::_getCustomer(): ' . $e->getMessage());
         }
     }
     
@@ -243,18 +278,23 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
      * 
      * @param int $storeId
      * @return array
+     * @throws Exception if unable to generate catalog object
      */
     
     protected function _getCatalog( $storeId = null )
     {
-        if (is_numeric( $storeId )) {
-            return array(
-                'id' => $storeId,
-                'name' => Mage::getModel('core/store')->load( $storeId )->getName());
-        } else {
-            return array(
-                'id' => '',
-                'name' => '');
+        try {
+            if (is_numeric( $storeId )) {
+                return array(
+                    'id' => $storeId,
+                    'name' => Mage::getModel('core/store')->load( $storeId )->getName());
+            } else {
+                return array(
+                    'id' => '',
+                    'name' => '');
+            }
+        } catch (Exception $e) {
+             Mage::throwException('CATALOG OBJECT ERROR Jirafe_Analytics_Model_Abstract::_getCatalog(): ' . $e->getMessage());
         }
     
     }
@@ -320,7 +360,11 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
     
     protected function _formatDate( $date )
     {
-        return date( DATE_ISO8601, strtotime( $date) );
+        try {
+            return date( DATE_ISO8601, strtotime( $date) );
+        } catch (Exception $e) {
+            Mage::throwException('UTILITY ERROR Jirafe_Analytics_Model_Abstract::_formatDate(): ' . $e->getMessage());
+        }
     }
     
     /**
@@ -329,7 +373,12 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
      * @return string
      */
     
-    protected function _getCreatedDt() {
-        return gmdate('Y-m-d H:i:s');
+    protected function _getCreatedDt() 
+    {
+        try {
+            return gmdate('Y-m-d H:i:s');
+        } catch (Exception $e) {
+            Mage::throwException('UTILITY ERROR Jirafe_Analytics_Model_Abstract::_getCreatedDt(): ' . $e->getMessage());
+        }
     }
 }

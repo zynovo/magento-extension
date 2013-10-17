@@ -246,7 +246,8 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             $obj = (object) null;
             if ( $product ) {
                 $attributes = $product->getAttributes();
-                $magnetoFields = $this->_getElementMagentoFields( 'product' );
+                $magnetoFields = $this->_getMagentoFieldsByElement( 'product' );
+                Mage::log($magnetoFields,null,'attributes.log');
                 $obj = array();
                 foreach ( $attributes as $attribute ) {
                     if ( $attribute->getAttributeId() && $value = $attribute->getFrontend()->getValue( $product ) && !array_search($attribute->getAttributeCode(), $magnetoFields)) {
@@ -298,7 +299,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
     public function getJson( $productId = null, $isRoot = true )
     {
         if ( $productId ) {
-            return json_encode( $this->getArray( $productId, $isRoot ) );
+            return str_replace('\/', '/', json_encode( $this->getArray( $productId, $isRoot ) ) );
         } else {
             return false;
         }
