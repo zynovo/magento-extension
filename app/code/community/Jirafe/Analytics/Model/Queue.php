@@ -21,7 +21,7 @@ class Jirafe_Analytics_Model_Queue extends Jirafe_Analytics_Model_Abstract
     public $maxRecords = null;
     
     /**
-     * Object constructor
+     * Class construction & resource initialization
      *
      * Load user configurable variables from Mage::getStoreConfig() into object property scope
      */

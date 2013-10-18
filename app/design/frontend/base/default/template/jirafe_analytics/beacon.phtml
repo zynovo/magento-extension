@@ -1,16 +1,15 @@
+<?php if ($this->_isEnabled): ?>
 <script type="text/javascript">
-/* Jirafe */
+/* Jirafe Analytics */
 (function(){
     var d=document,g=d.createElement('script'),s=d.getElementsByTagName('script')[0];
         g.type='text/javascript';g.defer=g.async=true;g.src=d.location.protocol+'//<?php echo $this->_beaconApiUrl ?>';
         s.parentNode.insertBefore(g,s);
 })();
- 
 var jirafe_site_id = "<?php echo $this->_siteId ?>";
 var jirafe_org_id = "<?php echo $this->_orgId ?>";
- 
 function jirafe_deferred(jirafe_api){
     jirafe_api.pageview(jirafe_org_id, jirafe_site_id, "<?php echo $this->_getPage(); ?>");
 }
-
 </script>
+<?php endif; 

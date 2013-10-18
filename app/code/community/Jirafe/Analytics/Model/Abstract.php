@@ -26,9 +26,16 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
     {
         try {
             
-            if (!$this->_rootMap = Mage::registry('jirafe_analytics_map')) {
+                                            
+            if (!$this->_rootMap = Mage::registry('jirafe_analytics_map') 
+                                            || $regenerate = Mage::registry('jirafe_analytics_regenerate_map') ) {
+                
                 $this->_rootMap = Mage::getModel('jirafe_analytics/map')->getArray();
                 Mage::register('jirafe_analytics_map', $this->_rootMap);
+                
+                if ($regenerate) {
+                    Mage::register('jirafe_analytics_regenerate_map');
+                }
             }
         } catch (Exception $e) {
             Mage::throwException('FIELD MAPPING ERROR Jirafe_Analytics_Model_Abstract::_getMap(): ' . $e->getMessage());
@@ -155,6 +162,7 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
     protected function _flattenArray( $inArray = null, $subkey = null )
     {
         try {
+            Zend_Debug::dump($inArray);
             $outArray = array();
            
             if ($inArray) {
@@ -165,7 +173,8 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
                     $outArray[] = ($subkey ? $subkey . '|' : '' ) . $field;
                 }
             }
-            
+            Zend_Debug::dump($outArray);
+  
             return $outArray;
         } catch (Exception $e) {
             Mage::throwException('UTILITY FUNCTION ERROR Jirafe_Analytics_Model_Abstract::_flattenArray(): ' . $e->getMessage());

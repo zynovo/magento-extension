@@ -265,6 +265,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             return false;
         }
     }
+    
     /**
      * Create array of images associated with product
      *

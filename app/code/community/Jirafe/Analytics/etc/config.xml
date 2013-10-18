@@ -272,10 +272,10 @@
             </jirafe_analytics_process_queue>
             <jirafe_analytics_heartbeat>
                 <schedule>
-                    <cron_expr>0 */1 * * *</cron_expr>
+                    <cron_expr>*/30 * * * *</cron_expr>
                 </schedule>
                 <run>
-                    <model>jirafe_analytics/heartbeat::send</model>
+                    <model>jirafe_analytics/heartbeat::transmit</model>
                 </run>
             </jirafe_analytics_heartbeat>
         </jobs>

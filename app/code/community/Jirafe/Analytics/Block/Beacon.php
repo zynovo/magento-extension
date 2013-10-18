@@ -13,16 +13,22 @@
 
 class Jirafe_Analytics_Block_Beacon extends Mage_Core_Block_Template
 {
+    protected $_isEnabled = null;
     protected $_beaconApiUrl = null;
     protected $_siteId = null;
     protected $_orgId = null;
     
+    /**
+     * Class construction & variable initialization
+     */
+    
     public function __construct()
     {
-        $this->_beaconApiUrl = Mage::getStoreConfig('jirafe_analytics/account/beacon_api') ;
-        $this->_siteId = Mage::getStoreConfig('jirafe_analytics/account/site_id') ;
-        $this->_orgId = Mage::getStoreConfig('jirafe_analytics/account/org_id');
-        
+        if ( $this->_isEnabled = Mage::getStoreConfig('jirafe_analytics/general/enabled') ) {
+            $this->_beaconApiUrl = Mage::getStoreConfig('jirafe_analytics/general/beacon_api') ;
+            $this->_siteId = Mage::getStoreConfig('jirafe_analytics/general/site_id') ;
+            $this->_orgId = Mage::getStoreConfig('jirafe_analytics/general/org_id');
+        }
     }
     
     /**
