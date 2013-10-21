@@ -162,7 +162,6 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
     protected function _flattenArray( $inArray = null, $subkey = null )
     {
         try {
-            Zend_Debug::dump($inArray);
             $outArray = array();
            
             if ($inArray) {
@@ -173,8 +172,6 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
                     $outArray[] = ($subkey ? $subkey . '|' : '' ) . $field;
                 }
             }
-            Zend_Debug::dump($outArray);
-  
             return $outArray;
         } catch (Exception $e) {
             Mage::throwException('UTILITY FUNCTION ERROR Jirafe_Analytics_Model_Abstract::_flattenArray(): ' . $e->getMessage());

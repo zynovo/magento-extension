@@ -228,11 +228,9 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
         try {
             $output = array();
             
-            
                 if ( $order_item = Mage::getModel('sales/order_item')->getCollection()->getFirstItem()->getData() ) {
                     $output = $this->_flattenArray( array_keys( $order_item ) );
                 }
-          
             
             return $output;
             
@@ -253,19 +251,24 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
         try {
             $output = array();
             
+            
+            if ( $product = Mage::getModel('catalog/product')->getCollection()->getFirstItem()->getData() ) {
+                $output = $this->_flattenArray( array_keys( $product ) );
+            }
+            
             $collection = Mage::getResourceModel('catalog/product_attribute_collection');
             $attributes = array();
             
             foreach ($collection as $attribute) {
-                $attributes[] = $attribute->getAttributeCode();;
+                $code = $attribute->getAttributeCode();
+                if ( !array_search($code,$output) ) {
+                    $attributes[] = $code;
+                }
             }
             
-            $output['product'] = $attributes;
-            /*
-            if ( $product = Mage::getModel('catalog/product')->getCollection()->getFirstItem()->getData() ) {
-                $output['product'] = $this->_flattenArray( array_keys( $product ) );
+            if ($attributes) {
+                $output = array_merge( $output, $this->_flattenArray($attributes) );
             }
-            */
             return $output;
             
         } catch (Exception $e) {
@@ -534,39 +537,38 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
         try {
             
             $map = array();
-            
             $quote = Mage::getModel('sales/quote')->getCollection()->getFirstItem();
             
             if ( $cart = $this->_getCartFields( $quote ) ) {
-                $map = array_merge( $map, $cart );
+                $map['cart'] = $cart;
             }
             
             if ( $cartItem = $this->_getCartItemFields( $quote ) ) {
-                $map = array_merge( $map, $cartItem );
+                $map['cart_item'] = $cartItem;
             }
             
             if ( $category = $this->_getCategoryFields() ) {
-                $map = array_merge( $map, $category );
+                $map['category'] = $category;
             }
             
             if ( $customer = $this->_getCustomerFields() ) {
-                $map = array_merge( $map, $customer );
+                $map['customer'] = $customer;
             }
             
             if ( $employee = $this->_getEmployeeFields() ) {
-                $map = array_merge( $map, $employee );
+                $map['employee'] = $employee;
             }
             
             if ( $order = $this->_getOrderFields() ) {
-                $map = array_merge( $map, $order );
+                $map['order'] = $order;
             }
             
             if ( $orderItem = $this->_getOrderItemFields() ) {
-                $map = array_merge( $map, $orderItem );
+                $map['order_item'] = $orderItem;
             }
             
             if ( $product = $this->_getProductFields() ) {
-                $map = array_merge( $map, $product );
+                $map['product'] = $product;
             }
             
             return json_encode($map);
