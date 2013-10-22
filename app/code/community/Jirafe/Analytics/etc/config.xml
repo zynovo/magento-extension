@@ -275,9 +275,58 @@
                     <cron_expr>*/30 * * * *</cron_expr>
                 </schedule>
                 <run>
-                    <model>jirafe_analytics/heartbeat::transmit</model>
+                    <model>jirafe_analytics/curl::heartbeat</model>
                 </run>
             </jirafe_analytics_heartbeat>
         </jobs>
     </crontab>
+    <api>
+        <resources>
+            <jirafe_analytics translate="title" module="jirafe_analytics">
+                <title>Jirafe Analytics Field Mapping</title>
+                <methods>
+                    <options translate="title" module="jirafe_analytics">
+                        <title>Get Options</title>
+                    </options>
+                    <update translate="title" module="jirafe_analytics">
+                        <title>Update Mapping</title>
+                    </update>
+                </methods>
+                <faults module="jirafe_analytics">
+                    <invalid_json>
+                        <code>100</code >
+                        <message>Invalid JSON.</message>
+                    </invalid_json>
+                    <invalid_element>
+                        <code>101</code >
+                        <message>Invalid element.</message>
+                    </invalid_element>
+                    <invalid_key>
+                        <code>102</code >
+                        <message>Invalid key.</message>
+                    </invalid_key>
+                    <invalid_field>
+                        <code>102</code >
+                        <message>Invalid Magento field.</message>
+                    </invalid_field>
+                    <not_updated>
+                        <code>103</code >
+                        <message>Error. Field mapping was not successful.</message>
+                    </not_updated>
+                </faults>
+            </jirafe_analytics>
+        </resources>
+        <acl>
+            <resources>
+                    <jirafe_analytics translate="title" module="jirafe_analytics">
+                         <options translate="title" module="jirafe_analytics">
+                        <title>Get Options</title>
+                    </options>
+                    <update translate="title" module="jirafe_analytics">
+                        <title>Update Mapping</title>
+                    </update>
+                    </jirafe_analytics>
+            </resources>
+        </acl>
+    </api>
 </config>

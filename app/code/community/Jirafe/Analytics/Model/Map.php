@@ -428,7 +428,7 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
      * @throws Exception if unable to update field map
      */
     
-    public function update( $json = null)
+    public function updateMap( $json = null)
     {
         try {
             if ( $json ) {
@@ -437,15 +437,15 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
                 
                 if ( !$this->_validateElement( $params ) ) {
                     
-                    return $this->_getJsonResponse( false, 'validation', 'Invalid element.' );
+                    return 'invalid_element';
                     
                 } else if ( !$this->_validateKey( $params ) ) {
                     
-                    return $this->_getJsonResponse( false, 'validation', 'Invalid key.' );
+                    return 'invalid_key';
                 
                 } else if ( !$this->_validateField( $params ) ) {
                     
-                    return $this->_getJsonResponse( false, 'validation', 'Invalid Magento field name.' );
+                    return 'invalid_field';
                     
                 } else {
                     
@@ -471,19 +471,19 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
                         
                         Mage::register('jirafe_analytics_regenerate_map', true);
                         
-                        return $this->_getJsonResponse( true, null, null  );
+                        return 'success';
                         
                     } else {
                         
                         $this->_log('ERROR', 'Jirafe_Analytics_Model_Map::_getField()', 'Unable to update field map. Request JSON=' . $json);
                         
-                        return $this->_getJsonResponse( false, 'validation', 'Server field mapping error.' );
+                        return 'not_updated';
                     }
                         
                 }
             } else {
                 
-                 return $this->_getJsonResponse( false, 'validation', 'Invalid request.' );
+                 return 'invalid_json';
                  
             }
             
@@ -497,22 +497,17 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
      * 
      * @param string $success
      * @param string $errorType
-     * @param string $message
      * @return json
      * @throws Exception if unable generate JSON response message
      */
     
-    protected function _getJsonResponse( $success = false, $errorType = null , $message = null  ) 
+    protected function _getJsonResponse( $success = false, $errorType = null ) 
     {
         try {
             $response = array( 'success' => $success );
             
             if ( $errorType ) {
                 $response['error_type'] = $errorType;
-            }
-            
-            if ( $message ) {
-                $response['message'] = $message;
             }
             
             return json_encode( $response );

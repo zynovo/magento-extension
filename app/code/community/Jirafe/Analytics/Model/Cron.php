@@ -65,7 +65,7 @@ class Jirafe_Analytics_Model_Queue extends Jirafe_Analytics_Model_Abstract
                 $data->limit($this->maxRecords);
             }
             
-            $response = Mage::getModel('jirafe_analytics/curl')->sendJson( $data->query() );
+            $response = Mage::getModel('jirafe_analytics/curl_feed')->send( $data->query() );
             
             /**
              * Record API attempt. 
