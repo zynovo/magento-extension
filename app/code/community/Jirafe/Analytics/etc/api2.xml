@@ -15,9 +15,18 @@
                 <privileges>
                     <admin>
                         <retrieve>1</retrieve>
+                        <update>1</update>
                     </admin>
                 </privileges>
                 <routes>
+                    <route_entity>
+                        <route>/jirafe_analytics/map/:id</route>
+                        <action_type>entity</action_type>
+                    </route_entity>
+                    <route_entity_with_element>
+                        <route>/jirafe_analytics/map/element/:element</route>
+                        <action_type>collection</action_type>
+                    </route_entity_with_element>
                     <route_collection>
                         <route>/jirafe_analytics/map</route>
                         <action_type>collection</action_type>

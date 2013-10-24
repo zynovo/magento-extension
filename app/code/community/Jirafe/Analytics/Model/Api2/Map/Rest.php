@@ -19,16 +19,16 @@ class Jirafe_Analytics_Model_Api2_Map_Rest extends Jirafe_Analytics_Model_Api2_M
      */
     protected function _retrieve()
     {
-        $mapId    = $this->getRequest()->getParam('id');
-        $collection = $this->_getCollectionForSingleRetrieve($mapId);
-
-        $map = $collection->getItemById($mapId);
-
-        if (!$map) {
+        
+        $mapData = array();
+        $mapId = $this->getRequest()->getParam('id');
+        $mapData = Mage::getModel('jirafe_analytics/map')->load($mapId)->getData();
+        
+        if (!$mapData) {
             $this->_critical(self::RESOURCE_NOT_FOUND);
         }
         
-        $mapData = $map->getData();
+
       
         return $mapData;
     }
