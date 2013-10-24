@@ -337,7 +337,7 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
         try {
         if ( $params ) {
                 $count = $this->getCollection()
-                        ->addFieldToFilter( '`element`', $params->element )
+                        ->addFieldToFilter( '`element`', $params['element'] )
                         ->getSize();
                 
                 return $count ? true : false;
@@ -362,8 +362,8 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
         try {
             if ( $params ) {
                 $count = $this->getCollection()
-                ->addFieldToFilter( '`element`', $params->element )
-                ->addFieldToFilter( '`key`', $params->key )
+                ->addFieldToFilter( '`element`', $params['element'] )
+                ->addFieldToFilter( '`key`', $params['key'] )
                 ->getSize();
                 
                 return $count ? true : false;
@@ -387,8 +387,8 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
     {
         try {
             if ( $params ) {
-                $fields = $this->_getMagentoFieldsByElement( $params->element );
-                return array_search( $params->magento, $fields[ $params->element ] ) ? true : false;
+                $fields = $this->_getMagentoFieldsByElement( $params['element'] );
+                return is_numeric(array_search( $params['magento'], $fields )) ? true : false;
             } else {
                 return false;
             }
@@ -410,8 +410,8 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
         try {
             if ( $params ) {
                 return $this->getCollection()
-                        ->addFieldToFilter( '`element`', $params->element )
-                        ->addFieldToFilter( '`key`', $params->key )
+                        ->addFieldToFilter( '`element`', $params['element'] )
+                        ->addFieldToFilter( '`key`', $params['key'])
                         ->getFirstItem();
             } else {
                 return null;
@@ -428,12 +428,10 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
      * @throws Exception if unable to update field map
      */
     
-    public function updateMap( $json = null)
+    public function updateMap( $params = null)
     {
         try {
-            if ( $json ) {
-                
-                $params = json_decode( $json );
+            if ( $params ) {
                 
                 if ( !$this->_validateElement( $params ) ) {
                     
@@ -451,26 +449,27 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
                     
                     if ( $field = $this->_getField( $params ) ) {
                         
-                        if ( $api = trim($params->api) ) {
+                        if ( $api = trim($params['api']) ) {
                             $field->setApi($api);
                         }
                         
-                        if ( $magento = trim($params->magento) ) {
+                        if ( $magento = trim($params['magento']) ) {
                             $field->setMagento($magento);
                         }
                         
-                        if ( $type = trim($params->type) ) {
+                        if ( $type = trim($params['type']) ) {
                             $field->setType($type);
                         }
                         
-                        if ( $default = trim($params->default) ) {
+                        if ( $default = trim($params['default']) ) {
                             $field->setDefault($default);
                         }
                         $field->setUpdatedDt( $this->_getCreatedDt() );
                         $field->save();
                         
-                        Mage::register('jirafe_analytics_regenerate_map', true);
-                        
+                        if (Mage::registry('jirafe_analytics_map')) {
+                           Mage::unregister('jirafe_analytics_map');
+                        }
                         return 'success';
                         
                     } else {
@@ -520,56 +519,4 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
     }
     
     
-    /**
-     * Get all Magento field mapping options
-     *
-     * @return string
-     * @throws Exception if unable to return array of fields
-     */
-    
-    public function getOptions()
-    {
-        try {
-            
-            $map = array();
-            $quote = Mage::getModel('sales/quote')->getCollection()->getFirstItem();
-            
-            if ( $cart = $this->_getCartFields( $quote ) ) {
-                $map['cart'] = $cart;
-            }
-            
-            if ( $cartItem = $this->_getCartItemFields( $quote ) ) {
-                $map['cart_item'] = $cartItem;
-            }
-            
-            if ( $category = $this->_getCategoryFields() ) {
-                $map['category'] = $category;
-            }
-            
-            if ( $customer = $this->_getCustomerFields() ) {
-                $map['customer'] = $customer;
-            }
-            
-            if ( $employee = $this->_getEmployeeFields() ) {
-                $map['employee'] = $employee;
-            }
-            
-            if ( $order = $this->_getOrderFields() ) {
-                $map['order'] = $order;
-            }
-            
-            if ( $orderItem = $this->_getOrderItemFields() ) {
-                $map['order_item'] = $orderItem;
-            }
-            
-            if ( $product = $this->_getProductFields() ) {
-                $map['product'] = $product;
-            }
-            
-            return json_encode($map);
-        } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map::options(): ' . $e->getMessage());
-        }
-         
-    }
 }

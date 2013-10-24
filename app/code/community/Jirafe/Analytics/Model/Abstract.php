@@ -26,16 +26,9 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
     {
         try {
             
-                                            
-            if (!$this->_rootMap = Mage::registry('jirafe_analytics_map') 
-                                            || $regenerate = Mage::registry('jirafe_analytics_regenerate_map') ) {
-                
+            if (!$this->_rootMap = Mage::registry('jirafe_analytics_map') ) {
                 $this->_rootMap = Mage::getModel('jirafe_analytics/map')->getArray();
                 Mage::register('jirafe_analytics_map', $this->_rootMap);
-                
-                if ($regenerate) {
-                    Mage::register('jirafe_analytics_regenerate_map');
-                }
             }
         } catch (Exception $e) {
             Mage::throwException('FIELD MAPPING ERROR Jirafe_Analytics_Model_Abstract::_getMap(): ' . $e->getMessage());
