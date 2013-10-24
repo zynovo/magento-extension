@@ -1,0 +1,78 @@
+<config>
+    <api>
+        <resources>
+            <jirafe_analytics translate="title" module="jirafe_analytics">
+                <model>jirafe_analytics/api</model>
+                <title>Map API</title>
+                <acl>jirafe_analytics/map</acl>
+                <methods>
+                    <update translate="title" module="jirafe_analytics">
+                        <title>Update map</title>
+                        <method>update</method>
+                        <acl>jirafe_analytics/map/options</acl>
+                    </update>
+                    <options translate="title" module="jirafe_analytics">
+                        <title>Retrieve map options</title>
+                        <acl>jirafe_analytics/map/options</acl>
+                    </options>
+                </methods>
+                <faults module="jirafe_analytics">
+                    <not_exists>
+                        <code>100</code>
+                        <message>Requested order not exists.</message>
+                    </not_exists>
+                    <filters_invalid>
+                        <code>101</code>
+                        <message>Invalid filters given. Details in error message.</message>
+                    </filters_invalid>
+                    <data_invalid>
+                        <code>102</code>
+                        <message>Invalid data given. Details in error message.</message>
+                    </data_invalid>
+                    <status_not_changed>
+                        <code>103</code>
+                        <message>Order status not changed. Details in error message.</message>
+                    </status_not_changed>
+                </faults>
+            </jirafe_analytics>
+        </resources>
+        <resources_alias>
+            <map>jirafe_analytics</map>
+        </resources_alias>
+        <v2>
+            <resources_function_prefix>
+                <map>jirafeAnalticsMap</map>
+            </resources_function_prefix>
+        </v2>
+        <rest>
+            <mapping>
+                <sales_order>
+                    <delete>
+                        <method>cancel</method>
+                    </delete>
+                    <post>
+                        <resource>cart</resource>
+                        <method>order</method>
+                    </post>
+                </sales_order>
+            </mapping>
+        </rest>
+        <acl>
+            <resources>
+                <jirafe_analytics translate="title" module="jirafe_analytics">
+                    <title>Map</title>
+                    <sort_order>2</sort_order>
+                    <map translate="title" module="jirafe_analytics">
+                        <title>Map</title>
+                        <collection translate="title" module="jirafe_analytics">
+                            <title>Retrieve current map</title>
+                        </collection>
+                        <options translate="title" module="jirafe_analytics">
+                            <title>Retrieve map options</title>
+                        </options>
+                    </map>
+                </jirafe_analytics>
+            </resources>
+        </acl>
+    </api>
+</config>

@@ -1,0 +1,44 @@
+<config>
+    <api2>
+        <resource_groups>
+            <map translate="title" module="jirafe_analytics">
+                <title>Map</title>
+                <sort_order>9999</sort_order>
+            </map>
+        </resource_groups>
+        <resources>
+            <map translate="title" module="jirafe_analytics">
+                <group>map</group>
+                <sort_order>10</sort_order>
+                <model>jirafe_analytics/api2_map</model>
+                <title>Map</title>
+                <privileges>
+                    <admin>
+                        <retrieve>1</retrieve>
+                    </admin>
+                    <customer>
+                        <retrieve>1</retrieve>
+                    </customer>
+                </privileges>
+                <routes>
+                    <route_collection>
+                        <route>/map</route>
+                        <action_type>collection</action_type>
+                    </route_collection>
+                </routes>
+                <attributes module="jirafe_analytics">
+                    <id>Id (internal)</id>
+                    <element>Element</element>
+                    <key>Key</key>
+                    <api>API</api>
+                    <magento>Magento</magento>
+                    <type>Type</type>
+                    <default>Default</default>
+                    <created_ts>Created Date</created_ts>
+                    <updated_dt>Updated Date</updated_dt>
+                </attributes>
+                <versions>1</versions>
+            </map>
+        </resources>
+    </api2>
+</config>
