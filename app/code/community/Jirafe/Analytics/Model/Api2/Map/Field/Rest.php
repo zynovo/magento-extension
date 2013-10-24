@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Api2 Map Rest Customer V1 Model
+ * Api2 Map Field Rest Model
  *
  * @category  Jirafe
  * @package   Jirafe_Analytics
@@ -9,7 +9,6 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Model_Api2_Map_Rest_Customer_V1 extends Jirafe_Analytics_Model_Api2_Map_Rest
+class Jirafe_Analytics_Model_Api2_Map_Field_Rest extends Jirafe_Analytics_Model_Api2_Map_Field
 {
-    
 }

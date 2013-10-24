@@ -19,10 +19,27 @@ class Jirafe_Analytics_Model_Api2_Map extends Mage_Api2_Model_Resource
      */
     protected function _retrieveCollection()
     {
-        $collection = Mage::getModel('jirafe_analytics/map')->getCollection();
+        $collection = Mage::getModel('jirafe_analytics/map')
+            ->getCollection();
         $mapData = array();
         
          foreach ($collection->getItems() as $field) {
+            $mapData[] = $field->toArray();
+        }
+        return $mapData;
+    }
+    
+    /**
+     * Get Magento field options
+     *
+     * @return array
+     */
+    protected function _retrieveOptions()
+    {
+        $collection = Mage::getModel('jirafe_analytics/map')->getCollection();
+        $mapData = array();
+    
+        foreach ($collection->getItems() as $field) {
             $mapData[] = $field->toArray();
         }
         return $mapData;

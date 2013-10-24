@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Api2 Rest Model
+ * Api2 Map Rest Model
  *
  * @category  Jirafe
  * @package   Jirafe_Analytics

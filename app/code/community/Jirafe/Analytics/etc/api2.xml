@@ -1,14 +1,14 @@
 <config>
     <api2>
         <resource_groups>
-            <map translate="title" module="jirafe_analytics">
-                <title>Map</title>
+            <jirafe_analytics translate="title" module="jirafe_analytics">
+                <title>Jirafe Analytics</title>
                 <sort_order>9999</sort_order>
-            </map>
+            </jirafe_analytics>
         </resource_groups>
         <resources>
             <map translate="title" module="jirafe_analytics">
-                <group>map</group>
+                <group>jirafe_analytics</group>
                 <sort_order>10</sort_order>
                 <model>jirafe_analytics/api2_map</model>
                 <title>Map</title>
@@ -16,13 +16,10 @@
                     <admin>
                         <retrieve>1</retrieve>
                     </admin>
-                    <customer>
-                        <retrieve>1</retrieve>
-                    </customer>
                 </privileges>
                 <routes>
                     <route_collection>
-                        <route>/map</route>
+                        <route>/jirafe_analytics/map</route>
                         <action_type>collection</action_type>
                     </route_collection>
                 </routes>
@@ -39,6 +36,33 @@
                 </attributes>
                 <versions>1</versions>
             </map>
+            <field translate="title" module="jirafe_analytics">
+                <group>jirafe_analytics</group>
+                <sort_order>20</sort_order>
+                <model>jirafe_analytics/api2_map_field</model>
+                <title>Field</title>
+                <privileges>
+                    <admin>
+                        <retrieve>1</retrieve>
+                    </admin>
+                </privileges>
+                <routes>
+                    <route_collection>
+                        <route>/jirafe_analytics/map_fields</route>
+                        <action_type>collection</action_type>
+                    </route_collection>
+                </routes>
+                <attributes module="jirafe_analytics">
+                    <cart>Cart</cart>
+                    <cart_item>Cart Item</cart_item>
+                    <catalog>Catalog</catalog>
+                    <customer>Customer</customer>
+                    <employee>Employee</employee>
+                    <order>Order</order>
+                    <order_item>Order Item</order_item>
+                </attributes>
+                <versions>1</versions>
+            </field>
         </resources>
     </api2>
 </config>
