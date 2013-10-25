@@ -9,7 +9,7 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Model_Api2_Map_Field extends Mage_Api2_Model_Resource
+class Jirafe_Analytics_Model_Api2_Map_Field extends Jirafe_Analytics_Model_Api2_Map
 {
     
    /**

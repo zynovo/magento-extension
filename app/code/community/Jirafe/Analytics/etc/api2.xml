@@ -20,7 +20,7 @@
                 </privileges>
                 <routes>
                     <route_entity>
-                        <route>/jirafe_analytics/map/:id</route>
+                        <route>/jirafe_analytics/map/element/:element/key/:key</route>
                         <action_type>entity</action_type>
                     </route_entity>
                     <route_entity_with_element>

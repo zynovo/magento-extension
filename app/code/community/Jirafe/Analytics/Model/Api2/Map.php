@@ -9,32 +9,6 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Model_Api2_Map extends Mage_Api2_Model_Resource
+class Jirafe_Analytics_Model_Api2_Map extends Jirafe_Analytics_Model_Api2_Resource
 {
-    
-   /**
-     * Get current map
-     *
-     * @return array
-     */
-    protected function _retrieveCollection()
-    {
-        $mapData = array();
-        
-        if ($element = $this->getRequest()->getParam('element')) {
-            $collection = Mage::getModel('jirafe_analytics/map')
-                ->getCollection()
-                ->addFieldToFilter('element',$element);
-        } else {
-            $collection = Mage::getModel('jirafe_analytics/map')
-                ->getCollection();
-        }
-        
-         foreach ($collection->getItems() as $field) {
-            $mapData[] = $field->toArray();
-        }
-        
-        return $mapData;
-    }
-    
 }

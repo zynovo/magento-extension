@@ -332,12 +332,12 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
      * @throws Exception if unable to validate element identifier
      */
     
-    protected function _validateElement( $params = null )
+    public function validateElement( $element )
     {
         try {
-        if ( $params ) {
+        if ( $element ) {
                 $count = $this->getCollection()
-                        ->addFieldToFilter( '`element`', $params['element'] )
+                        ->addFieldToFilter( '`element`', $element )
                         ->getSize();
                 
                 return $count ? true : false;
@@ -346,7 +346,7 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
             }
     
         } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map::_validateElement(): ' . $e->getMessage());
+            Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map::validateElement(): ' . $e->getMessage());
         }
     }
     
@@ -357,13 +357,13 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
      * @throws Exception if unable to validate key
      */
     
-    protected function _validateKey( $params = null )
+    public function validateKey( $element, $key )
     {
         try {
-            if ( $params ) {
+            if ( $element && $key) {
                 $count = $this->getCollection()
-                ->addFieldToFilter( '`element`', $params['element'] )
-                ->addFieldToFilter( '`key`', $params['key'] )
+                ->addFieldToFilter( '`element`', $element )
+                ->addFieldToFilter( '`key`', $key )
                 ->getSize();
                 
                 return $count ? true : false;
@@ -372,7 +372,7 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
             }
             
         } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map::_validateKey(): ' . $e->getMessage());
+            Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map::validateKey(): ' . $e->getMessage());
         }
     }
     
@@ -383,71 +383,74 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
      * @throws Exception if unable to validate field name
      */
     
-    protected function _validateField( $params = null )
+    public function validateField( $element, $field )
     {
         try {
-            if ( $params ) {
-                $fields = $this->_getMagentoFieldsByElement( $params['element'] );
-                return is_numeric(array_search( $params['magento'], $fields )) ? true : false;
+            if ( $element && $field ) {
+                $fields = $this->_getMagentoFieldsByElement( $element ); 
+                return in_array( $field, $fields );
             } else {
                 return false;
             }
         
         } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map::_validateField(): ' . $e->getMessage());
+            Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map::validateField(): ' . $e->getMessage());
         }
     }
     
     /**
-     * Get field object to update
+     * Get field map object to update
      *
      * @return Jirafe_Analytics_Model_Map
      * @throws Exception if unable to query db for field object
      */
     
-    protected function _getField( $params = null )
+    public function getMapByElementKey( $element, $key )
     {
         try {
-            if ( $params ) {
+            if ( $element && $key ) {
                 return $this->getCollection()
-                        ->addFieldToFilter( '`element`', $params['element'] )
-                        ->addFieldToFilter( '`key`', $params['key'])
+                        ->addFieldToFilter( '`element`', $element )
+                        ->addFieldToFilter( '`key`', $key )
                         ->getFirstItem();
             } else {
                 return null;
             }
         } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map::_getField(): ' . $e->getMessage());
+            Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map::getMap(): ' . $e->getMessage());
         }
     }
     
     /**
      * Update field map
      *
-     * @return json
+     * @return array
      * @throws Exception if unable to update field map
      */
     
     public function updateMap( $params = null)
     {
         try {
+            Mage::log($params);
             if ( $params ) {
+                if ( empty($params['element']) || empty($params['key']) || empty($params['api']) || empty($params['magento']) ) {
+                    return array('success' => false, 'message' => Jirafe_Analytics_Model_Api2_Resource::FIELD_MAPPING_REQUEST_DATA_INVALID);
+                    
+                } else if ( !$this->_validateField( $params['magento'] ) ) {
+                     
+                    return array('success' => false, 'message' => Jirafe_Analytics_Model_Api2_Resource::FIELD_MAPPING_ERROR_INVALID_FIELD);
+                    
+                } else if ( !$this->_validateElement( $params['element'] ) ) {
+                    
+                    return array('success' => false, 'message' => Jirafe_Analytics_Model_Api2_Resource::FIELD_MAPPING_ERROR_INVALID_ELEMENT);
                 
-                if ( !$this->_validateElement( $params ) ) {
-                    
-                    return 'invalid_element';
-                    
-                } else if ( !$this->_validateKey( $params ) ) {
-                    
-                    return 'invalid_key';
+                } else if ( !$this->_validateKey( $params['element'], $params['key']) ) {
                 
-                } else if ( !$this->_validateField( $params ) ) {
-                    
-                    return 'invalid_field';
-                    
+                    return array('success' => false, 'message' => Jirafe_Analytics_Model_Api2_Resource::FIELD_MAPPING_ERROR_INVALID_KEY);
+                
                 } else {
                     
-                    if ( $field = $this->_getField( $params ) ) {
+                    if ( $field = $this->_getField($params) ) {
                         
                         if ( $api = trim($params['api']) ) {
                             $field->setApi($api);
@@ -470,19 +473,19 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
                         if (Mage::registry('jirafe_analytics_map')) {
                            Mage::unregister('jirafe_analytics_map');
                         }
-                        return 'success';
+                        return array('success' => true, 'message' => Jirafe_Analytics_Model_Api2_Resource::FIELD_MAPPING_UPDATE_SUCCESSFUL);
                         
                     } else {
                         
                         $this->_log('ERROR', 'Jirafe_Analytics_Model_Map::_getField()', 'Unable to update field map. Request JSON=' . $json);
                         
-                        return 'not_updated';
+                        return array('success' => false, 'message' => Jirafe_Analytics_Model_Api2_Resource::RESOURCE_UNKNOWN_ERROR);
                     }
                         
                 }
             } else {
                 
-                 return 'invalid_json';
+                 return array('success' => false, 'message' => Jirafe_Analytics_Model_Api2_Resource::FIELD_MAPPING_REQUEST_DATA_INVALID);
                  
             }
             
@@ -490,33 +493,4 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
             Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map::update(): ' . $e->getMessage());
         }
     }
-    
-    /**
-     * Generate JSON response message
-     * 
-     * @param string $success
-     * @param string $errorType
-     * @return json
-     * @throws Exception if unable generate JSON response message
-     */
-    
-    protected function _getJsonResponse( $success = false, $errorType = null ) 
-    {
-        try {
-            $response = array( 'success' => $success );
-            
-            if ( $errorType ) {
-                $response['error_type'] = $errorType;
-            }
-            
-            return json_encode( $response );
-            
-         } catch (Exception $e) {
-             
-            Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map::_getJsonResponse(): ' . $e->getMessage());
-            
-        }
-    }
-    
-    
 }
