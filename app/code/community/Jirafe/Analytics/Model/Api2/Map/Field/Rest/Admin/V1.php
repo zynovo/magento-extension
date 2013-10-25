@@ -11,5 +11,4 @@
 
 class Jirafe_Analytics_Model_Api2_Map_Field_Rest_Admin_V1 extends Jirafe_Analytics_Model_Api2_Map_Field_Rest
 {
-    
 }

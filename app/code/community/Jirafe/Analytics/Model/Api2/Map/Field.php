@@ -11,15 +11,4 @@
 
 class Jirafe_Analytics_Model_Api2_Map_Field extends Jirafe_Analytics_Model_Api2_Map
 {
-    
-   /**
-     * Get array of optional Magneto fields
-     *
-     * @return array
-     */
-    protected function _retrieveCollection()
-    {
-        return Mage::getModel('jirafe_analytics/map_field')->getArray();
-    }
-    
 }

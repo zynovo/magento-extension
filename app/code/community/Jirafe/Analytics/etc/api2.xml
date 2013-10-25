@@ -33,7 +33,6 @@
                     </route_collection>
                 </routes>
                 <attributes module="jirafe_analytics">
-                    <id>Id (internal)</id>
                     <element>Element</element>
                     <key>Key</key>
                     <api>API</api>
