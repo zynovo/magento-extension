@@ -13,6 +13,8 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
 {
     protected $_magentoFields = null;
     
+    const VALID_FIELD_TYPES =  '|string|int|float|boolean|';
+    
     /**
      * Class construction & resource initialization
      */
@@ -422,75 +424,13 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
     }
     
     /**
-     * Update field map
+     * Current DataTime in UTC/GMT to avoid MySQL possible timezone configuration issues
      *
-     * @return array
-     * @throws Exception if unable to update field map
+     * @return string
      */
     
-    public function updateMap( $params = null)
+    public function getCreatedDt()
     {
-        try {
-            Mage::log($params);
-            if ( $params ) {
-                if ( empty($params['element']) || empty($params['key']) || empty($params['api']) || empty($params['magento']) ) {
-                    return array('success' => false, 'message' => Jirafe_Analytics_Model_Api2_Resource::FIELD_MAPPING_REQUEST_DATA_INVALID);
-                    
-                } else if ( !$this->_validateField( $params['magento'] ) ) {
-                     
-                    return array('success' => false, 'message' => Jirafe_Analytics_Model_Api2_Resource::FIELD_MAPPING_ERROR_INVALID_FIELD);
-                    
-                } else if ( !$this->_validateElement( $params['element'] ) ) {
-                    
-                    return array('success' => false, 'message' => Jirafe_Analytics_Model_Api2_Resource::FIELD_MAPPING_ERROR_INVALID_ELEMENT);
-                
-                } else if ( !$this->_validateKey( $params['element'], $params['key']) ) {
-                
-                    return array('success' => false, 'message' => Jirafe_Analytics_Model_Api2_Resource::FIELD_MAPPING_ERROR_INVALID_KEY);
-                
-                } else {
-                    
-                    if ( $field = $this->_getField($params) ) {
-                        
-                        if ( $api = trim($params['api']) ) {
-                            $field->setApi($api);
-                        }
-                        
-                        if ( $magento = trim($params['magento']) ) {
-                            $field->setMagento($magento);
-                        }
-                        
-                        if ( $type = trim($params['type']) ) {
-                            $field->setType($type);
-                        }
-                        
-                        if ( $default = trim($params['default']) ) {
-                            $field->setDefault($default);
-                        }
-                        $field->setUpdatedDt( $this->_getCreatedDt() );
-                        $field->save();
-                        
-                        if (Mage::registry('jirafe_analytics_map')) {
-                           Mage::unregister('jirafe_analytics_map');
-                        }
-                        return array('success' => true, 'message' => Jirafe_Analytics_Model_Api2_Resource::FIELD_MAPPING_UPDATE_SUCCESSFUL);
-                        
-                    } else {
-                        
-                        $this->_log('ERROR', 'Jirafe_Analytics_Model_Map::_getField()', 'Unable to update field map. Request JSON=' . $json);
-                        
-                        return array('success' => false, 'message' => Jirafe_Analytics_Model_Api2_Resource::RESOURCE_UNKNOWN_ERROR);
-                    }
-                        
-                }
-            } else {
-                
-                 return array('success' => false, 'message' => Jirafe_Analytics_Model_Api2_Resource::FIELD_MAPPING_REQUEST_DATA_INVALID);
-                 
-            }
-            
-        } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map::update(): ' . $e->getMessage());
-        }
+        parent::_getCreatedDt();
     }
 }

@@ -14,11 +14,11 @@ abstract class Jirafe_Analytics_Model_Api2_Resource extends Mage_Api2_Model_Reso
     /**
      *  Default error messages
      */
-    const FIELD_MAPPING_ERROR_INVALID_ELEMENT = 'Field mapping error: invalid element.';
-    const FIELD_MAPPING_ERROR_INVALID_KEY = 'Field mapping error: invalid key.';
-    const FIELD_MAPPING_ERROR_INVALID_FIELD = 'Field mapping error: invalid element.';
-    const FIELD_MAPPING_REQUEST_DATA_INVALID = 'The field mapping request data is invalid.';
-
+    const FIELD_MAPPING_ERROR_INVALID_ELEMENT = 'Invalid element.';
+    const FIELD_MAPPING_ERROR_INVALID_KEY = 'Invalid key.';
+    const FIELD_MAPPING_ERROR_INVALID_TYPE = 'Invalid type. Must be either string, int, float or boolean.';
+    const FIELD_MAPPING_ERROR_INVALID_FIELD = 'Invalid element.';
+    const FIELD_MAPPING_REQUEST_DATA_INVALID = 'Request data is invalid.';
     
     /**
      *  Default success messages
@@ -89,6 +89,7 @@ abstract class Jirafe_Analytics_Model_Api2_Resource extends Mage_Api2_Model_Reso
                 self::FIELD_MAPPING_ERROR_INVALID_ELEMENT => Mage_Api2_Model_Server::HTTP_BAD_REQUEST,
                 self::FIELD_MAPPING_ERROR_INVALID_KEY => Mage_Api2_Model_Server::HTTP_BAD_REQUEST,
                 self::FIELD_MAPPING_ERROR_INVALID_FIELD => Mage_Api2_Model_Server::HTTP_BAD_REQUEST,
+                self::FIELD_MAPPING_ERROR_INVALID_TYPE => Mage_Api2_Model_Server::HTTP_BAD_REQUEST,
                 self::FIELD_MAPPING_REQUEST_DATA_INVALID => Mage_Api2_Model_Server::HTTP_BAD_REQUEST,
             ));
     }

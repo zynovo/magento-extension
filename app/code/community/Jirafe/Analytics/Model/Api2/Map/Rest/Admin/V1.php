@@ -19,17 +19,45 @@ class Jirafe_Analytics_Model_Api2_Map_Rest_Admin_V1 extends Jirafe_Analytics_Mod
      */
     protected function _update(array $data)
     {
+        $map = $this->_getMap();
+        $obj = Mage::getSingleton('jirafe_analytics/map');
+        $element = $this->getRequest()->getParam('element');
+        $magento = isset($data['magento']) ? trim($data['magento']) : '';
+        $continue = true;
         
-        $result = Mage::getModel('jirafe_analytics/map')->updateMap( $data );
-        
-        if ($result['success']) {
-            $this->_successMessage( $result['message'], Mage_Api2_Model_Server::HTTP_OK );
+        if ( $magento && $element && !$obj->validateField( $element, $magento ) ) {
+            $this->_critical( self::FIELD_MAPPING_ERROR_INVALID_FIELD );
         } else {
-            $this->_critical( $result['message'] );
+            $api = isset($data['api']) ? strtolower( trim($data['api']) ) : '';
+            $type = isset($data['type']) ? strtolower( trim($data['type']) ) : '';
+            $default = isset($data['default']) ? trim($data['default']) : '';
+            
+            
+            if ( $type ) {
+                if ( strrpos(Jirafe_Analytics_Model_Map::VALID_FIELD_TYPES, $type) ) {
+                    $map->setType( $type );
+                } else {
+                    $this->_critical( self::FIELD_MAPPING_ERROR_INVALID_TYPE );
+                    $continue = false;
+                }
+            }
+            
+            if ( $api) {
+                $map->setApi( $api );
+            }
+            
+            if ( $continue ) {
+                $map->setDefault( $default );
+                $map->setMagento( $magento );
+                $map->setUpdatedDt( $obj->getCreatedDt() );
+                $map->save();
+                
+                $this->_successMessage( self::FIELD_MAPPING_UPDATE_SUCCESSFUL, Mage_Api2_Model_Server::HTTP_OK );
+                
+                if (Mage::registry('jirafe_analytics_map')) {
+                    Mage::unregister('jirafe_analytics_map');
+                }
+            }
         }
-       
     }
-    
-    
-    
 }
