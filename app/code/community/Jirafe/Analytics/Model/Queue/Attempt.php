@@ -55,7 +55,7 @@ class Jirafe_Analytics_Model_Queue_Attempt extends Jirafe_Analytics_Model_Abstra
                 
                 return true;
             } else {
-                Mage::log('QUEUE ATTEMPT ERROR Jirafe_Analytics_Model_Queue_Attempt::add(): empty attempt record.',null,'jirafe_analytics.log');
+                $this->_log( 'ERROR', 'Jirafe_Analytics_Model_Queue_Attempt::add()' , 'Empty attempt record.');
                 return false;
             }
         } catch (Exception $e) {

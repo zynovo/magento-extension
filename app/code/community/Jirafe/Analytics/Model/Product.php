@@ -247,7 +247,6 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             if ( $product ) {
                 $attributes = $product->getAttributes();
                 $magnetoFields = $this->_getMagentoFieldsByElement( 'product' );
-                Mage::log($magnetoFields,null,'attributes.log');
                 $obj = array();
                 foreach ( $attributes as $attribute ) {
                     if ( $attribute->getAttributeId() && $value = $attribute->getFrontend()->getValue( $product ) && !array_search($attribute->getAttributeCode(), $magnetoFields)) {

@@ -69,7 +69,7 @@ class Jirafe_Analytics_Block_Beacon extends Mage_Core_Block_Template
                 return "search";
                 break;
             default:
-                return "$module_$controller";
+                return $module . '_' . $controller;
             break;
         }
     }

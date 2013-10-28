@@ -41,6 +41,7 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
                         $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
                         'order_item_number' => "$count",
                         $fieldMap['quantity']['api'] => $fieldMap['quantity']['magento'],
+                        'status' => 'accepted',
                         $fieldMap['price']['api'] => $fieldMap['price']['magento'],
                         $fieldMap['discount_price']['api'] => $fieldMap['discount_price']['magento'],
                         'product' => Mage::getModel('jirafe_analytics/product')->getArray( $item['product_id'], false )
@@ -53,7 +54,7 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
                 return array();
             }
         } catch (Exception $e) {
-            Mage::log('ERROR Jirafe_Analytics_Model_Cart_Item::getItems(): ' . $e->getMessage(),null,'jirafe_analytics.log');
+             Mage::throwException('ORDER ITEM ERROR Jirafe_Analytics_Model_Cart_Item::getItems(): ' . $e->getMessage());
             return false;
         }
        

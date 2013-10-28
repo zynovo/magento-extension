@@ -56,7 +56,7 @@ class Jirafe_Analytics_Model_Map_Field extends Jirafe_Analytics_Model_Abstract
             if ( $product = $this->_getProductFields() ) {
                 $map['product'] = implode( ',', $product );
             }
-            Mage::log($map);
+            
             return $map;
         } catch (Exception $e) {
             Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map_Field::getArray(): ' . $e->getMessage());

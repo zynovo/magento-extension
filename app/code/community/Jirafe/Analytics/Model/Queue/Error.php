@@ -47,7 +47,7 @@ class Jirafe_Analytics_Model_Queue_Error extends Jirafe_Analytics_Model_Abstract
                 $this->save();
                 return true;
             } else {
-                Mage::log('QUEUE ERROR ERROR Jirafe_Analytics_Model_Queue_Error::add(): empty attemptrecord.',null,'jirafe_analytics.log');
+                $this->_log( 'ERROR', 'Jirafe_Analytics_Model_Queue_Error::add()' , 'Empty attempt record.');
                 return false;
             }
             
