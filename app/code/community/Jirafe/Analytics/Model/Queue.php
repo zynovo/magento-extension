@@ -65,21 +65,26 @@ class Jirafe_Analytics_Model_Queue extends Jirafe_Analytics_Model_Abstract
                 $data->limit($this->maxRecords);
             }
             
-            $response = Mage::getModel('jirafe_analytics/curl')->sendJson( $data->query() );
-            
             /**
              * Record API attempt. 
              * Update queue with information from attempt
              */
             
-            foreach ($response as $batch) {
-                foreach ($batch as $attempt) {
-                    $this->updateQueue( $attempt );
-                    Mage::getModel('jirafe_analytics/queue_attempt')->add( $attempt );
+            if (  $response = Mage::getModel('jirafe_analytics/curl')->sendJson( $data->query() ) ) {
+                foreach ($response as $batch) {
+                    foreach ($batch as $attempt) {
+                        $this->updateQueue( $attempt );
+                        Mage::getModel('jirafe_analytics/queue_attempt')->add( $attempt );
+                    }
                 }
+                
+                return true;
+            } else {
+                /**
+                 * No data to process
+                 */
+                return false;
             }
-            
-            return true;
         } catch (Exception $e) {
             Mage::throwException('ERROR', 'Jirafe_Analytics_Model_Queue::process()', $e->getMessage());
         }
