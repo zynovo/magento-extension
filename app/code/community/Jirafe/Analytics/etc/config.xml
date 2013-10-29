@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Jirafe_Analytics>
-            <version>0.0.5</version>
+            <version>1.0.0</version>
         </Jirafe_Analytics>
     </modules>
     <global>
@@ -19,18 +19,24 @@
             <jirafe_analytics_resource>
                 <class>Jirafe_Analytics_Model_Resource</class>
                 <entities>
-                    <queue>
-                        <table>jirafe_analytics_queue</table>
-                    </queue>
-                    <queue_attempt>
-                        <table>jirafe_analytics_queue_attempt</table>
-                    </queue_attempt>
-                    <queue_error>
-                        <table>jirafe_analytics_queue_error</table>
-                    </queue_error>
-                    <queue_type>
-                        <table>jirafe_analytics_queue_type</table>
-                    </queue_type>
+                    <batch>
+                        <table>jirafe_analytics_batch</table>
+                    </batch>
+                    <batch_attempt>
+                        <table>jirafe_analytics_batch_attempt</table>
+                    </batch_attempt>
+                    <batch_data>
+                        <table>jirafe_analytics_batch_data</table>
+                    </batch_data>
+                    <batch_error>
+                        <table>jirafe_analytics_batch_error</table>
+                    </batch_error>
+                    <data>
+                        <table>jirafe_analytics_data</table>
+                    </data>
+                    <data_type>
+                        <table>jirafe_analytics_data_type</table>
+                    </data_type>
                     <log>
                         <table>jirafe_analytics_log</table>
                     </log>
@@ -271,14 +277,14 @@
     </adminhtml>
      <crontab>
         <jobs>
-            <jirafe_analytics_process_queue>
+            <jirafe_analytics_process_batch>
                 <schedule>
                     <cron_expr>*/5 * * * *</cron_expr>
                 </schedule>
                 <run>
-                    <model>jirafe_analytics/queue::process</model>
+                    <model>jirafe_analytics/batch::process</model>
                 </run>
-            </jirafe_analytics_process_queue>
+            </jirafe_analytics_process_batch>
             <jirafe_analytics_heartbeat>
                 <schedule>
                     <cron_expr>*/30 * * * *</cron_expr>
@@ -289,4 +295,33 @@
             </jirafe_analytics_heartbeat>
         </jobs>
     </crontab>
+    <default>
+        <jirafe_analytics>
+            <general>
+                <enabled>1</enabled>
+                <org_id>6</org_id>
+                <site_id>9</site_id>
+                <beacon_api>sandbox-beacon.jirafe.net/jirafe_api.js</beacon_api>
+                <event_api_url>sandbox-event-api.jirafe.net/v2/</event_api_url>
+                <access_token>582fc79df0434793ecf74c78cdcedd7ca9f0a119</access_token>
+                <heartbeat_id>1000</heartbeat_id>
+            </general>
+            <debug>
+                <logging>0</logging>
+                <server_load>0</server_load>
+            </debug>
+            <curl>
+                <threading>multi</threading>
+                <threads>5</threads>
+                <max_size>10485760</max_size>
+                <max_attempts>5</max_attempts>
+                <max_records></max_records>
+            </curl>
+            <php>
+                <max_execution_time></max_execution_time>
+                <memory_limit></memory_limit>
+                <proc_nice></proc_nice>
+            </php>
+        </jirafe_analytics>
+    </default>
 </config>

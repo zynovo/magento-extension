@@ -17,7 +17,11 @@
  *  
  *  @property boolean $logging        logging toggle
  *  
- *  @property int $batchSize          number of threads for multithreaded cURL
+ *  @property int $threads            number of threads for multithreaded cURL
+ *  
+ *  @property int $jsonType           batched or single item json
+ *  
+ *  @property int $jsonMaxSize        maximum size of json object in bytes
  *  
  *  @property int $maxExecutionTime   php.ini max_execution_time override
  *  
@@ -43,7 +47,7 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
     
     public $logging = false;
     
-    public $batchSize = null;
+    public $threads = null;
     
     public $maxExecutionTime = null;
     
@@ -87,7 +91,6 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
             
             $this->eventApiUrl = 'https://' . Mage::getStoreConfig('jirafe_analytics/general/event_api_url');
             
-            
             /**
              * Set PHP override properties to Mage::getStoreConfig() values
              */
@@ -101,15 +104,15 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
              */
             
             $this->threading  = Mage::getStoreConfig('jirafe_analytics/curl/threading');
-            $this->batchSize = Mage::getStoreConfig('jirafe_analytics/curl/batch_size');
+            $this->threads = Mage::getStoreConfig('jirafe_analytics/curl/threads');
             $this->maxAttempts = Mage::getStoreConfig('jirafe_analytics/curl/max_attempts');
             
             /**
-             * If batchSize not supplied by user, set to default
+             * If threads not supplied by user, set to default
              */
             
-            if (!is_numeric($this->batchSize)) {
-                $this->batchSize = 5;
+            if (!is_numeric($this->threads)) {
+                $this->threads = 5;
             }
         }
     }
@@ -117,12 +120,12 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
     /**
      * Prepare data to pass to either single of mutli-threaded cURL
      *
-     * @param array $data    data from jirafe_analytics_queue that is ready to be sent to Jirafe
+     * @param array $data    data from jirafe_analytics_batch that is ready to be sent to Jirafe
      * @return array
      * @throws Exception if logging or calling of single or multi-threaded cURL fails
      */
     
-    public function sendJson( $data = null ) 
+    public function sendJson( $rawData = null ) 
     {
         /**
          * @var array $resource   resource info after cURL completion for logging 
@@ -137,22 +140,27 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
             try {
                 
                 /**
-                 * Store curl resource information for queue, queue_attempt and queue_error
+                 * Store curl resource information for batch, batch_attempt and batch_error
                  */
                 
                 $resource = array();
                 
-                if (count( $data )) {
+                if (count( $rawData )) {
                     if ( $this->logging ) {
                         $startTime = time();
                         $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'BEGIN');
                         $this->_logServerLoad( 'Jirafe_Analytics_Model_Curl::sendJson');
                         $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'START TIME = ' . date("H:i:s", $startTime) . ' UTC');
                         $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'EVENT API URL = ' . $this->eventApiUrl);
-                        $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'BATCH SIZE = ' . $this->batchSize);
+                        $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'BATCH SIZE = ' . $this->threads);
                     }
                     
                     $this->_overridePhpSettings();
+                    
+                    /**
+                     * Prepare data as batches of items or single items
+                     */
+                    $data = $this_prepareData( $rawData );
                     
                     /**
                      * Determine CURL method
@@ -169,45 +177,47 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
                         }
                         
                         $count = 1;
-                        $batch = array();
+                        $threadBatch = array();
                         $stop = false;
                         
+                        
+                        
                         /**
-                         * Create batches of URLs and JSON in arrays with $this->batchSize elements
+                         * Create CURL threads
                          */
                         
                         foreach($data as $row) {
                         
-                           if ($count > $this->batchSize) {
-                                $resource[] = $this->_processMulti($batch);
-                                $batch = array();
+                           if ($count > $this->threads) {
+                                $resource[] = $this->_processMulti($threadBatch);
+                                $threadBatch = array();
                                 $count = 1;
                             }
                             
                            $item = array(
-                                'queue_id' => $row['id'],
+                                'batch_id' => $row['id'],
                                 'url' => $this->eventApiUrl . $this->_getSiteId( $row['store_id'] ) . '/' . $row['type'],
                                 'token' => $this->_getAccessToken( $row['store_id'] ),
                                 'json' =>  $row['content'] );
                            
                            if ( $this->logging ) {
-                               $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'QUEUE ID = ' . $item['queue_id'] );
+                               $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'BATCH ID = ' . $item['batch_id'] );
                                $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'ACCESS TOKEN = ' . $item['token'] );
                                $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'EVENT API URL = ' . $item['url'] );
                                $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'JSON = ' . $item['json'] );
                             }
                             
-                            $batch[] = $item;
+                            $threadBatch[] = $item;
                             $count++;
                         }
                         
                         /**
-                         * Final batch may be less than $this->batchSize. 
+                         * Final batch may be less than $this->threads. 
                          * Process batch separately.
                          */
                         
-                        if (count($batch) > 0 && !$stop) {
-                            $resource[] = $this->_processMulti($batch);
+                        if (count($threadBatch) > 0 && !$stop) {
+                            $resource[] = $this->_processMulti($threadBatch);
                         }
                     } else {
                         
@@ -222,13 +232,13 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
                         foreach($data as $row) {
                             
                             $item = array(
-                                'queue_id' => $row['id'],
+                                'batch_id' => $row['id'],
                                 'url' => $this->eventApiUrl . $this->_getSiteId($row['store_id']) . '/' . $row['type'],
                                 'token' => $this->_getAccessToken( $row['store_id'] ),
                                 'json' =>  $json );
                             
                             if ( $this->logging ) {
-                               $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'QUEUE ID = ' . $item['queue_id'] );
+                               $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'BATCH ID = ' . $item['batch_id'] );
                                $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'ACCESS TOKEN = ' . $item['token'] );
                                $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'EVENT API URL = ' . $item['url'] );
                                $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'JSON = ' . $item['json'] );
@@ -260,6 +270,7 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
             }
         }
     }
+    
     
     /**
      * Send heartbeat to Jirafe via REST. Trigger by cron
@@ -295,7 +306,7 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
     /**
      * Send batch data using standard single threaded cURL
      *
-     * @param array $batch    segment of data from jirafe_analytics_queue
+     * @param array $batch    segment of data from jirafe_analytics_batch
      * @return array
      * @throws Exception if curl_exec() fails
      */
@@ -331,10 +342,10 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
             }
             
             $resourceId = intval($thread);
-            $resource[ $resourceId ]['created_dt'] = $this->_getCreatedDt();
+            $resource[ $resourceId ]['created_dt'] = $this->_getCurrentDt();
             
-            if (isset($item['queue_id'])) {
-                $resource[ $resourceId ]['queue_id'] = $item['queue_id'];
+            if (isset($item['batch_id'])) {
+                $resource[ $resourceId ]['batch_id'] = $item['batch_id'];
             }
             
             $response = curl_exec($thread);
@@ -355,7 +366,7 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
     /**
      * Send batch data using multi-threaded cURL
      * 
-     * @param array $batch    json records from jirafe_analytics_queue
+     * @param array $batch    json records from jirafe_analytics_batch
      * @return array
      * @throws Exception if curl_multi execution fails
      */
@@ -397,7 +408,7 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
              * Add all urls and json from batch to multithread cURL handle
              */
             
-            for ($i = 0; $i < $this->batchSize; $i++) {
+            for ($i = 0; $i < $this->threads; $i++) {
                 
                 if (isset($batch[$i])) {
                     $thread = curl_init();
@@ -409,7 +420,7 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
                     curl_setopt($thread, CURLOPT_RETURNTRANSFER, true);
                     curl_setopt($thread, CURLOPT_FOLLOWLOCATION, true);
                     curl_setopt($thread, CURLINFO_HEADER_OUT, true);
-                    curl_setopt($thread, CURLOPT_MAXREDIRS, $this->batchSize);
+                    curl_setopt($thread, CURLOPT_MAXREDIRS, $this->threads);
                     curl_setopt($thread, CURLOPT_CUSTOMREQUEST, 'PUT');
                     curl_setopt($thread, CURLOPT_POSTFIELDS,$batch[$i]['json']);
                     
@@ -419,7 +430,7 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
                     
                     curl_multi_add_handle($mh, $thread);
                     $ch[] = $thread;
-                    $resource[intval($thread)]['queue_id'] = $batch[$i]['queue_id'];
+                    $resource[intval($thread)]['batch_id'] = $batch[$i]['batch_id'];
                 }
             }
             
@@ -449,7 +460,7 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
                 curl_multi_remove_handle($mh, $thread);
                 $resource[intval($thread)]['http_code'] = $info['http_code'] ;
                 $resource[intval($thread)]['total_time'] = $info['total_time'];
-                $resource[intval($thread)]['created_dt'] = $this->_getCreatedDt();
+                $resource[intval($thread)]['created_dt'] = $this->_getCurrentDt();
             }
             
             /**

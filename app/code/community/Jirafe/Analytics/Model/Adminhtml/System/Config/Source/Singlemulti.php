@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Queue Attempt Model
+ * Adminhtml System Config Source Singlemulti Model
  *
  * @category  Jirafe
  * @package   Jirafe_Analytics

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Queue Type Model
+ * Data Type Model
  *
  * @category  Jirafe
  * @package   Jirafe_Analytics
@@ -9,7 +9,7 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Model_Queue_Type extends Mage_Core_Model_Abstract
+class Jirafe_Analytics_Model_Data_Type extends Mage_Core_Model_Abstract
 {
     const CART = 1;
     
@@ -29,7 +29,7 @@ class Jirafe_Analytics_Model_Queue_Type extends Mage_Core_Model_Abstract
     
     protected function _construct()
     {
-        $this->_init('jirafe_analytics/queue_type');
+        $this->_init('jirafe_analytics/data_type');
     }
 
 }

@@ -429,8 +429,8 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
      * @return string
      */
     
-    public function getCreatedDt()
+    public function getCurrentDt()
     {
-        parent::_getCreatedDt();
+        parent::_getCurrentDt();
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Adminhtml Queue Block Grid
+ * Adminhtml Data Block Grid
  *
  * @category  Jirafe
  * @package   Jirafe_Analytics
@@ -9,7 +9,7 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Block_Adminhtml_Queue_Grid extends Mage_Adminhtml_Block_Widget_Grid
+class Jirafe_Analytics_Block_Adminhtml_Data_Grid extends Mage_Adminhtml_Block_Widget_Grid
 {
     /**
      * Constructor
@@ -17,7 +17,7 @@ class Jirafe_Analytics_Block_Adminhtml_Queue_Grid extends Mage_Adminhtml_Block_W
     public function __construct()
     {
         parent::__construct();
-        $this->setId('queueId');
+        $this->setId('dataId');
         $this->setDefaultSort('created_dt');
         $this->setDefaultDir('DESC');
         $this->setSaveParametersInSession(true);
@@ -26,13 +26,12 @@ class Jirafe_Analytics_Block_Adminhtml_Queue_Grid extends Mage_Adminhtml_Block_W
     /**
      * Prepare collection
      *
-     * @return Jirafe_Analytics_Block_Adminhtml_Queue_Grid
+     * @return Jirafe_Analytics_Block_Adminhtml_Data_Grid
      */
     protected function _prepareCollection()
     {
-        $collection = Mage::getModel('jirafe_analytics/queue')->getCollection();
-
-        $collection->getSelect()->join( array('t'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/queue_type')), 'main_table.type_id = t.id', array('t.description'), array());
+        $collection = Mage::getModel('jirafe_analytics/data')->getCollection();
+        $collection->getSelect()->join( array('t'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/data_type')), 'main_table.type_id = t.id', array('t.description'), array());
         $this->setCollection($collection);
         $collection->addFilterToMap('id', 'main_table.id');
         
@@ -43,7 +42,7 @@ class Jirafe_Analytics_Block_Adminhtml_Queue_Grid extends Mage_Adminhtml_Block_W
     /**
      * Prepare columns
      *
-     * @return Jirafe_Analytics_Block_Adminhtml_Queue_Grid
+     * @return Jirafe_Analytics_Block_Adminhtml_Data_Grid
      */
     protected function _prepareColumns()
     {
@@ -77,7 +76,7 @@ class Jirafe_Analytics_Block_Adminhtml_Queue_Grid extends Mage_Adminhtml_Block_W
         );
         
         $this->addColumn(
-            'created_dt',
+            'captured_dt',
             array(
                 'header'    => Mage::helper('jirafe_analytics')->__('CAPTURED'),
                 'align'     => 'left',

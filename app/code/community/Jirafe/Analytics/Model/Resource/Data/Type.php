@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Queue Error Resource Model
+ * Data Type Resource Model
  *
  * @category  Jirafe
  * @package   Jirafe_Analytics
@@ -9,10 +9,10 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Model_Resource_Queue_Error extends Mage_Core_Model_Resource_Db_Abstract
+class Jirafe_Analytics_Model_Resource_Data_Type extends Mage_Core_Model_Resource_Db_Abstract
 {
     public function _construct()
     {
-        $this->_init('jirafe_analytics/queue_error','id');
+        $this->_init('jirafe_analytics/data_type','id');
     }
 }

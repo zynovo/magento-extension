@@ -312,7 +312,7 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
             $log->setType( $type );
             $log->setLocation( $location );
             $log->setMessage( $message );
-            $log->setCreatedDt( $this->_getCreatedDt() );
+            $log->setCreatedDt( $this->_getCurrentDt() );
             $log->save();
             return true;
         } catch (Exception $e) {
@@ -372,12 +372,8 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
      * @return string
      */
     
-    protected function _getCreatedDt() 
+    protected function _getCurrentDt() 
     {
-        try {
-            return gmdate('Y-m-d H:i:s');
-        } catch (Exception $e) {
-            Mage::throwException('UTILITY ERROR Jirafe_Analytics_Model_Abstract::_getCreatedDt(): ' . $e->getMessage());
-        }
+        return gmdate('Y-m-d H:i:s');
     }
 }

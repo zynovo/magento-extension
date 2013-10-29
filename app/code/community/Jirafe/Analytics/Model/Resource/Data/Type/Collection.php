@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Queue Collection Resource Model
+ * Data Type Collection Resource Model
  *
  * @category  Jirafe
  * @package   Jirafe_Analytics
@@ -9,10 +9,10 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Model_Resource_Queue_Collection extends Mage_Core_Model_Resource_Db_Collection_Abstract
+class Jirafe_Analytics_Model_Resource_Data_Type_Collection extends Mage_Core_Model_Resource_Db_Collection_Abstract
 {
     protected function _construct()
     {
-        $this->_init('jirafe_analytics/queue');
+        $this->_init('jirafe_analytics/data_type');
     }
 }

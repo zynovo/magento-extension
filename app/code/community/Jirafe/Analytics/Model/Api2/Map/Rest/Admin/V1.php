@@ -49,7 +49,7 @@ class Jirafe_Analytics_Model_Api2_Map_Rest_Admin_V1 extends Jirafe_Analytics_Mod
             if ( $continue ) {
                 $map->setDefault( $default );
                 $map->setMagento( $magento );
-                $map->setUpdatedDt( $obj->getCreatedDt() );
+                $map->setUpdatedDt( $obj->getCurrentDt() );
                 $map->save();
                 
                 $this->_successMessage( self::FIELD_MAPPING_UPDATE_SUCCESSFUL, Mage_Api2_Model_Server::HTTP_OK );

@@ -112,7 +112,7 @@
                     </fields>
                  </debug>
                  <curl>
-                    <label>Performance Tuning: cURL Settings</label>
+                    <label>Jirafe API Settings</label>
                     <frontend_type>text</frontend_type>
                     <sort_order>50</sort_order>
                     <show_in_default>1</show_in_default>
@@ -128,18 +128,26 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                         </threading>
-                        <batch_size translate="label">
-                            <label>Batch Size (multi-threaded only)</label>
+                        <threads translate="label">
+                            <label>Number of threads (multi-threaded only)</label>
                             <frontend_type>text</frontend_type>
                             <sort_order>20</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
-                        </batch_size>
+                        </threads>
+                        <max_size translate="label">
+                            <label>Max Size of JSON In Bytes</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>30</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </max_size>
                         <max_attempts translate="label">
                             <label>Max Attempts After Error</label>
                              <frontend_type>text</frontend_type>
-                            <sort_order>30</sort_order>
+                            <sort_order>40</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
@@ -147,7 +155,7 @@
                         <max_records translate="label">
                             <label>Max Number of Records Per Attempt</label>
                             <frontend_type>text</frontend_type>
-                            <sort_order>70</sort_order>
+                            <sort_order>50</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>

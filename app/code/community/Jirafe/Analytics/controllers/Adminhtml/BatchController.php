@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Adminhtml Queue Controller
+ * Adminhtml Batch Controller
  *
  * @category  Jirafe
  * @package   Jirafe_Analytics
@@ -9,7 +9,7 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Adminhtml_QueueController extends Mage_Adminhtml_Controller_Action
+class Jirafe_Analytics_Adminhtml_BatchController extends Mage_Adminhtml_Controller_Action
 {
     /**
      * Index action
@@ -21,7 +21,7 @@ class Jirafe_Analytics_Adminhtml_QueueController extends Mage_Adminhtml_Controll
         $this->_title($this->__('Jirafe Analytics: Data Captured By Observers'));
         $this->loadLayout();
         $this->_setActiveMenu('reports/jirafe_analytics');
-        $this->_addContent($this->getLayout()->createBlock('jirafe_analytics/adminhtml_queue'));
+        $this->_addContent($this->getLayout()->createBlock('jirafe_analytics/adminhtml_batch'));
         $this->renderLayout();
 
     }

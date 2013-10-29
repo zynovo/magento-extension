@@ -17,7 +17,7 @@ class Jirafe_Analytics_Block_Adminhtml_Attempt_Grid extends Mage_Adminhtml_Block
     public function __construct()
     {
         parent::__construct();
-        $this->setId('queueId');
+        $this->setId('batchId');
         $this->setDefaultSort('created_dt');
         $this->setDefaultDir('DESC');
         $this->setSaveParametersInSession(true);
@@ -26,14 +26,13 @@ class Jirafe_Analytics_Block_Adminhtml_Attempt_Grid extends Mage_Adminhtml_Block
     /**
      * Prepare collection
      *
-     * @return Jirafe_Analytics_Block_Adminhtml_Queue_Grid
+     * @return Jirafe_Analytics_Block_Adminhtml_Attemp_Grid
      */
     protected function _prepareCollection()
     {
-        $collection = Mage::getModel('jirafe_analytics/queue_attempt')->getCollection();
-        $collection->getSelect()->join( array('q'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/queue')), 'main_table.queue_id = q.id', array('q.content'), array());
-        $collection->getSelect()->join( array('t'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/queue_type')), 'q.type_id = t.id', array('t.description'), array());
-        $collection->getSelect()->joinLeft( array('e'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/queue_error')), 'main_table.id = e.queue_attempt_id', array('e.response'), array());
+        $collection = Mage::getModel('jirafe_analytics/batch_attempt')->getCollection();
+        $collection->getSelect()->join( array('b'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/batch')), 'main_table.batch_id = b.id', array('b.content'), array());
+        $collection->getSelect()->joinLeft( array('e'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/batch_error')), 'main_table.id = e.batch_attempt_id', array('e.response'), array());
         $this->setCollection($collection);
         $collection->addFilterToMap('id', 'main_table.id');
         $collection->addFilterToMap('created_dt', 'main_table.created_dt');
@@ -44,7 +43,7 @@ class Jirafe_Analytics_Block_Adminhtml_Attempt_Grid extends Mage_Adminhtml_Block
     /**
      * Prepare columns
      *
-     * @return Jirafe_Analytics_Block_Adminhtml_Queue_Grid
+     * @return Jirafe_Analytics_Block_Adminhtml_Attemp_Grid
      */
     protected function _prepareColumns()
     {
@@ -55,15 +54,6 @@ class Jirafe_Analytics_Block_Adminhtml_Attempt_Grid extends Mage_Adminhtml_Block
                 'header'    => Mage::helper('jirafe_analytics')->__('ID'),
                 'align'     =>'left',
                 'index'     => 'id',
-            )
-        );
-        
-        $this->addColumn(
-            'description',
-            array(
-                'header'    => Mage::helper('jirafe_analytics')->__('TYPE'),
-                'align'     =>'left',
-                'index'     => 'description',
             )
         );
         

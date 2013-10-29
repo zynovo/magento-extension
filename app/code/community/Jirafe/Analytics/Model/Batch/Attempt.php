@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Queue Attempt Model
+ * Batch Attempt Model
  *
  * Store cURL response information for every attempt at sending data to Jirafe API
  * 
@@ -11,7 +11,7 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Model_Queue_Attempt extends Jirafe_Analytics_Model_Abstract
+class Jirafe_Analytics_Model_Batch_Attempt extends Jirafe_Analytics_Model_Abstract
 {
     /**
      * Class construction & resource initialization
@@ -19,11 +19,11 @@ class Jirafe_Analytics_Model_Queue_Attempt extends Jirafe_Analytics_Model_Abstra
     
     protected function _construct()
     {
-        $this->_init('jirafe_analytics/queue_attempt');
+        $this->_init('jirafe_analytics/batch_attempt');
     }
     
     /**
-     * Store data for each API queue attempt 
+     * Store data for each API batch attempt 
      * 
      * @param array $attempt    cURL reponse data for single API attempt
      * @return boolean
@@ -36,10 +36,10 @@ class Jirafe_Analytics_Model_Queue_Attempt extends Jirafe_Analytics_Model_Abstra
             if ( $attempt ) {
                 
                 /**
-                 * Save attempt data into jirafe_analytics_queue_attempt table
+                 * Save attempt data into jirafe_analytics_batch_attempt table
                  */
                 
-                $this->setQueueId( $attempt['queue_id'] );
+                $this->setbatchId( $attempt['batch_id'] );
                 $this->setHttpCode( $attempt['http_code'] );
                 $this->setTotalTime( $attempt['total_time'] );
                 $this->setCreatedDt( $attempt['created_dt'] );
@@ -50,16 +50,16 @@ class Jirafe_Analytics_Model_Queue_Attempt extends Jirafe_Analytics_Model_Abstra
                  */
                 
                 if ($attempt['http_code'] != '200') {
-                    Mage::getModel('jirafe_analytics/queue_error')->add( $attempt, $this->getId() );
+                    Mage::getModel('jirafe_analytics/batch_error')->add( $attempt, $this->getId() );
                 }
                 
                 return true;
             } else {
-                $this->_log( 'ERROR', 'Jirafe_Analytics_Model_Queue_Attempt::add()' , 'Empty attempt record.');
+                $this->_log( 'ERROR', 'Jirafe_Analytics_Model_Batch_Attempt::add()' , 'Empty attempt record.');
                 return false;
             }
         } catch (Exception $e) {
-            Mage::throwException('QUEUE ATTEMPT ERROR Jirafe_Analytics_Model_Queue_Attempt::add(): ' . $e->getMessage());
+            Mage::throwException(' Jirafe_Analytics_Model_Batch_Attempt::add(): ' . $e->getMessage());
         }
     }
 }
