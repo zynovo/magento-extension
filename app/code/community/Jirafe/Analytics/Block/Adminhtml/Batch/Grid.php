@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Adminhtml Attempt Block Grid
+ * Adminhtml Batch Block Grid
  *
  * @category  Jirafe
  * @package   Jirafe_Analytics
@@ -9,7 +9,7 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Block_Adminhtml_Attempt_Grid extends Mage_Adminhtml_Block_Widget_Grid
+class Jirafe_Analytics_Block_Adminhtml_Batch_Grid extends Mage_Adminhtml_Block_Widget_Grid
 {
     /**
      * Constructor
@@ -31,7 +31,7 @@ class Jirafe_Analytics_Block_Adminhtml_Attempt_Grid extends Mage_Adminhtml_Block
     protected function _prepareCollection()
     {
         $collection = Mage::getModel('jirafe_analytics/batch_attempt')->getCollection();
-        $collection->getSelect()->join( array('b'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/batch')), 'main_table.batch_id = b.id', array('b.content'), array());
+        $collection->getSelect()->join( array('b'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/batch')), 'main_table.batch_id = b.id', array('b.json'), array());
         $collection->getSelect()->joinLeft( array('e'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/batch_error')), 'main_table.id = e.batch_attempt_id', array('e.response'), array());
         $this->setCollection($collection);
         $collection->addFilterToMap('id', 'main_table.id');
@@ -67,10 +67,10 @@ class Jirafe_Analytics_Block_Adminhtml_Attempt_Grid extends Mage_Adminhtml_Block
         );
         
         $this->addColumn(
-            'content',
+            'json',
             array(
                 'header'    => Mage::helper('jirafe_analytics')->__('JSON'),
-                'index'     => 'content',
+                'index'     => 'json',
             )
         );
         $this->addColumn(
@@ -83,12 +83,11 @@ class Jirafe_Analytics_Block_Adminhtml_Attempt_Grid extends Mage_Adminhtml_Block
         $this->addColumn(
             'created_dt',
             array(
-                'header'    => Mage::helper('jirafe_analytics')->__('CREATED'),
+                'header'    => Mage::helper('jirafe_analytics')->__('ATTEMPTED (UTC)'),
                 'align'     => 'left',
-                'width'     => '120px',
+                'width'     => '150px',
                 'type'      => 'datetime',
-                'index'     => 'created_dt',
-                'format'    => Mage::app()->getLocale()->getDateFormat()
+                'index'     => 'created_dt'
             )
         );
         

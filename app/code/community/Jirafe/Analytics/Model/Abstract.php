@@ -308,12 +308,16 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
     protected function _log( $type = null, $location = null, $message = null )
     {
         try {
-            $log = Mage::getModel('jirafe_analytics/log');
-            $log->setType( $type );
-            $log->setLocation( $location );
-            $log->setMessage( $message );
-            $log->setCreatedDt( $this->_getCurrentDt() );
-            $log->save();
+            if ( Mage::getStoreConfig('jirafe_analytics/debug/type') == 'db' ) {
+                $log = Mage::getModel('jirafe_analytics/log');
+                $log->setType( $type );
+                $log->setLocation( $location );
+                $log->setMessage( $message );
+                $log->setCreatedDt( $this->_getCurrentDt() );
+                $log->save();
+            } else {
+                Mage::log( "$location: $message ($type):",null,'jirafe_analytics.log');
+            }
             return true;
         } catch (Exception $e) {
             Mage::throwException('LOGGING ERROR Jirafe_Analytics_Model_Abstract::_log(): ' . $e->getMessage());

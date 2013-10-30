@@ -111,7 +111,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
      * Convert event data to batch
      *
      * @return boolean
-     * @throws Exception if create batch array
+     * @throws Exception if create batch array fails
      */
     public function convertEventDataToBatchData()
     {

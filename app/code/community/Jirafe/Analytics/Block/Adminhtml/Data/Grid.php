@@ -31,7 +31,10 @@ class Jirafe_Analytics_Block_Adminhtml_Data_Grid extends Mage_Adminhtml_Block_Wi
     protected function _prepareCollection()
     {
         $collection = Mage::getModel('jirafe_analytics/data')->getCollection();
-        $collection->getSelect()->join( array('t'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/data_type')), 'main_table.type_id = t.id', array('t.description'), array());
+        $collection->getSelect()->join( array('t'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/data_type')), 'main_table.type_id = t.id', array('t.type'), array());
+        $collection->getSelect()->joinLeft( array('bd'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/batch_data')), 'main_table.id = bd.data_id', array('bd.batch_id'), array());
+        $collection->getSelect()->joinLeft( array('b'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/batch')), 'bd.batch_id = b.id', array('b.attempt_count', 'b.success', 'b.completed_dt'), array());
+        
         $this->setCollection($collection);
         $collection->addFilterToMap('id', 'main_table.id');
         
@@ -57,11 +60,11 @@ class Jirafe_Analytics_Block_Adminhtml_Data_Grid extends Mage_Adminhtml_Block_Wi
         );
         
         $this->addColumn(
-            'description',
+            'type',
             array(
                 'header'    => Mage::helper('jirafe_analytics')->__('TYPE'),
                 'align'     =>'left',
-                'index'     => 'description',
+                'index'     => 'type',
             )
         );
         
@@ -78,11 +81,11 @@ class Jirafe_Analytics_Block_Adminhtml_Data_Grid extends Mage_Adminhtml_Block_Wi
         $this->addColumn(
             'captured_dt',
             array(
-                'header'    => Mage::helper('jirafe_analytics')->__('CAPTURED'),
+                'header'    => Mage::helper('jirafe_analytics')->__('CAPTURED (UTC)'),
                 'align'     => 'left',
+                'width'     => '150px',
                 'type'      => 'datetime',
-                'index'     => 'created_dt',
-                'format'    => Mage::app()->getLocale()->getDateFormat()
+                'index'     => 'captured_dt'
             )
         );
         
@@ -91,7 +94,17 @@ class Jirafe_Analytics_Block_Adminhtml_Data_Grid extends Mage_Adminhtml_Block_Wi
             array(
                 'header'    => Mage::helper('jirafe_analytics')->__('ATTEMPTS'),
                 'align'     =>'left',
+                'width'     => '100px',
                 'index'     => 'attempt_count',
+            )
+        );
+        
+        $this->addColumn(
+            'batch_id',
+            array(
+                'header'    => Mage::helper('jirafe_analytics')->__('BATCH'),
+                'align'     =>'left',
+                'index'     => 'batch_id',
             )
         );
         
@@ -109,12 +122,12 @@ class Jirafe_Analytics_Block_Adminhtml_Data_Grid extends Mage_Adminhtml_Block_Wi
         $this->addColumn(
             'completed_dt',
             array(
-                'header'    => Mage::helper('jirafe_analytics')->__('COMPLETE'),
+                'header'    => Mage::helper('jirafe_analytics')->__('COMPLETED (UTC)'),
                 'align'     => 'left',
+                'width'     => '150px',
                 'type'      => 'datetime',
                 'default'   => '--',
-                'index'     => 'completed_dt',
-                'format'    => Mage::app()->getLocale()->getDateFormat()
+                'index'     => 'completed_dt'
             )
         );
         

@@ -309,6 +309,7 @@
             <debug>
                 <logging>0</logging>
                 <server_load>0</server_load>
+                <type>database</type>
             </debug>
             <curl>
                 <threading>multi</threading>

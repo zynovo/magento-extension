@@ -125,7 +125,7 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
      * @throws Exception if logging or calling of single or multi-threaded cURL fails
      */
     
-    public function sendJson( $rawData = null ) 
+    public function sendJson( $data = null ) 
     {
         /**
          * @var array $resource   resource info after cURL completion for logging 
@@ -145,7 +145,7 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
                 
                 $resource = array();
                 
-                if (count( $rawData )) {
+                if (count( $data )) {
                     if ( $this->logging ) {
                         $startTime = time();
                         $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'BEGIN');
@@ -156,11 +156,6 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
                     }
                     
                     $this->_overridePhpSettings();
-                    
-                    /**
-                     * Prepare data as batches of items or single items
-                     */
-                    $data = $this_prepareData( $rawData );
                     
                     /**
                      * Determine CURL method
@@ -196,9 +191,9 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
                             
                            $item = array(
                                 'batch_id' => $row['id'],
-                                'url' => $this->eventApiUrl . $this->_getSiteId( $row['store_id'] ) . '/' . $row['type'],
+                                'url' => $this->eventApiUrl . $this->_getSiteId( $row['store_id'] ) . '/batch',
                                 'token' => $this->_getAccessToken( $row['store_id'] ),
-                                'json' =>  $row['content'] );
+                                'json' =>  $row['json'] );
                            
                            if ( $this->logging ) {
                                $this->_log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'BATCH ID = ' . $item['batch_id'] );
@@ -233,7 +228,7 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
                             
                             $item = array(
                                 'batch_id' => $row['id'],
-                                'url' => $this->eventApiUrl . $this->_getSiteId($row['store_id']) . '/' . $row['type'],
+                                'url' => $this->eventApiUrl . $this->_getSiteId($row['store_id']) . '/batch',
                                 'token' => $this->_getAccessToken( $row['store_id'] ),
                                 'json' =>  $json );
                             

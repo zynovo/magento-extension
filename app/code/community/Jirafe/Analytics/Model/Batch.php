@@ -41,51 +41,7 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
          */
         $this->maxRecords = intval(Mage::getStoreConfig('jirafe_analytics/curl/max_records'));
         
-        /**
-         * User configurable maximum size of json object in bytes
-         */
-        $this->maxSize = Mage::getStoreConfig('jirafe_analytics/curl/max_size');
     }
-    
-    public function getDataStores() {
-        $stores =  Mage::getModel('core/store')->getCollection()
-            ->addFieldToSelect(array('store_id'))
-            ->getSelect()
-            ->join( array('d'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/data')), "`main_table`.`store_id` = `d`.`store_id`", array())
-            ->joinLeft( array('bd'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/batch_data')), "`d`.`id` = `bd`.`data_id`", array())
-            ->where('`bd`.`batch_id` is NULL')
-            ->distinct(true);
-        return $stores->query();
-    }
-    
-    public function getDataStoreTypes( $storeId = null ) {
-        
-        if ($storeId) {
-            $types =  Mage::getModel('jirafe_analytics/data_type')
-                ->getCollection()
-                ->addFieldToSelect(array('type'))
-                ->getSelect()
-                ->join( array('d'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/data')), "`main_table`.`id` = `d`.`type_id` AND `d`.`content` is not null AND `d`.`store_id` = $storeId",array())
-                ->joinLeft( array('bd'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/batch_data')), "`d`.`id` = `bd`.`data_id`",array())
-                ->where('`bd`.`batch_id` is NULL')
-                ->distinct(true);
-        return $types->query();
-        } else {
-            return array();
-        }
-    }
-    
-    
-    public function convertData() {
-        $data = Mage::getModel('jirafe_analytics/data')->getCollection()
-        ->addFieldToSelect(array('content','store_id'))
-        ->addFieldToFilter('`main_table`.`content`', array('neq' => ''))
-        ->getSelect()
-        ->join( array('qt'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/batch_type')), "`main_table`.`type_id` = `qt`.`id` AND `qt`.`description` != 'batch'", array('qt.description as type'))
-        ->order(array('main_table.created_dt ASC'));
-    }
-    
-    
     
     /**
      * Process batch of records via cron or direct call
@@ -99,35 +55,21 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
     {
         try {
             
-           // if ( $this->jsonType == 'batch' ) {
-                $rawData = Mage::getModel('jirafe_analytics/batch')->getCollection()
-                    ->addFieldToSelect(array('content','store_id'))
-                    ->addFieldToFilter('`main_table`.`completed_dt`', array('is' => new Zend_Db_Expr('null')))
-                    ->addFieldToFilter('`main_table`.`content`', array('neq' => ''))
-                    ->getSelect()
-                    ->join( array('qt'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/batch_type')), "`main_table`.`type_id` = `qt`.`id` AND `qt`.`description` != 'batch'", array('qt.description as type'))
-                    ->order(array('main_table.created_dt ASC'));
-                
-                $data = $this->prepareBatches($rawData->query());
-               Zend_Debug::dump($data);
-                
-          /*  }
             $data = $this->getCollection()
-                ->addFieldToSelect(array('content','store_id'))
+                ->addFieldToSelect(array('json','store_id'))
                 ->addFieldToFilter('`main_table`.`completed_dt`', array('is' => new Zend_Db_Expr('null')))
-                ->addFieldToFilter('`main_table`.`content`', array('neq' => ''))
-                ->getSelect()
-                ->join( array('qt'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/batch_type')), '`main_table`.`type_id` = `qt`.`id`', array('qt.description as type'))
-                ->order(array('main_table.created_dt ASC'));
+                ->addFieldToFilter('`main_table`.`json`', array('neq' => ''))
+                ->setOrder('created_dt ASC')
+                ->getSelect();
             
             if (is_numeric($this->maxRecords)) {
-                $data->limit($this->maxRecords);
+                $data->limit( $this->maxRecords );
             }
             
-            **
+            /**
              * Record API attempt. 
              * Update batch with information from attempt
-             *
+             */
             
             if (  $response = Mage::getModel('jirafe_analytics/curl')->sendJson( $data->query() ) ) {
                 foreach ($response as $batch) {
@@ -139,11 +81,11 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
                 
                 return true;
             } else {
-                **
+                /**
                  * No data to process
-                 *
+                 */
                 return false;
-            }*/
+            }
         } catch (Exception $e) {
             Mage::throwException('ERROR', 'Jirafe_Analytics_Model_Batch::process()', $e->getMessage());
         }

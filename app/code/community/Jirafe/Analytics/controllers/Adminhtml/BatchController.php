@@ -18,7 +18,7 @@ class Jirafe_Analytics_Adminhtml_BatchController extends Mage_Adminhtml_Controll
      */
     public function indexAction()
     {
-        $this->_title($this->__('Jirafe Analytics: Data Captured By Observers'));
+        $this->_title($this->__('Jirafe Analytics: Data Transfer Attempts'));
         $this->loadLayout();
         $this->_setActiveMenu('reports/jirafe_analytics');
         $this->_addContent($this->getLayout()->createBlock('jirafe_analytics/adminhtml_batch'));
