@@ -68,6 +68,34 @@ class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract
     }
     
     /**
+     * Create array of customer historical data
+     *
+     * @return array
+     */
+    
+    public function getHistoricalData() 
+    {
+        try {
+            $data = array();
+            $customers = Mage::getModel('customer/customer')->getCollection();
+            
+            foreach($customers as $customer) {
+                $data[] = array(
+                    'type_id' => Jirafe_Analytics_Model_Data_Type::CUSTOMER,
+                    'store_id' => $customer->getStoreId(),
+                    'json' => $this->getJson( $customer )
+                );
+            }
+            
+            return $data;
+        } catch (Exception $e) {
+            $this->_log('ERROR', 'Jirafe_Analytics_Model_Customer::getHistoricalData()', $e->getMessage());
+            return false;
+        }
+       
+    }
+    
+    /**
      * Get customer array for beacon api javascript
      *
      * @return array

@@ -39,14 +39,14 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                     $json = Mage::getModel('jirafe_analytics/cart')->getJson( $quote );
                     $data = Mage::getModel('jirafe_analytics/data');
                     $data->setTypeId( Jirafe_Analytics_Model_Data_Type::CART );
-                    $data->setContent( $json );
+                    $data->setJson( $json );
                     $data->setStoreId( $quote->getStoreId() );
                     $data->setCapturedDt( $this->_getCurrentDt() );
                     $data->save();;
                     Mage::getSingleton('core/session')->setJirafeProcessCart( false );
                     return true;
                 } else {
-                    return true;
+                    return false;
                 }
             } catch (Exception $e) {
                 $this->_log('ERROR', 'Jirafe_Analytics_Model_Observer::cartProductAdd()', $e->getMessage());
@@ -104,7 +104,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             try {
                 $data = Mage::getModel('jirafe_analytics/data');
                 $data->setTypeId( Jirafe_Analytics_Model_Data_Type::CATEGORY );
-                $data->setContent( Mage::getModel('jirafe_analytics/category')->getJson( $observer->getCategory() ) );
+                $data->setJson( Mage::getModel('jirafe_analytics/category')->getJson( $observer->getCategory() ) );
                 $data->setCapturedDt( $this->_getCurrentDt() );
                 $data->save();
                 return true;
@@ -128,7 +128,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             try {
                 $data = Mage::getModel('jirafe_analytics/data');
                 $data->setTypeId( Jirafe_Analytics_Model_Data_Type::CATEGORY );
-                $data->setContent( Mage::getModel('jirafe_analytics/category')->getDeleteJson( $observer->getCategory() ) );
+                $data->setJson( Mage::getModel('jirafe_analytics/category')->getDeleteJson( $observer->getCategory() ) );
                 $data->setCapturedDt( $this->_getCurrentDt() );
                 $data->save();
                 return true;
@@ -154,7 +154,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 if ( Mage::getSingleton('core/session')->getJirafeProcessCustomer() ) {
                     $data = Mage::getModel('jirafe_analytics/data');
                     $data->setTypeId( Jirafe_Analytics_Model_Data_Type::CUSTOMER );
-                    $data->setContent( Mage::getModel('jirafe_analytics/customer')->getJson( $observer->getCustomer() ) );
+                    $data->setJson( Mage::getModel('jirafe_analytics/customer')->getJson( $observer->getCustomer() ) );
                     $data->setStoreId( $observer->getCustomer()->getStoreId() );
                     $data->setCapturedDt( $this->_getCurrentDt() );
                     $data->save();
@@ -252,7 +252,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                     
                     $data = Mage::getModel('jirafe_analytics/data');
                     $data->setTypeId( Jirafe_Analytics_Model_Data_Type::ORDER );
-                    $data->setContent( Mage::getModel('jirafe_analytics/order')->getJson( $order ) );
+                    $data->setJson( Mage::getModel('jirafe_analytics/order')->getJson( $order ) );
                     $data->setStoreId( $order['store_id'] );
                     $data->setCapturedDt( $this->_getCurrentDt() );
                     $data->save();
@@ -281,7 +281,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 $order = $observer->getOrder()->getData();
                 $data = Mage::getModel('jirafe_analytics/data');
                 $data->setTypeId( Jirafe_Analytics_Model_Data_Type::ORDER );
-                $data->setContent( Mage::getModel('jirafe_analytics/order')->getJson( $order ) );
+                $data->setJson( Mage::getModel('jirafe_analytics/order')->getJson( $order ) );
                 $data->setStoreId( $order['store_id'] );
                 $data->setCapturedDt( $this->_getCurrentDt() );
                 $data->save();
@@ -307,7 +307,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 $product = $observer->getProduct();
                 $data = Mage::getModel('jirafe_analytics/data');
                 $data->setTypeId( Jirafe_Analytics_Model_Data_Type::PRODUCT );
-                $data->setContent( Mage::getModel('jirafe_analytics/product')->getJson( $product->getEntityId() ) );
+                $data->setJson( Mage::getModel('jirafe_analytics/product')->getJson( $product->getEntityId() ) );
                 $data->setStoreId( $product->getStoreId() );
                 $data->setCapturedDt( $this->_getCurrentDt() );
                 $data->save();
@@ -333,7 +333,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 $userId = $observer->getObject()->getUserId();
                 $data = Mage::getModel('jirafe_analytics/data');
                 $data->setTypeId( Jirafe_Analytics_Model_Data_Type::EMPLOYEE );
-                $data->setContent( Mage::getModel('jirafe_analytics/employee')->getJson( $userId ) );
+                $data->setJson( Mage::getModel('jirafe_analytics/employee')->getJson( null, $userId ) );
                 $data->setCapturedDt( $this->_getCurrentDt() );
                 $data->save();
                 return true;

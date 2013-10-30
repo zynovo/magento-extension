@@ -99,4 +99,34 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
         }
         
     }
+    
+    
+    /**
+     * Create array of cart historical data
+     *
+     * @return array
+     */
+    
+    public function getHistoricalData()
+    {
+        try {
+            $data = array();
+            
+            $quotes = Mage::getModel('sales/quote')
+                ->getCollection();
+            
+            foreach($quotes as $quote) {
+                $data[] = array( 
+                       'type_id' => Jirafe_Analytics_Model_Data_Type::CART,
+                       'store_id' => $quote->getStoreId(),
+                       'json' => $this->getJson( $quote )
+                   );
+            }
+            
+            return $data;
+        } catch (Exception $e) {
+            $this->_log('ERROR', 'Jirafe_Analytics_Model_Cart::getHistoricalData()', $e->getMessage());
+            return false;
+        }
+    }
 }

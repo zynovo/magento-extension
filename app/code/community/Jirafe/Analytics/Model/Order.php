@@ -135,4 +135,33 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
                 break;
         }
     }
+    
+    /**
+     * Create array of product historical data
+     *
+     * @return array
+     */
+    
+    public function getHistoricalData()
+    {
+        try {
+            $data = array();
+            
+            $orders = Mage::getModel('sales/order')
+                ->getCollection();
+            
+            foreach($orders as $order) {
+                $data[] = array(
+                    'type_id' => Jirafe_Analytics_Model_Data_Type::ORDER,
+                    'store_id' => $order->getStoreId(),
+                    'json' => $this->getJson( $order )
+                );
+            }
+            
+            return $data;
+        } catch (Exception $e) {
+            $this->_log('ERROR', 'Jirafe_Analytics_Model_Order::getHistoricalData()', $e->getMessage());
+            return false;
+        }
+    }
 }

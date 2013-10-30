@@ -62,7 +62,7 @@ $installer->run("
     DROP TABLE IF EXISTS {$this->getTable('jirafe_analytics/data')};
     CREATE TABLE {$this->getTable('jirafe_analytics/data')} (
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-        `content` text NOT NULL,
+        `json` text NOT NULL,
         `type_id` int(10) unsigned NOT NULL,
         `store_id` int(10) NOT NULL DEFAULT '1',
         `historical` tinyint(1) unsigned NOT NULL DEFAULT '0',

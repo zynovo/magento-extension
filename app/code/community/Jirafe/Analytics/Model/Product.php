@@ -21,12 +21,15 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
      * @return mixed
      */
     
-    public function getArray( $productId = null, $isRoot = true )
+    public function getArray( $productId = null, $isRoot = true, $product = null )
     {
         try {
-            if ($productId) {
-                
+            if ( $productId && !$product ) {
                 $product = Mage::getModel('catalog/product')->load( $productId );
+            }
+            
+            if ( $product ) {
+                
                 $parentIds = $this->_getParentIds( $product );
                 
                 /**
@@ -296,11 +299,41 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
      * @return mixed
      */
     
-    public function getJson( $productId = null, $isRoot = true )
+    public function getJson( $productId = null, $isRoot = true, $product = null )
     {
-        if ( $productId ) {
-            return str_replace('\/', '/', json_encode( $this->getArray( $productId, $isRoot ) ) );
+        if ( $productId || $product) {
+            return str_replace('\/', '/', json_encode( $this->getArray( $productId, $isRoot, $product ) ) );
         } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Create array of product historical data
+     *
+     * @return array
+     */
+    
+    public function getHistoricalData()
+    {
+        try {
+            $data = array();
+            
+            $products = Mage::getModel('catalog/product')
+                ->getCollection()
+                ->addAttributeToSelect('name');
+            
+            foreach($products as $product) {
+                $data[] = array(
+                    'type_id' => Jirafe_Analytics_Model_Data_Type::PRODUCT,
+                    'store_id' => $product->getStoreId(),
+                    'json' => $this->getJson( null, null, $product )
+                );
+            }
+            
+            return $data;
+        } catch (Exception $e) {
+            $this->_log('ERROR', 'Jirafe_Analytics_Model_Product::getHistoricalData()', $e->getMessage());
             return false;
         }
     }

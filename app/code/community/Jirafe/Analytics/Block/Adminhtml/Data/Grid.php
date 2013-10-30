@@ -69,12 +69,12 @@ class Jirafe_Analytics_Block_Adminhtml_Data_Grid extends Mage_Adminhtml_Block_Wi
         );
         
         $this->addColumn(
-            'content',
+            'json',
             array(
                 'header'    => Mage::helper('jirafe_analytics')->__('JSON'),
                 'align'     => 'left',
                 'width'     => '200px',
-                'index'     => 'content',
+                'index'     => 'json',
             )
         );
         

@@ -61,4 +61,33 @@ class Jirafe_Analytics_Model_Category extends Jirafe_Analytics_Model_Abstract
         }
         
     }
+    
+    /**
+     * Create array of category historical data
+     *
+     * @return array
+     */
+    
+    public function getHistoricalData()
+    {
+        try {
+            $data = array();
+            $categories = Mage::getModel('catalog/category')
+                ->getCollection()
+                ->addAttributeToSelect('name');
+            
+            foreach($categories as $category) {
+                $data[] = array(
+                    'type_id' => Jirafe_Analytics_Model_Data_Type::CATEGORY,
+                    'store_id' => $category->getStoreId(),
+                    'json' => $this->getJson( $category )
+                );
+            }
+            
+            return $data;
+        } catch (Exception $e) {
+            $this->_log('ERROR', 'Jirafe_Analytics_Model_Category::getHistoricalData()', $e->getMessage());
+            return false;
+        }
+    }
 }

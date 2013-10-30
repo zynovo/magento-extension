@@ -15,16 +15,20 @@ class Jirafe_Analytics_Model_Employee extends Jirafe_Analytics_Model_Abstract
     /**
      * Create user admin array of data required by Jirafe API
      *
-     * @param string $userId
+     * @param Mage_Admin_Model_User  $user
+     * @param string                 $userId
      * @return mixed
      */
     
-    public function getArray( $userId = null )
+    public function getArray( $user = null, $userId = null )
     {
         try {
-            if ( $userId ) {
+            
+            if ( $userId && !$user ) {
                 $user = Mage::getModel('admin/user')->load( $userId );
-                
+            }
+            
+            if ( $user ) {
                 /**
                  * Get field map array
                  */
@@ -51,18 +55,46 @@ class Jirafe_Analytics_Model_Employee extends Jirafe_Analytics_Model_Abstract
     
      /**
      * Convert employee array into JSON object
-     *
+     * 
+     * @param string $user
      * @param string $userId
      * @return mixed
      */
     
-    public function getJson( $userId = null )
+    public function getJson( $user = null, $userId = null )
     {
-        if ($userId) {
-            return json_encode( $this->getArray( $userId ) );
+        if ($userId || $user) {
+            return json_encode( $this->getArray( $user, $userId ) );
         } else {
             return false;
         }
         
+    }
+    
+    /**
+     * Create array of customer historical data
+     *
+     * @return array
+     */
+    
+    public function getHistoricalData()
+    {
+        try {
+            $data = array();
+            $employees = Mage::getModel('admin/user')->getCollection();
+            
+            foreach($employees as $employee) {
+                 $data[] = array(
+                    'type_id' => Jirafe_Analytics_Model_Data_Type::EMPLOYEE,
+                    'store_id' => Mage_Catalog_Model_Abstract::DEFAULT_STORE_ID,
+                    'json' => $this->getJson( $employee, null )
+                );
+            }
+            
+            return $data;
+        } catch (Exception $e) {
+            $this->_log('ERROR', 'Jirafe_Analytics_Model_Employee::getHistoricalData()', $e->getMessage());
+            return false;
+        }
     }
 }
