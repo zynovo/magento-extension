@@ -64,7 +64,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             }
             
         } catch (Exception $e) {
-            $this->_log('ERROR', 'Jirafe_Analytics_Model_Product::getArray()', $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::getArray()', $e->getMessage());
             return false;
         }
     }
@@ -171,7 +171,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                 return array();
             }
         } catch (Exception $e) {
-            $this->_log('ERROR', 'Jirafe_Analytics_Model_Product::_getCategories()', $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::_getCategories()', $e->getMessage());
             return false;
         }
     }
@@ -202,7 +202,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             
             return $obj;
         } catch (Exception $e) {
-            $this->_log('ERROR', 'Jirafe_Analytics_Model_Product::_getBaseProducts()', $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::_getBaseProducts()', $e->getMessage());
             return false;
         }
     }
@@ -231,7 +231,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             }
             
         } catch (Exception $e) {
-            $this->_log('ERROR', 'Jirafe_Analytics_Model_Product::_getParentIds()', $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::_getParentIds()', $e->getMessage());
             return false;
         }
     }
@@ -263,7 +263,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             
             return $obj;
         } catch (Exception $e) {
-            $this->_log('ERROR', 'Jirafe_Analytics_Model_Product::_getAttributes()', $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::_getAttributes()', $e->getMessage());
             return false;
         }
     }
@@ -286,7 +286,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                 return array( 'url' => '' );
             }
         } catch (Exception $e) {
-            $this->_log('ERROR', 'Jirafe_Analytics_Model_Product::_getImages()', $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::_getImages()', $e->getMessage());
             return false;
         }
     }
@@ -333,7 +333,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             
             return $data;
         } catch (Exception $e) {
-            $this->_log('ERROR', 'Jirafe_Analytics_Model_Product::getHistoricalData()', $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::getHistoricalData()', $e->getMessage());
             return false;
         }
     }

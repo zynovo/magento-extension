@@ -47,18 +47,30 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
      * Process batch of records via cron or direct call
      * Get all records that need to be sent to Jirafe and pass to api
      * 
-     * @param array $params    params for overriding default collection filters
+     * @param array $params        params for overriding default collection filters
+     * @param boolean $historical  select historical or current event data
      * @throws Exception if unable to process batch
      */
     
-    public function process( $params = null ) 
+    public function process( $params = null, $historical = false ) 
     {
         try {
+            
+            if ( $historical ) {
+                $historicalEQ = 'eq';
+            } else {
+                $historicalEQ = 'neq';
+            }
+            
+            if (isset($params['max_records'])) {
+                $this->maxRecords = $params['max_records'];
+            }
             
             $data = $this->getCollection()
                 ->addFieldToSelect(array('json','store_id'))
                 ->addFieldToFilter('`main_table`.`completed_dt`', array('is' => new Zend_Db_Expr('null')))
                 ->addFieldToFilter('`main_table`.`json`', array('neq' => ''))
+                ->addFieldToFilter('`main_table`.`historical`', array($historicalEQ => '1'))
                 ->setOrder('created_dt ASC')
                 ->getSelect();
             
@@ -71,15 +83,15 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
              * Update batch with information from attempt
              */
             
-            if (  $response = Mage::getModel('jirafe_analytics/curl')->sendJson( $data->query() ) ) {
+            if (  $response = Mage::getModel('jirafe_analytics/curl')->sendJson( $data->query(), $params ) ) {
                 foreach ($response as $batch) {
                     foreach ($batch as $attempt) {
                         $this->updateBatch( $attempt );
                         Mage::getModel('jirafe_analytics/batch_attempt')->add( $attempt );
                     }
                 }
-                
                 return true;
+                
             } else {
                 /**
                  * No data to process
@@ -118,7 +130,7 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
                 $batch->save();
                 return true;
             } else {
-                $this->_log( 'ERROR', 'Jirafe_Analytics_Model_Batch::updateBatch()' ,'attempt object null');
+                Mage::helper('jirafe_analytics')->log( 'ERROR', 'Jirafe_Analytics_Model_Batch::updateBatch()' ,'attempt object null');
                 return false;
             }
         } catch (Exception $e) {

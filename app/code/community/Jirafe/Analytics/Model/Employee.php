@@ -48,7 +48,7 @@ class Jirafe_Analytics_Model_Employee extends Jirafe_Analytics_Model_Abstract
                return array();
             }
         } catch (Exception $e) {
-            $this->_log( 'ERROR', 'Jirafe_Analytics_Model_Employee::getArray()', $e->getMessage());
+            Mage::helper('jirafe_analytics')->log( 'ERROR', 'Jirafe_Analytics_Model_Employee::getArray()', $e->getMessage());
             return false;
         }
     }
@@ -93,7 +93,7 @@ class Jirafe_Analytics_Model_Employee extends Jirafe_Analytics_Model_Abstract
             
             return $data;
         } catch (Exception $e) {
-            $this->_log('ERROR', 'Jirafe_Analytics_Model_Employee::getHistoricalData()', $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Employee::getHistoricalData()', $e->getMessage());
             return false;
         }
     }

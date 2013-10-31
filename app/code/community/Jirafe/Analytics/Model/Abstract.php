@@ -299,62 +299,6 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
     }
     
     /**
-     * Write log messages to db
-     *
-     * @param  string $message 
-     * @return boolean
-     */
-    
-    protected function _log( $type = null, $location = null, $message = null )
-    {
-        try {
-            if ( Mage::getStoreConfig('jirafe_analytics/debug/type') == 'db' ) {
-                $log = Mage::getModel('jirafe_analytics/log');
-                $log->setType( $type );
-                $log->setLocation( $location );
-                $log->setMessage( $message );
-                $log->setCreatedDt( $this->_getCurrentDt() );
-                $log->save();
-            } else {
-                Mage::log( "$location: $message ($type):",null,'jirafe_analytics.log');
-            }
-            return true;
-        } catch (Exception $e) {
-            Mage::throwException('LOGGING ERROR Jirafe_Analytics_Model_Abstract::_log(): ' . $e->getMessage());
-        }
-    }
-    
-    /**
-     * Log server load averages
-     *
-     * @param  string $message    message to add to log file
-     * @return boolean
-     * @throws Exception if sys_getloadavg() fails
-     */
-    
-    protected function _logServerLoad( $location = null )
-    {
-        /**
-         * @var array $load    set of three sampled server load averages
-         */
-        
-        if (Mage::getStoreConfig('jirafe_analytics/debug/server_load')) {
-            try {
-                $load = sys_getloadavg();
-                if (is_numeric($load[0]) && is_numeric($load[1]) && is_numeric($load[2])) {
-                    $this->_log('DEBUG', $location, 'SERVER LOAD AVG: ' . number_format($load[0],2) . ' ' . number_format($load[1],2) . ' '. number_format($load[2],2));
-                    return true;
-                } else {
-                    $this->_log('ERROR', 'Jirafe_Analytics_Model_Abstract::_logServerLoad()', $e->getMessage());
-                    return false;
-                }
-            } catch (Exception $e) {
-                $this->_log('ERROR', 'Jirafe_Analytics_Model_Abstract::_logServerLoad()', $e->getMessage());
-            }
-        }
-    }
-    
-    /**
      * Format date to Jirafe API requirements: UTC in the ISO 8601:2004 format
      *
      * @param datetime $date
@@ -370,14 +314,4 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
         }
     }
     
-    /**
-     * Current DataTime in UTC/GMT to avoid MySQL possible timezone configuration issues
-     *
-     * @return string
-     */
-    
-    protected function _getCurrentDt() 
-    {
-        return gmdate('Y-m-d H:i:s');
-    }
 }

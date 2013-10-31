@@ -63,7 +63,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                     ->getCollection()
                     ->addFieldToSelect(array('type'))
                     ->getSelect()
-                    ->join( array('d'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/data')), "`main_table`.`id` = `d`.`type_id` AND `d`.`content` is not null AND `d`.`store_id` = $storeId",array())
+                    ->join( array('d'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/data')), "`main_table`.`id` = `d`.`type_id` AND `d`.`json` is not null AND `d`.`store_id` = $storeId",array())
                     ->joinLeft( array('bd'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/batch_data')), "`d`.`id` = `bd`.`data_id`",array())
                     ->where('`bd`.`batch_id` is NULL')
                     ->distinct(true)
@@ -91,8 +91,8 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
             if ( $storeId && $typeId ) {
                 return Mage::getModel('jirafe_analytics/data')
                 ->getCollection()
-                ->addFieldToSelect(array('content','store_id'))
-                ->addFieldToFilter('`main_table`.`content`', array('neq' => ''))
+                ->addFieldToSelect(array('json','store_id'))
+                ->addFieldToFilter('`main_table`.`json`', array('neq' => ''))
                 ->addFieldToFilter('`main_table`.`store_id`', array('eq' => $storeId))
                 ->getSelect()
                 ->join( array('dt'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/data_type')), "`main_table`.`type_id` = `dt`.`id` AND `dt`.`id` = $typeId",array('dt.type'))
@@ -113,9 +113,15 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
      * @return boolean
      * @throws Exception if create batch array fails
      */
-    public function convertEventDataToBatchData()
+    public function convertEventDataToBatchData( $params = null,  $historical = false )
     {
         try {
+            
+            /**
+             * Performance tuning options: override server php settings
+             */
+            
+            Mage::helper('jirafe_analytics')->overridePhpSettings( $params );
             
             /**
              * Get user configurable maximum size of json object in bytes
@@ -157,7 +163,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                     
                     foreach( $this->_getItems( $store['store_id'], $type['id'] ) as $item ) {
                         
-                        $content = json_decode( $item['content'] );
+                        $content = json_decode( $item['json'] );
                         
                         /**
                          * Evaluate size of JSON
@@ -169,7 +175,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                             /**
                              * Save and close current batch
                              */
-                            $this->_saveBatch( $batch, $store['store_id'], json_encode( array( $type['type'] => $typeContainer ) ) );
+                            $this->_saveBatch( $batch, $store['store_id'], json_encode( array( $type['type'] => $typeContainer ) ), $historical );
                             
                             /**
                              * Create new batch
@@ -201,10 +207,12 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                 /**
                  * Save and close current batch
                  */
-                $this->_saveBatch( $batch, $store['store_id'], json_encode($batchContainer) );
+                $this->_saveBatch( $batch, $store['store_id'], json_encode($batchContainer), $historical );
                 
             }
+            
             return true;
+            
         } catch (Exception $e) {
             Mage::throwException('BATCH DATA ERROR: Jirafe_Analytics_Model_Data::convertEventDataToBatchData(): ' . $e->getMessage());
         }
@@ -216,13 +224,17 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
      * @return boolean
      * @throws Exception if failure to save batch
      */
-    protected function _saveBatch( $batch = null, $storeId = null, $json = null )
+    protected function _saveBatch( $batch = null, $storeId = null, $json = null, $historical = false )
     {
         try {
             if ( $batch && $storeId && $json) {
                 $batch->setStoreId( $storeId );
                 $batch->setJson( $json );
-                $batch->setCreatedDt( $this->_getCurrentDt()  );
+                $batch->setCreatedDt( Mage::helper('jirafe_analytics')->getCurrentDt()  );
+                
+                if ($historical) {
+                    $batch->setHistorical(1);
+                }
                 $batch->save();
                 return true;
             } else {

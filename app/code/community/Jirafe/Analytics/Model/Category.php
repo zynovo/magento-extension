@@ -40,7 +40,7 @@ class Jirafe_Analytics_Model_Category extends Jirafe_Analytics_Model_Abstract
                 return array();
             }
         } catch (Exception $e) {
-            $this->_log('ERROR', 'Jirafe_Analytics_Model_Category::getArray()', $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Category::getArray()', $e->getMessage());
             return false;
         }
     }
@@ -86,7 +86,7 @@ class Jirafe_Analytics_Model_Category extends Jirafe_Analytics_Model_Abstract
             
             return $data;
         } catch (Exception $e) {
-            $this->_log('ERROR', 'Jirafe_Analytics_Model_Category::getHistoricalData()', $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Category::getHistoricalData()', $e->getMessage());
             return false;
         }
     }

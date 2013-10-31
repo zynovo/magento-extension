@@ -18,7 +18,7 @@ class Jirafe_Analytics_Model_History extends Jirafe_Analytics_Model_Abstract
      * @return array
      */
     
-    public function import()
+    public function process()
     {
         try {
             
@@ -36,13 +36,13 @@ class Jirafe_Analytics_Model_History extends Jirafe_Analytics_Model_Abstract
                 $data->setTypeId( $item['type_id'] );
                 $data->setHistorical( 1 );
                 $data->setJson( $item['json'] );
-                $data->setCapturedDt( $this->_getCurrentDt() );
+                $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
                 $data->save();
                 $data = null;
             }
             return $history;
         } catch (Exception $e) {
-            $this->_log('ERROR', 'Jirafe_Analytics_Model_History::import()', $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_History::import()', $e->getMessage());
             return false;
         }
     }

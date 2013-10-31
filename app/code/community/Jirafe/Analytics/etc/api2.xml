@@ -71,6 +71,59 @@
                 </attributes>
                 <versions>1</versions>
             </field>
+            <data translate="title" module="jirafe_analytics">
+                <group>jirafe_analytics</group>
+                <sort_order>30</sort_order>
+                <model>jirafe_analytics/api2_data</model>
+                <title>Data</title>
+                <privileges>
+                    <admin>
+                        <retrieve>1</retrieve>
+                    </admin>
+                </privileges>
+                <routes>
+                    <route_collection>
+                        <route>/jirafe_analytics/data</route>
+                        <action_type>collection</action_type>
+                    </route_collection>
+                </routes>
+                <attributes module="jirafe_analytics">
+                    <id>Id</id>
+                    <json>JSON</json>
+                    <type_id>Type Id</type_id>
+                    <batch_id>Batch Id</batch_id>
+                    <store_id>Store Id</store_id>
+                    <historical>Historical</historical>
+                    <captured_dt>Captured Datetime</captured_dt>
+                </attributes>
+                <versions>1</versions>
+            </data>
+            <history translate="title" module="jirafe_analytics">
+                <group>jirafe_analytics</group>
+                <sort_order>40</sort_order>
+                <model>jirafe_analytics/api2_history</model>
+                <title>Historical Data</title>
+                <privileges>
+                    <admin>
+                        <update>1</update>
+                    </admin>
+                </privileges>
+                <routes>
+                    <route_entity>
+                        <route>/jirafe_analytics/history</route>
+                        <action_type>function</action_type>
+                    </route_entity>
+                </routes>
+                <attributes module="jirafe_analytics">
+                    <convert>Function: Convert Historical Data</convert>
+                    <batch>Function: Batch Historical Data</batch>
+                    <export>Function: Export Historical Data</export>
+                    <max_execution_time>PHP Override: max_execution_time</max_execution_time>
+                    <memory_limit>PHP Override: memory_limit</memory_limit>
+                    <proc_nice>PHP Override: proc_nice</proc_nice>
+                </attributes>
+                <versions>1</versions>
+            </history>
         </resources>
     </api2>
 </config>

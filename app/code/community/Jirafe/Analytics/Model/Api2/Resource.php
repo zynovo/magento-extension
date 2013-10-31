@@ -11,6 +11,11 @@
 
 abstract class Jirafe_Analytics_Model_Api2_Resource extends Mage_Api2_Model_Resource
 {
+    /**#@+
+     *  Action types
+     */
+    const ACTION_TYPE_FUNCTION  = 'function';
+    
     /**
      *  Default error messages
      */
@@ -19,11 +24,16 @@ abstract class Jirafe_Analytics_Model_Api2_Resource extends Mage_Api2_Model_Reso
     const FIELD_MAPPING_ERROR_INVALID_TYPE = 'Invalid type. Must be either string, int, float or boolean.';
     const FIELD_MAPPING_ERROR_INVALID_FIELD = 'Invalid element.';
     const FIELD_MAPPING_REQUEST_DATA_INVALID = 'Request data is invalid.';
+    const HISTORY_FUNCTION_INVALID = 'History function invalid.';
+    const HISTORY_FUNCTION_NO_DATA = 'No historical data available.';
     
     /**
      *  Default success messages
      */
     const FIELD_MAPPING_UPDATE_SUCCESSFUL = 'Field mapping update successful.';
+    const HISTORY_EXPORT_FUNCTION_SUCCESSFUL = 'Historical data successfully exported to Jirafe.';
+    const HISTORY_CONVERT_FUNCTION_SUCCESSFUL = 'Historical data successfully converted to JSON.';
+    const HISTORY_BATCH_FUNCTION_SUCCESSFUL = 'Historical JSON objects successfully batched for export.';
     
     /**
      * Dispatch
@@ -33,7 +43,21 @@ abstract class Jirafe_Analytics_Model_Api2_Resource extends Mage_Api2_Model_Reso
     public function dispatch()
     {
         switch ($this->getActionType() . $this->getOperation()) {
-                /* Retrieve */
+            /* Function */
+            case self::ACTION_TYPE_FUNCTION . self::OPERATION_UPDATE:
+                $this->_errorIfMethodNotExist('_function');
+                $requestData = $this->getRequest()->getBodyParams();
+                if (empty($requestData)) {
+                    $this->_critical(self::HISTORY_FUNCTION_INVALID);
+                }
+                $filteredData = $this->getFilter()->in($requestData);
+                if (empty($filteredData)) {
+                    $this->_critical(self::HISTORY_FUNCTION_INVALID);
+                }
+                $this->_function($filteredData);
+                $this->_render($this->getResponse()->getMessages());
+                break;
+            /* Retrieve */
             case self::ACTION_TYPE_ENTITY . self::OPERATION_RETRIEVE:
                 $this->_errorIfMethodNotExist('_retrieve');
                 $retrievedData = $this->_retrieve();
@@ -46,7 +70,7 @@ abstract class Jirafe_Analytics_Model_Api2_Resource extends Mage_Api2_Model_Reso
                 $filteredData  = $this->getFilter()->collectionOut($retrievedData);
                 $this->_render($filteredData);
                 break;
-                /* Update */
+            /* Update */
             case self::ACTION_TYPE_ENTITY . self::OPERATION_UPDATE:
                 $this->_errorIfMethodNotExist('_update');
                 $requestData = $this->getRequest()->getBodyParams();
@@ -60,18 +84,7 @@ abstract class Jirafe_Analytics_Model_Api2_Resource extends Mage_Api2_Model_Reso
                 $this->_update($filteredData);
                 $this->_render($this->getResponse()->getMessages());
                 break;
-            case self::ACTION_TYPE_COLLECTION . self::OPERATION_UPDATE:
-                $this->_errorIfMethodNotExist('_multiUpdate');
-                $requestData = $this->getRequest()->getBodyParams();
-                if (empty($requestData)) {
-                    $this->_critical(self::FIELD_MAPPING_REQUEST_DATA_INVALID);
-                }
-                $filteredData = $this->getFilter()->collectionIn($requestData);
-                $this->_multiUpdate($filteredData);
-                $this->_render($this->getResponse()->getMessages());
-                $this->getResponse()->setHttpResponseCode(Mage_Api2_Model_Server::HTTP_MULTI_STATUS);
-                break;
-            default:
+             default:
                 $this->_critical(self::REQUEST_METHOD_NOT_IMPLEMENTED);
                 break;
         }

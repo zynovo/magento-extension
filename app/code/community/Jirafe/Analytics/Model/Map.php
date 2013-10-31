@@ -423,14 +423,4 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
         }
     }
     
-    /**
-     * Current DataTime in UTC/GMT to avoid MySQL possible timezone configuration issues
-     *
-     * @return string
-     */
-    
-    public function getCurrentDt()
-    {
-        parent::_getCurrentDt();
-    }
 }

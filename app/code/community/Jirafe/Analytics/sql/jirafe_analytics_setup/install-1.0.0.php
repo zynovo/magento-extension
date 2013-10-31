@@ -6,7 +6,7 @@ $installer->run("
     DROP TABLE IF EXISTS {$this->getTable('jirafe_analytics/batch')};
     CREATE TABLE {$this->getTable('jirafe_analytics/batch')} (
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-        `json` text NOT NULL,
+        `json` mediumtext NOT NULL,
         `store_id` int(10) NOT NULL DEFAULT '1',
         `attempt_count` int(10) unsigned NOT NULL DEFAULT '0',
         `success` tinyint(1) unsigned NOT NULL DEFAULT '0',

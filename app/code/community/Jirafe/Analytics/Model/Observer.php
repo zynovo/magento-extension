@@ -41,7 +41,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                     $data->setTypeId( Jirafe_Analytics_Model_Data_Type::CART );
                     $data->setJson( $json );
                     $data->setStoreId( $quote->getStoreId() );
-                    $data->setCapturedDt( $this->_getCurrentDt() );
+                    $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
                     $data->save();;
                     Mage::getSingleton('core/session')->setJirafeProcessCart( false );
                     return true;
@@ -49,7 +49,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                     return false;
                 }
             } catch (Exception $e) {
-                $this->_log('ERROR', 'Jirafe_Analytics_Model_Observer::cartProductAdd()', $e->getMessage());
+                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::cartProductAdd()', $e->getMessage());
                 return false;
             }
         }
@@ -67,7 +67,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             try {
                 Mage::getSingleton('core/session')->setJirafeProcessCart( true );
             } catch (Exception $e) {
-                $this->_log('ERROR', 'Jirafe_Analytics_Model_Observer::cartAddItem()', $e->getMessage());
+                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::cartAddItem()', $e->getMessage());
                 return false;
             }
         }
@@ -85,7 +85,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             try {
                 Mage::getSingleton('core/session')->setJirafeProcessCart( true );
             } catch (Exception $e) {
-                $this->_log('ERROR', 'Jirafe_Analytics_Model_Observer::cartRemoveItem()', $e->getMessage());
+                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::cartRemoveItem()', $e->getMessage());
                 return false;
             }
         }
@@ -105,11 +105,11 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 $data = Mage::getModel('jirafe_analytics/data');
                 $data->setTypeId( Jirafe_Analytics_Model_Data_Type::CATEGORY );
                 $data->setJson( Mage::getModel('jirafe_analytics/category')->getJson( $observer->getCategory() ) );
-                $data->setCapturedDt( $this->_getCurrentDt() );
+                $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
                 $data->save();
                 return true;
             } catch (Exception $e) {
-                $this->_log('ERROR', 'Jirafe_Analytics_Model_Observer::categorySave()', $e->getMessage());
+                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::categorySave()', $e->getMessage());
                 return false;
             }
         }
@@ -129,11 +129,11 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 $data = Mage::getModel('jirafe_analytics/data');
                 $data->setTypeId( Jirafe_Analytics_Model_Data_Type::CATEGORY );
                 $data->setJson( Mage::getModel('jirafe_analytics/category')->getDeleteJson( $observer->getCategory() ) );
-                $data->setCapturedDt( $this->_getCurrentDt() );
+                $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
                 $data->save();
                 return true;
             } catch (Exception $e) {
-                $this->_log('ERROR', 'Jirafe_Analytics_Model_Observer::categoryDelete()', $e->getMessage());
+                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::categoryDelete()', $e->getMessage());
                 return false;
             }
         }
@@ -156,7 +156,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                     $data->setTypeId( Jirafe_Analytics_Model_Data_Type::CUSTOMER );
                     $data->setJson( Mage::getModel('jirafe_analytics/customer')->getJson( $observer->getCustomer() ) );
                     $data->setStoreId( $observer->getCustomer()->getStoreId() );
-                    $data->setCapturedDt( $this->_getCurrentDt() );
+                    $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
                     $data->save();
                     Mage::getSingleton('core/session')->setJirafeProcessCustomer( false );
                     return true;
@@ -164,7 +164,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                     return false;
                 }
             } catch (Exception $e) {
-                $this->_log('ERROR', 'Jirafe_Analytics_Model_Observer::customerSave()', $e->getMessage());
+                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::customerSave()', $e->getMessage());
                 return false;
             }
         }
@@ -185,7 +185,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 $this->customerSave( $observer );
                 return true;
             } catch (Exception $e) {
-                $this->_log('ERROR', 'Jirafe_Analytics_Model_Observer::customerSave()', $e->getMessage());
+                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::customerSave()', $e->getMessage());
                 return false;
             }
         }
@@ -205,7 +205,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 Mage::getSingleton('core/session')->setJirafeProcessCustomer( true );
                 return true;
             } catch (Exception $e) {
-                $this->_log('ERROR', 'Jirafe_Analytics_Model_Observer::customerLoad()', $e->getMessage());
+                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::customerLoad()', $e->getMessage());
                 return false;
             }
         }
@@ -224,7 +224,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 Mage::getSingleton('core/session')->setJirafeProcessCustomer( true );
                 return true;
             } catch (Exception $e) {
-                $this->_log('ERROR', 'Jirafe_Analytics_Model_Observer::customerRegister()', $e->getMessage());
+                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::customerRegister()', $e->getMessage());
                 return false;
             }
         }
@@ -254,14 +254,14 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                     $data->setTypeId( Jirafe_Analytics_Model_Data_Type::ORDER );
                     $data->setJson( Mage::getModel('jirafe_analytics/order')->getJson( $order ) );
                     $data->setStoreId( $order['store_id'] );
-                    $data->setCapturedDt( $this->_getCurrentDt() );
+                    $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
                     $data->save();
                     return true;
                 } else {
                     return false;
                 }
             } catch (Exception $e) {
-                $this->_log('ERROR', 'Jirafe_Analytics_Model_Observer::orderPlaceAfter()', $e->getMessage());
+                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::orderPlaceAfter()', $e->getMessage());
                 return false;
             }
         }
@@ -283,11 +283,11 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 $data->setTypeId( Jirafe_Analytics_Model_Data_Type::ORDER );
                 $data->setJson( Mage::getModel('jirafe_analytics/order')->getJson( $order ) );
                 $data->setStoreId( $order['store_id'] );
-                $data->setCapturedDt( $this->_getCurrentDt() );
+                $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
                 $data->save();
                 return true;
             } catch (Exception $e) {
-                $this->_log('ERROR', 'Jirafe_Analytics_Model_Observer::orderPlaceAfter()', $e->getMessage());
+                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::orderPlaceAfter()', $e->getMessage());
                 return false;
             }
         }
@@ -309,11 +309,11 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 $data->setTypeId( Jirafe_Analytics_Model_Data_Type::PRODUCT );
                 $data->setJson( Mage::getModel('jirafe_analytics/product')->getJson( $product->getEntityId() ) );
                 $data->setStoreId( $product->getStoreId() );
-                $data->setCapturedDt( $this->_getCurrentDt() );
+                $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
                 $data->save();
                 return true;
             } catch (Exception $e) {
-                $this->_log('ERROR', 'Jirafe_Analytics_Model_Observer::productSave()', $e->getMessage());
+                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::productSave()', $e->getMessage());
                 return false;
             }
         }
@@ -334,11 +334,11 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 $data = Mage::getModel('jirafe_analytics/data');
                 $data->setTypeId( Jirafe_Analytics_Model_Data_Type::EMPLOYEE );
                 $data->setJson( Mage::getModel('jirafe_analytics/employee')->getJson( null, $userId ) );
-                $data->setCapturedDt( $this->_getCurrentDt() );
+                $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
                 $data->save();
                 return true;
             } catch (Exception $e) {
-                $this->_log('ERROR', 'Jirafe_Analytics_Model_Observer::employeeSave()', $e->getMessage());
+                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::employeeSave()', $e->getMessage());
                 return false;
             }
         }

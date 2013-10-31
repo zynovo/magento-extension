@@ -55,7 +55,7 @@ class Jirafe_Analytics_Model_Batch_Attempt extends Jirafe_Analytics_Model_Abstra
                 
                 return true;
             } else {
-                $this->_log( 'ERROR', 'Jirafe_Analytics_Model_Batch_Attempt::add()' , 'Empty attempt record.');
+                Mage::helper('jirafe_analytics')->log( 'ERROR', 'Jirafe_Analytics_Model_Batch_Attempt::add()' , 'Empty attempt record.');
                 return false;
             }
         } catch (Exception $e) {
