@@ -31,7 +31,7 @@ abstract class Jirafe_Analytics_Model_Api2_Resource extends Mage_Api2_Model_Reso
      *  Default success messages
      */
     const FIELD_MAPPING_UPDATE_SUCCESSFUL = 'Field mapping update successful.';
-    const HISTORY_EXPORT_FUNCTION_SUCCESSFUL = 'Historical data successfully exported to Jirafe.';
+    const HISTORY_EXPORT_FUNCTION_SUCCESSFUL = 'Historical data successfully exported.';
     const HISTORY_CONVERT_FUNCTION_SUCCESSFUL = 'Historical data successfully converted to JSON.';
     const HISTORY_BATCH_FUNCTION_SUCCESSFUL = 'Historical JSON objects successfully batched for export.';
     

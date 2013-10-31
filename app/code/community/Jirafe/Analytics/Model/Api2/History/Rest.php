@@ -18,15 +18,15 @@ class Jirafe_Analytics_Model_Api2_History_Rest extends Jirafe_Analytics_Model_Ap
      */
     protected function _function( array $params )
     {
-       if (isset($params['convert'])) {
-           $this->_process( $params );
-       } else if (isset($params['batch'])) {
+       if ( $params['function'] === 'convert') {
+           $this->_convert( $params );
+       } else if ( $params['function'] === 'batch') {
            if ( Mage::getModel('jirafe_analytics/data')->convertEventDataToBatchData( $params, true ) ) {
                $this->_successMessage( self::HISTORY_BATCH_FUNCTION_SUCCESSFUL, Mage_Api2_Model_Server::HTTP_OK );
            } else {
                $this->_critical( self::HISTORY_FUNCTION_NO_DATA );
            }
-       } else if (isset($params['export'])) {
+       } else if ( $params['function'] === 'export') {
            if ( Mage::getModel('jirafe_analytics/batch')->process( $params, true ) ) {
                $this->_successMessage( self::HISTORY_EXPORT_FUNCTION_SUCCESSFUL, Mage_Api2_Model_Server::HTTP_OK );
            } else {

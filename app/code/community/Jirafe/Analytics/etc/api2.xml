@@ -115,9 +115,8 @@
                     </route_entity>
                 </routes>
                 <attributes module="jirafe_analytics">
-                    <convert>Function: Convert Historical Data</convert>
-                    <batch>Function: Batch Historical Data</batch>
-                    <export>Function: Export Historical Data</export>
+                    <function>Function</function>
+                    <json_max_size>JSON: Max Size</json_max_size>
                     <max_execution_time>PHP Override: max_execution_time</max_execution_time>
                     <memory_limit>PHP Override: memory_limit</memory_limit>
                     <proc_nice>PHP Override: proc_nice</proc_nice>

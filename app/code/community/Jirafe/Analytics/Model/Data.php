@@ -139,9 +139,8 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                  * Initialize batch database object and array container
                  */
                 $batchContainer = array();
-                $batch = Mage::getModel('jirafe_analytics/batch');
-                $batch->save();
-                
+                $batch = null;
+               
                 /**
                  * Get all available object types for each store
                  */
@@ -160,8 +159,13 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                     /**
                      * Separate data by object type for batching
                      */
-                    
+                   
                     foreach( $this->_getItems( $store['store_id'], $type['id'] ) as $item ) {
+                        
+                        if (!$batch) {
+                            $batch = Mage::getModel('jirafe_analytics/batch');
+                            $batch->save();
+                        }
                         
                         $content = json_decode( $item['json'] );
                         
@@ -176,13 +180,12 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                              * Save and close current batch
                              */
                             $this->_saveBatch( $batch, $store['store_id'], json_encode( array( $type['type'] => $typeContainer ) ), $historical );
-                            
+                            $batch = null;
                             /**
                              * Create new batch
                              */
                             $batch = Mage::getModel('jirafe_analytics/batch');
                             $batch->save();
-                            
                             /**
                              * Reset containers
                              */
@@ -207,7 +210,9 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                 /**
                  * Save and close current batch
                  */
-                $this->_saveBatch( $batch, $store['store_id'], json_encode($batchContainer), $historical );
+                if ( $batchContainer ) {
+                    $this->_saveBatch( $batch, $store['store_id'], json_encode($batchContainer), $historical );
+                }
                 
             }
             
