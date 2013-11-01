@@ -8,7 +8,7 @@
     </tabs>
     <sections>
         <jirafe_analytics translate="label">
-            <label>Jirafe Analytics</label>
+            <label>Analytics</label>
             <tab>jirafe</tab>
             <frontend_type>text</frontend_type>
             <sort_order>1</sort_order>
@@ -18,7 +18,15 @@
             <groups>
                 <general translate="label">
                     <label>General Settings</label>
-                    <frontend_type>text</frontend_type>
+                                <comment><![CDATA[<br />
+<div class="custom-options">
+<div class="box">
+<p class="grand-total"><br /><b>Jirafe</b></p>
+<p>Vivamus elementum ultricies mi, in sagittis purus eleifend ut. Donec eu nisi eget urna malesuada sollicitudin. Mauris a arcu lorem. Nullam convallis vehicula lorem. Nullam sed tempus nunc. In bibendum ante eu dictum congue. Praesent consectetur lectus lacus, id pretium purus imperdiet ac. Pellentesque a condimentum dolor. Nullam quam lacus, elementum ac leo eget, ornare ullamcorper dui.</p>
+<p><br /><a href="https://www.jirafe.com/board/" target="_blank">Login to your Jirafe Customer Dashboard</a><br /><br /></p>
+</div>
+</div>
+]]></comment><frontend_type>text</frontend_type>
                     <sort_order>10</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
