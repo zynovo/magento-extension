@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Api2 Batch Rest Admin V1 Model
+ * Api2 Data Type Rest Admin V1 Model
  *
  * @category  Jirafe
  * @package   Jirafe_Analytics
@@ -9,6 +9,6 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Model_Api2_Batch_Rest_Admin_V1 extends Jirafe_Analytics_Model_Api2_Batch_Rest
+class Jirafe_Analytics_Model_Api2_Data_Type_Rest_Admin_V1 extends Jirafe_Analytics_Model_Api2_Data_Type_Rest
 {
 }

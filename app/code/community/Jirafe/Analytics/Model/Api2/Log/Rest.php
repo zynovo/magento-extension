@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Api2 Data Rest Model
+ * Api2 Log Rest Model
  *
  * @category  Jirafe
  * @package   Jirafe_Analytics
@@ -9,7 +9,7 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Model_Api2_Data_Rest extends Jirafe_Analytics_Model_Api2_Data
+class Jirafe_Analytics_Model_Api2_Log_Rest extends Jirafe_Analytics_Model_Api2_Log
 {
     
     /**
@@ -21,7 +21,7 @@ class Jirafe_Analytics_Model_Api2_Data_Rest extends Jirafe_Analytics_Model_Api2_
     {
         $data = array();
         
-        $collection = Mage::getModel('jirafe_analytics/data')->getCollection();
+        $collection = Mage::getModel('jirafe_analytics/log')->getCollection();
         
         foreach ($collection->getData() as $item) {
             $data[] = $item;
@@ -51,11 +51,11 @@ class Jirafe_Analytics_Model_Api2_Data_Rest extends Jirafe_Analytics_Model_Api2_
     }
     
     /**
-     * Data update not available
+     * Update entity not available
      *
-     * @param array $data
+     * @return array
      */
-    protected function _update(array $data)
+    protected function _update()
     {
         $this->_critical(self::RESOURCE_METHOD_NOT_ALLOWED);
     }
@@ -67,7 +67,5 @@ class Jirafe_Analytics_Model_Api2_Data_Rest extends Jirafe_Analytics_Model_Api2_
     {
         $this->_critical(self::RESOURCE_METHOD_NOT_ALLOWED);
     }
-    
-    
     
 }

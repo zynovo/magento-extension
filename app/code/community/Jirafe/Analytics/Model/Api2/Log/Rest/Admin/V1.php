@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Api Model
+ * Api2 Log Rest Admin V1 Model
  *
  * @category  Jirafe
  * @package   Jirafe_Analytics
@@ -9,7 +9,6 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Api_Resource extends Mage_Api_Model_Resource_Abstract
+class Jirafe_Analytics_Model_Api2_Log_Rest_Admin_V1 extends Jirafe_Analytics_Model_Api2_Log_Rest
 {
-
-} 
+}

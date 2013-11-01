@@ -57,9 +57,22 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
         try {
             
             if ( $historical ) {
+                
                 $historicalEQ = 'eq';
+                
+                /**
+                 * Batch conversion done as separate step for historical data
+                 */
+                
             } else {
+                
                 $historicalEQ = 'neq';
+                
+                /**
+                 * Convert data into batches before processing
+                 */
+                
+                Mage::getModel('jirafe_analytics/data')->convertEventDataToBatchData( $params, false );
             }
             
             if (isset($params['max_records'])) {

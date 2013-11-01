@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Api2 Data Rest Model
+ * Api2 Data Type Rest Model
  *
  * @category  Jirafe
  * @package   Jirafe_Analytics
@@ -9,7 +9,7 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Model_Api2_Data_Rest extends Jirafe_Analytics_Model_Api2_Data
+class Jirafe_Analytics_Model_Api2_Data_Type_Rest extends Jirafe_Analytics_Model_Api2_Data_Type
 {
     
     /**
@@ -21,7 +21,7 @@ class Jirafe_Analytics_Model_Api2_Data_Rest extends Jirafe_Analytics_Model_Api2_
     {
         $data = array();
         
-        $collection = Mage::getModel('jirafe_analytics/data')->getCollection();
+        $collection = Mage::getModel('jirafe_analytics/data_type')->getCollection();
         
         foreach ($collection->getData() as $item) {
             $data[] = $item;

@@ -11,7 +11,7 @@
                 <group>jirafe_analytics</group>
                 <sort_order>10</sort_order>
                 <model>jirafe_analytics/api2_map</model>
-                <title>Map</title>
+                <title>Field Map</title>
                 <privileges>
                     <admin>
                         <retrieve>1</retrieve>
@@ -48,7 +48,7 @@
                 <group>jirafe_analytics</group>
                 <sort_order>20</sort_order>
                 <model>jirafe_analytics/api2_map_field</model>
-                <title>Field</title>
+                <title>Magento Fields</title>
                 <privileges>
                     <admin>
                         <retrieve>1</retrieve>
@@ -71,36 +71,9 @@
                 </attributes>
                 <versions>1</versions>
             </field>
-            <data translate="title" module="jirafe_analytics">
-                <group>jirafe_analytics</group>
-                <sort_order>30</sort_order>
-                <model>jirafe_analytics/api2_data</model>
-                <title>Data</title>
-                <privileges>
-                    <admin>
-                        <retrieve>1</retrieve>
-                    </admin>
-                </privileges>
-                <routes>
-                    <route_collection>
-                        <route>/jirafe_analytics/data</route>
-                        <action_type>collection</action_type>
-                    </route_collection>
-                </routes>
-                <attributes module="jirafe_analytics">
-                    <id>Id</id>
-                    <json>JSON</json>
-                    <type_id>Type Id</type_id>
-                    <batch_id>Batch Id</batch_id>
-                    <store_id>Store Id</store_id>
-                    <historical>Historical</historical>
-                    <captured_dt>Captured Datetime</captured_dt>
-                </attributes>
-                <versions>1</versions>
-            </data>
             <history translate="title" module="jirafe_analytics">
                 <group>jirafe_analytics</group>
-                <sort_order>40</sort_order>
+                <sort_order>30</sort_order>
                 <model>jirafe_analytics/api2_history</model>
                 <title>Historical Data</title>
                 <privileges>
@@ -123,6 +96,158 @@
                 </attributes>
                 <versions>1</versions>
             </history>
+            <batch translate="title" module="jirafe_analytics">
+                <group>jirafe_analytics</group>
+                <sort_order>40</sort_order>
+                <model>jirafe_analytics/api2_batch</model>
+                <title>Batched Data</title>
+                <privileges>
+                    <admin>
+                        <retrieve>1</retrieve>
+                    </admin>
+                </privileges>
+                <routes>
+                    <route_collection>
+                        <route>/jirafe_analytics/batch</route>
+                        <action_type>collection</action_type>
+                    </route_collection>
+                </routes>
+                <attributes module="jirafe_analytics">
+                    <id>Id</id>
+                    <json>JSON</json>
+                    <store_id>Store Id</store_id>
+                    <attempt_count>Attempt Count</attempt_count>
+                    <success>Success</success>
+                    <historical>Historical</historical>
+                    <created_dt>Created Datetime</created_dt>
+                    <completed_dt>Completed Datetime</completed_dt>
+                </attributes>
+                <versions>1</versions>
+            </batch>
+            <batch_attempt translate="title" module="jirafe_analytics">
+                <group>jirafe_analytics</group>
+                <sort_order>42</sort_order>
+                <model>jirafe_analytics/api2_batch_attempt</model>
+                <title>Batch API Attempts</title>
+                <privileges>
+                    <admin>
+                        <retrieve>1</retrieve>
+                    </admin>
+                </privileges>
+                <routes>
+                    <route_collection>
+                        <route>/jirafe_analytics/batch_attempt</route>
+                        <action_type>collection</action_type>
+                    </route_collection>
+                </routes>
+                <attributes module="jirafe_analytics">
+                    <id>Id</id>
+                    <batch_id>Batch Id</batch_id>
+                    <http_code>HTTP Code</http_code>
+                    <total_time>Total Time</total_time>
+                    <created_dt>Created Datetime</created_dt>
+                </attributes>
+                <versions>1</versions>
+            </batch_attempt>
+            <batch_error translate="title" module="jirafe_analytics">
+                <group>jirafe_analytics</group>
+                <sort_order>44</sort_order>
+                <model>jirafe_analytics/api2_batch_error</model>
+                <title>Batch API Errors</title>
+                <privileges>
+                    <admin>
+                        <retrieve>1</retrieve>
+                    </admin>
+                </privileges>
+                <routes>
+                    <route_collection>
+                        <route>/jirafe_analytics/batch_error</route>
+                        <action_type>collection</action_type>
+                    </route_collection>
+                </routes>
+                <attributes module="jirafe_analytics">
+                    <id>Id</id>
+                    <batch_id>Batch Id</batch_id>
+                    <batch_attempt_id>Batch Attempt Id</batch_attempt_id>
+                    <response>Response</response>
+                    <created_dt>Created Datetime</created_dt>
+                </attributes>
+                <versions>1</versions>
+            </batch_error>
+            <data translate="title" module="jirafe_analytics">
+                <group>jirafe_analytics</group>
+                <sort_order>50</sort_order>
+                <model>jirafe_analytics/api2_data</model>
+                <title>Observer Data</title>
+                <privileges>
+                    <admin>
+                        <retrieve>1</retrieve>
+                    </admin>
+                </privileges>
+                <routes>
+                    <route_collection>
+                        <route>/jirafe_analytics/data</route>
+                        <action_type>collection</action_type>
+                    </route_collection>
+                </routes>
+                <attributes module="jirafe_analytics">
+                    <id>Id</id>
+                    <json>JSON</json>
+                    <type_id>Type Id</type_id>
+                    <batch_id>Batch Id</batch_id>
+                    <store_id>Store Id</store_id>
+                    <historical>Historical</historical>
+                    <captured_dt>Captured Datetime</captured_dt>
+                </attributes>
+                <versions>1</versions>
+            </data>
+            <data_type translate="title" module="jirafe_analytics">
+                <group>jirafe_analytics</group>
+                <sort_order>52</sort_order>
+                <model>jirafe_analytics/api2_data_type</model>
+                <title>Observer Data Types</title>
+                <privileges>
+                    <admin>
+                        <retrieve>1</retrieve>
+                    </admin>
+                </privileges>
+                <routes>
+                    <route_collection>
+                        <route>/jirafe_analytics/data_type</route>
+                        <action_type>collection</action_type>
+                    </route_collection>
+                </routes>
+                <attributes module="jirafe_analytics">
+                    <id>Id</id>
+                    <type>Type</type>
+                </attributes>
+                <versions>1</versions>
+            </data_type>
+            <log translate="title" module="jirafe_analytics">
+                <group>jirafe_analytics</group>
+                <sort_order>60</sort_order>
+                <model>jirafe_analytics/api2_log</model>
+                <title>Log</title>
+                <privileges>
+                    <admin>
+                        <retrieve>1</retrieve>
+                    </admin>
+                </privileges>
+                <routes>
+                    <route_collection>
+                        <route>/jirafe_analytics/log</route>
+                        <action_type>collection</action_type>
+                    </route_collection>
+                </routes>
+                <attributes module="jirafe_analytics">
+                    <id>Id</id>
+                    <type>Type</type>
+                    <location>Location</location>
+                    <message>Message</message>
+                    <created_dt>Created Datetime</created_dt>
+                </attributes>
+                <versions>1</versions>
+            </log>
         </resources>
     </api2>
 </config>

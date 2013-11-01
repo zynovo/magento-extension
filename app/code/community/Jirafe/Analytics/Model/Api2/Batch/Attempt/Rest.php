@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Api2 Batch Rest Model
+ * Api2 Batch Attempt Model
  *
  * @category  Jirafe
  * @package   Jirafe_Analytics
@@ -9,7 +9,7 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Model_Api2_Batch_Rest extends Jirafe_Analytics_Model_Api2_Batch
+class Jirafe_Analytics_Model_Api2_Batch_Attempt_Rest extends Jirafe_Analytics_Model_Api2_Batch_Attempt
 {
     
     /**
@@ -21,7 +21,7 @@ class Jirafe_Analytics_Model_Api2_Batch_Rest extends Jirafe_Analytics_Model_Api2
     {
         $data = array();
         
-        $collection = Mage::getModel('jirafe_analytics/batch')->getCollection();
+        $collection = Mage::getModel('jirafe_analytics/batch_attempt')->getCollection();
         
         foreach ($collection->getData() as $item) {
             $data[] = $item;

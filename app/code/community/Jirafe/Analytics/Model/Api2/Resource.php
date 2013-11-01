@@ -24,8 +24,8 @@ abstract class Jirafe_Analytics_Model_Api2_Resource extends Mage_Api2_Model_Reso
     const FIELD_MAPPING_ERROR_INVALID_TYPE = 'Invalid type. Must be either string, int, float or boolean.';
     const FIELD_MAPPING_ERROR_INVALID_FIELD = 'Invalid element.';
     const FIELD_MAPPING_REQUEST_DATA_INVALID = 'Request data is invalid.';
-    const HISTORY_FUNCTION_INVALID = 'History function invalid.';
-    const HISTORY_FUNCTION_NO_DATA = 'No historical data available.';
+    const REQUEST_FUNCTION_INVALID = 'Request function invalid.';
+    const REQUEST_FUNCTION_NO_DATA = 'Request data available.';
     
     /**
      *  Default success messages
@@ -34,6 +34,7 @@ abstract class Jirafe_Analytics_Model_Api2_Resource extends Mage_Api2_Model_Reso
     const HISTORY_EXPORT_FUNCTION_SUCCESSFUL = 'Historical data successfully exported.';
     const HISTORY_CONVERT_FUNCTION_SUCCESSFUL = 'Historical data successfully converted to JSON.';
     const HISTORY_BATCH_FUNCTION_SUCCESSFUL = 'Historical JSON objects successfully batched for export.';
+    const LOG_PURGE_SUCCESSFUL = 'Log purge successful.';
     
     /**
      * Dispatch
@@ -42,17 +43,18 @@ abstract class Jirafe_Analytics_Model_Api2_Resource extends Mage_Api2_Model_Reso
      */
     public function dispatch()
     {
+        Mage::log($this->getActionType() . $this->getOperation());
         switch ($this->getActionType() . $this->getOperation()) {
             /* Function */
             case self::ACTION_TYPE_FUNCTION . self::OPERATION_UPDATE:
                 $this->_errorIfMethodNotExist('_function');
                 $requestData = $this->getRequest()->getBodyParams();
                 if (empty($requestData)) {
-                    $this->_critical(self::HISTORY_FUNCTION_INVALID);
+                    $this->_critical(self::REQUEST_FUNCTION_INVALID);
                 }
                 $filteredData = $this->getFilter()->in($requestData);
                 if (empty($filteredData)) {
-                    $this->_critical(self::HISTORY_FUNCTION_INVALID);
+                    $this->_critical(self::REQUEST_FUNCTION_INVALID);
                 }
                 $this->_function($filteredData);
                 $this->_render($this->getResponse()->getMessages());
@@ -104,6 +106,8 @@ abstract class Jirafe_Analytics_Model_Api2_Resource extends Mage_Api2_Model_Reso
                 self::FIELD_MAPPING_ERROR_INVALID_FIELD => Mage_Api2_Model_Server::HTTP_BAD_REQUEST,
                 self::FIELD_MAPPING_ERROR_INVALID_TYPE => Mage_Api2_Model_Server::HTTP_BAD_REQUEST,
                 self::FIELD_MAPPING_REQUEST_DATA_INVALID => Mage_Api2_Model_Server::HTTP_BAD_REQUEST,
+                self::REQUEST_FUNCTION_INVALID => Mage_Api2_Model_Server::HTTP_BAD_REQUEST,
+                self::REQUEST_FUNCTION_NO_DATA => Mage_Api2_Model_Server::HTTP_BAD_REQUEST
             ));
     }
 }
