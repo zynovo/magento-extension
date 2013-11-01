@@ -48,13 +48,40 @@ class Jirafe_Analytics_Model_Api2_History_Rest extends Jirafe_Analytics_Model_Ap
             
             Mage::helper('jirafe_analytics')->overridePhpSettings( $params );
             
+            $element = isset($params['element'] ) ? trim( $params['element'] ) : null;
+            $startDate = isset($params['start_date'] ) ? trim( $params['start_date'] ) : null;
+            $endDate = isset($params['end_date'] ) ? trim( $params['end_date'] ) : null;
+            
+            /**
+             * If element name not passed through parameters, convert all element types 
+             */
+            $all = $element ? false : true;
+            
             $history = array();
-            $history = array_merge($history, Mage::getModel('jirafe_analytics/cart')->getHistoricalData() );
-            $history = array_merge($history, Mage::getModel('jirafe_analytics/category')->getHistoricalData() );
-            $history = array_merge($history, Mage::getModel('jirafe_analytics/customer')->getHistoricalData() );
-            $history = array_merge($history, Mage::getModel('jirafe_analytics/employee')->getHistoricalData() );
-            $history = array_merge($history, Mage::getModel('jirafe_analytics/order')->getHistoricalData() );
-            $history = array_merge($history, Mage::getModel('jirafe_analytics/product')->getHistoricalData() );
+            
+            if ( $element === 'cart' || $all ) {
+                $history = array_merge($history, Mage::getModel('jirafe_analytics/cart')->getHistoricalData( $startDate, $endDate ) );
+            }
+            
+            if ( $element === 'category' || $all ) {
+                $history = array_merge($history, Mage::getModel('jirafe_analytics/category')->getHistoricalData( $startDate, $endDate ) );
+            }
+            
+            if ( $element === 'customer' || !$all ) {
+                $history = array_merge($history, Mage::getModel('jirafe_analytics/customer')->getHistoricalData( $startDate, $endDate ) );
+            }
+            
+            if ( $element === 'employee' || $all ) {
+                $history = array_merge($history, Mage::getModel('jirafe_analytics/employee')->getHistoricalData( $startDate, $endDate ) );
+            }
+            
+            if ( $element === 'order' || $all ) {
+                $history = array_merge($history, Mage::getModel('jirafe_analytics/order')->getHistoricalData( $startDate, $endDate ) );
+            }
+            
+            if ( $element === 'product' || $all ) {
+                $history = array_merge($history, Mage::getModel('jirafe_analytics/product')->getHistoricalData( $startDate, $endDate ) );
+            }
             
             foreach ($history as $item) {
                 $data = Mage::getModel('jirafe_analytics/data');

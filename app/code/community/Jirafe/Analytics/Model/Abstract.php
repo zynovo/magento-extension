@@ -144,6 +144,43 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
     }
     
     /**
+     * Return string of attributes to select from a collection
+     *
+     * @param string  $element
+     * @return string
+     *
+     */
+    
+    protected function _getAttributesToSelect( $element )
+    {
+        try {
+            if ($element) {
+                
+                $attributes = array();
+                
+                $fields = $this->_getMagentoFieldsByElement( $element );
+                
+                foreach( $fields as $field ) {
+                    if (!strpos($field,'|')) {
+                        $attributes[] = $field;
+                    }
+                }
+                
+                if ( !in_array('store_id',$attributes) ) {
+                    $attributes[] = 'store_id';
+                }
+                return $attributes;
+            } else {
+                return array();
+            }
+    
+        } catch (Exception $e) {
+            Mage::throwException('FIELD MAPPING ERROR Jirafe_Analytics_Model_Abstract::_getFieldMap(): ' . $e->getMessage());
+        }
+    }
+    
+    
+    /**
      * Flatten arrays structure recursively
      * 
      * @param array   $inArray

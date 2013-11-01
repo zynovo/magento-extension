@@ -139,18 +139,35 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
      * @return array
      */
     
-    public function getHistoricalData()
+    public function getHistoricalData( $startDate = null, $endDate = null )
     {
         try {
             $data = array();
             
-            $orders = Mage::getModel('sales/order')
-                ->getCollection();
+            $orders = Mage::getModel('sales/order')->getCollection()->getSelect();
+
+            if ($columns = $this->_getAttributesToSelect( 'order' ) ) {
+                $orders->reset(Zend_Db_Select::COLUMNS)->columns( $this->_getAttributesToSelect( 'order' ) );
+            }
             
-            foreach($orders as $order) {
-                $data[] = array(
+            if ( $startDate && $endDate ){
+                $where = "created_at BETWEEN '$startDate' AND '$endDate'";
+            } else if ( $startDate && !$endDate ){
+                $where = "created_at >= '$startDate'";
+            } else if ( !$startDate && $endDate ){
+                $where = "created_at <= 'endDate'";
+            } else {
+                $where = null;
+            }
+            
+            if ($where) {
+                $orders->where( $where );
+            }
+            
+            foreach($orders->query() as $order) {
+                 $data[] = array(
                     'type_id' => Jirafe_Analytics_Model_Data_Type::ORDER,
-                    'store_id' => $order->getStoreId(),
+                    'store_id' => $order['store_id'],
                     'json' => $this->getJson( $order )
                 );
             }
