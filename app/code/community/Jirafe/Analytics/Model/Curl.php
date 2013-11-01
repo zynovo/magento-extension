@@ -253,8 +253,8 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
     
     
     /**
-     * Send heartbeat to Jirafe via REST. Trigger by cron
-     *
+     * Send heartbeat to Jirafe via REST + purge old data
+     * Trigger by cron
      * @return array
      * @throws Exception if unable to send heartbeat
      */
@@ -277,6 +277,19 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
             if ( @$response['http_code'] != '200' ) {
                 Mage::helper('jirafe_analytics')->log( 'ERROR', 'Jirafe_Analytics_Model_Curl::heartbeat()', json_encode( $response ) );
             }
+            
+            /**
+             * Purge processed data older than Mage::getStoreConfig('jirafe_analytics/general/purge_time') minutes
+             */
+            
+            Mage::getModel('jirafe_analytics/data')->purgeData();
+            
+            Mage::getModel('jirafe_analytics/batch')->purgeData();
+            
+            /**
+             * Purge log messages older than Mage::getStoreConfig('jirafe_analytics/debug/purge_time') minutes
+             */
+            Mage::getModel('jirafe_analytics/log')->purgeData();
             
             return $response;
         } catch (Exception $e) {

@@ -120,14 +120,16 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
             /**
              * Performance tuning options: override server php settings
              */
-            
             Mage::helper('jirafe_analytics')->overridePhpSettings( $params );
             
             /**
              * Get user configurable maximum size of json object in bytes
              */
-            $maxSize = Mage::getStoreConfig('jirafe_analytics/curl/max_size');
-            
+            if ( isset( $params['json_max_size'] ) ) {
+                $maxSize = intval( $params['json_max_size'] );
+            } else {
+                $maxSize = Mage::getStoreConfig('jirafe_analytics/curl/max_size');
+            }
             /**
              * Separate data by store id since each store has a separate site_id and oauth token
              * 
@@ -249,5 +251,31 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
             Mage::throwException('BATCH DATA ERROR: Jirafe_Analytics_Model_Data::_saveBatch(): ' . $e->getMessage());
         }
     }
+    
+    /**
+     * Purge data
+     *
+     * @return boolean
+     * @throws Exception if failure to purge data
+     */
+    public function purgeData()
+    {
+        try {
+            $minutes = Mage::getStoreConfig('jirafe_analytics/general/purge_time');
+            if ( intval($minutes) > 15 ) {
+                $resource = Mage::getSingleton('core/resource');
+                $sql = sprintf("DELETE FROM %s WHERE `id` IN (SELECT `data_id` FROM %s) AND TIMESTAMPDIFF(MINUTE,`captured_dt`,'%s') > %d",
+                                $resource->getTableName('jirafe_analytics/data'),
+                                $resource->getTableName('jirafe_analytics/batch_data'),
+                                Mage::helper('jirafe_analytics')->getCurrentDt(),
+                                $minutes);
+                $connection = $resource->getConnection('core_write')->query($sql);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception $e) {
+            Mage::throwException('DATA ERROR: Jirafe_Analytics_Model_Data::purge(): ' . $e->getMessage());
+        }
+    }
 }
-

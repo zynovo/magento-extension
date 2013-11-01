@@ -305,11 +305,13 @@
                 <event_api_url>sandbox-event-api.jirafe.net/v2/</event_api_url>
                 <access_token>582fc79df0434793ecf74c78cdcedd7ca9f0a119</access_token>
                 <heartbeat_id>1000</heartbeat_id>
+                <purge_time>10080</purge_time>
             </general>
             <debug>
                 <logging>0</logging>
                 <server_load>0</server_load>
                 <type>database</type>
+                <purge_time>10080</purge_time>
             </debug>
             <curl>
                 <threading>multi</threading>
