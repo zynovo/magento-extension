@@ -124,9 +124,6 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
             case 'pending':
                 return 'placed';
                 break;
-            case 'complete':
-                return 'accepted';
-                break;
             case 'canceled':
                 return 'cancelled';
                 break; 
