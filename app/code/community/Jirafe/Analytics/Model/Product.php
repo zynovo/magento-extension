@@ -310,18 +310,30 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
     
     /**
      * Create array of product historical data
-     *
+     * 
+     * @param string $startDate
+     * @param string $endDate
      * @return array
      */
     
-    public function getHistoricalData()
+    public function getHistoricalData( $startDate = null, $endDate = null )
     {
         try {
             $data = array();
             
+            
             $products = Mage::getModel('catalog/product')
                 ->getCollection()
-                ->addAttributeToSelect('name');
+                ->addAttributeToSelect('name')
+                ->addAttributeToSelect('sku');
+            
+            if ( $startDate ) {
+                $products->addAttributeToFilter('created_at', array('gteq' => $startDate));
+            }
+            
+            if ( $endDate ) {
+                $products->addAttributeToFilter('created_at', array('lteq' => $endDate));
+            }
             
             foreach($products as $product) {
                 $data[] = array(

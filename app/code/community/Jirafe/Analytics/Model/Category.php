@@ -65,16 +65,26 @@ class Jirafe_Analytics_Model_Category extends Jirafe_Analytics_Model_Abstract
     /**
      * Create array of category historical data
      *
+     * @param string $startDate
+     * @param string $endDate
      * @return array
      */
     
-    public function getHistoricalData()
+    public function getHistoricalData( $startDate = null, $endDate = null )
     {
         try {
             $data = array();
             $categories = Mage::getModel('catalog/category')
                 ->getCollection()
                 ->addAttributeToSelect('name');
+            
+            if ( $startDate ) {
+                $categories->addAttributeToFilter('created_at', array('gteq' => $startDate));
+            }
+            
+            if ( $endDate ) {
+                $categories->addAttributeToFilter('created_at', array('lteq' => $endDate));
+            }
             
             foreach($categories as $category) {
                 $data[] = array(

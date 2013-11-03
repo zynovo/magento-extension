@@ -19,15 +19,25 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
      * @return mixed
      */
     
-    public function getItems( $order = null )
+    public function getItems( $orderId = null )
     {
         try {
-            if ($order) {
+            if ($orderId) {
+                $itemColumns = $this->_getAttributesToSelect( 'order_item' );
+                $itemColumns[] = 'product_id';
+                
+                $items = Mage::getModel('sales/order_item')
+                    ->getCollection()
+                    ->getSelect()
+                    ->reset(Zend_Db_Select::COLUMNS)
+                    ->columns( $itemColumns )
+                    ->where("order_id = $orderId")
+                    ->query();
                 
                 $count = 1;
                 $data = array();
                 
-                foreach( $order['items'] as $item ) {
+                foreach( $items as $item ) {
                     
                     /**
                      * Get field map array

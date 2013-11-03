@@ -19,7 +19,7 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
      * @return mixed
      */
     
-    public function getArray( $order = null )
+    public function getArray( $order = null, $items = null, $payment = null )
     {
         try {
             
@@ -31,14 +31,18 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
             $fieldMap = $this->_getFieldMap( 'order', $order );
             
             if ($status == 'cancelled') {
+                
                 $data = array(
                     $fieldMap['order_number']['api'] => $order['increment_id'],
                     'status' => $status,
                     $fieldMap['cancel_date']['api'] => $this->_formatDate( $order['updated_at'] )
                 );
+                
             } else {
                 
-                $items = Mage::getModel('jirafe_analytics/order_item')->getItems( $order );
+                $order['payment'] = Mage::getModel('jirafe_analytics/order_payment')->getPayment( $order['entity_id'] );
+                
+                $items = Mage::getModel('jirafe_analytics/order_item')->getItems( $order['entity_id'] );
                 
                 $data = array(
                     $fieldMap['order_number']['api'] => $fieldMap['order_number']['magento'],
@@ -93,7 +97,6 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
         }
     }
     
-    
     /**
      * Convert order array into JSON object
      *
@@ -110,6 +113,7 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
         }
         
     }
+    
     
     /**
      * Map Magento order status values to Jirafe API values
@@ -142,13 +146,14 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
     public function getHistoricalData( $startDate = null, $endDate = null )
     {
         try {
-            $data = array();
             
+            $columns = $this->_getAttributesToSelect( 'order' );
+            $columns[] = 'store_id';
+            $columns[] = 'entity_id';
+            $columns[] = 'status';
+            $columns[] = 'customer_id';
             $orders = Mage::getModel('sales/order')->getCollection()->getSelect();
-
-            if ($columns = $this->_getAttributesToSelect( 'order' ) ) {
-                $orders->reset(Zend_Db_Select::COLUMNS)->columns( $this->_getAttributesToSelect( 'order' ) );
-            }
+            $orders->reset(Zend_Db_Select::COLUMNS)->columns( $columns );
             
             if ( $startDate && $endDate ){
                 $where = "created_at BETWEEN '$startDate' AND '$endDate'";
@@ -164,14 +169,18 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
                 $orders->where( $where );
             }
             
+            $data = array();
+            
             foreach($orders->query() as $order) {
-                 $data[] = array(
+                
+                $data[] = array(
                     'type_id' => Jirafe_Analytics_Model_Data_Type::ORDER,
                     'store_id' => $order['store_id'],
                     'json' => $this->getJson( $order )
                 );
+                
             }
-            
+           
             return $data;
         } catch (Exception $e) {
             Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Order::getHistoricalData()', $e->getMessage());

@@ -242,14 +242,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
         if ( $this->_isEnabled ) {
             try {
                 $order = $observer->getOrder()->getData();
-                if ($order['status'] == 'pending' || $order['status'] == 'cancelled' || $order['status'] == 'complete') {
-                    $order['payment'] = $observer->getOrder()->getPayment()->getData();
-                    
-                    $order['items'] = array();
-                    foreach($observer->getOrder()->getAllVisibleItems() as $item) {
-                        $order['items'][] = $item->getData();
-                    }
-                    
+                if ($order['status'] == 'pending' || $order['status'] == 'cancelled') {
                     $data = Mage::getModel('jirafe_analytics/data');
                     $data->setTypeId( Jirafe_Analytics_Model_Data_Type::ORDER );
                     $data->setJson( Mage::getModel('jirafe_analytics/order')->getJson( $order ) );

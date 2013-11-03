@@ -70,15 +70,26 @@ class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract
     /**
      * Create array of customer historical data
      *
+     * @param string $startDate
+     * @param string $endDate
      * @return array
      */
     
-    public function getHistoricalData() 
+    public function getHistoricalData( $startDate = null, $endDate = null )
     {
         try {
             $data = array();
             $customers = Mage::getModel('customer/customer')->getCollection();
             
+            if ( $startDate ) {
+                $customers->addAttributeToFilter('created_at', array('gteq' => $startDate));
+            }
+            
+            if ( $endDate ) {
+                $customers->addAttributeToFilter('created_at', array('lteq' => $endDate));
+            }
+            
+            Zend_Debug::dump( $customers->getSelect()->__toString());
             foreach($customers as $customer) {
                 $data[] = array(
                     'type_id' => Jirafe_Analytics_Model_Data_Type::CUSTOMER,

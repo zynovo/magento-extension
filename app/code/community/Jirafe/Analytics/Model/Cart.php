@@ -24,12 +24,12 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
         try {
             if ($quote) {
                 
-                $items = Mage::getModel('jirafe_analytics/cart_item')->getItems( $quote );
+                $items = Mage::getModel('jirafe_analytics/cart_item')->getItems( $quote['entity_id'] );
                 /**
                  * Get field map array
                  */
                 
-                $fieldMap = $this->_getFieldMap( 'cart', $quote->getData() );
+                $fieldMap = $this->_getFieldMap( 'cart', $quote );
                 
                 $data = array(
                      $fieldMap['id']['api'] => $fieldMap['id']['magento'],
@@ -44,12 +44,12 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
                      $fieldMap['currency']['api'] => $fieldMap['currency']['magento'],
                     'cookies' => (object) null,
                     'items' => $items,
-                    'previous_items' => $this->_getPreviousItems( $quote->getData('entity_id') ),
-                    'customer' => $this->_getCustomer( $quote->getData() ),
+                    'previous_items' => $this->_getPreviousItems( $quote['entity_id'] ),
+                    'customer' => $this->_getCustomer( $quote ),
                     'visit' => $this->_getVisit()
                     );
                 
-                Mage::getSingleton('core/session')->setJirafePrevQuoteId( $quote->getData('entity_id') );
+                Mage::getSingleton('core/session')->setJirafePrevQuoteId( $quote['entity_id'] );
                 Mage::getSingleton('core/session')->setJirafePrevQuoteItems( $items );
                 
                 return $data;
@@ -100,26 +100,42 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
         
     }
     
-    
     /**
      * Create array of cart historical data
      *
      * @return array
      */
-    
-    public function getHistoricalData()
+    public function getHistoricalData( $startDate = null, $endDate = null )
     {
         try {
+            
+            $columns = $this->_getAttributesToSelect( 'cart' );
+            $columns[] = 'store_id';
+            
+            $collection = Mage::getModel('sales/quote')->getCollection()->getSelect();
+            $collection->reset(Zend_Db_Select::COLUMNS)->columns( $columns );
+            
+            if ( $startDate && $endDate ){
+                $where = "created_at BETWEEN '$startDate' AND '$endDate'";
+            } else if ( $startDate && !$endDate ){
+                $where = "created_at >= '$startDate'";
+            } else if ( !$startDate && $endDate ){
+                $where = "created_at <= 'endDate'";
+            } else {
+                $where = null;
+            }
+            
+            if ($where) {
+                $collection->where( $where );
+            }
+            
             $data = array();
             
-            $quotes = Mage::getModel('sales/quote')
-                ->getCollection();
-            
-            foreach($quotes as $quote) {
+            foreach($collection->query() as $item) {
                 $data[] = array( 
                        'type_id' => Jirafe_Analytics_Model_Data_Type::CART,
-                       'store_id' => $quote->getStoreId(),
-                       'json' => $this->getJson( $quote )
+                       'store_id' => $item['store_id'],
+                       'json' => $this->getJson( $item )
                    );
             }
             
@@ -129,4 +145,5 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
             return false;
         }
     }
+    
 }
