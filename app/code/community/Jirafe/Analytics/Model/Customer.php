@@ -89,7 +89,6 @@ class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract
                 $customers->addAttributeToFilter('created_at', array('lteq' => $endDate));
             }
             
-            Zend_Debug::dump( $customers->getSelect()->__toString());
             foreach($customers as $customer) {
                 $data[] = array(
                     'type_id' => Jirafe_Analytics_Model_Data_Type::CUSTOMER,
