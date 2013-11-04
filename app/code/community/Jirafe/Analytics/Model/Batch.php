@@ -112,7 +112,7 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
                 return false;
             }
         } catch (Exception $e) {
-            Mage::throwException('ERROR', 'Jirafe_Analytics_Model_Batch::process()', $e->getMessage());
+            Mage::throwException('ERROR', 'Jirafe_Analytics_Model_Batch::process()' . $e->getMessage());
         }
     }
     
@@ -147,7 +147,7 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
                 return false;
             }
         } catch (Exception $e) {
-             Mage::throwException('ERROR', 'Jirafe_Analytics_Model_Batch::updateBatch()', $e->getMessage());
+             Mage::throwException('ERROR', 'Jirafe_Analytics_Model_Batch::updateBatch()'  . $e->getMessage());
         }
     }
     

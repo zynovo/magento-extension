@@ -53,9 +53,10 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                 if ($isRoot) {
                     $element['base_product'] = $this->_getBaseProducts( $parentIds );
                     $element['attributes'] = $this->_getAttributes( $product, $fieldMap );
+                    //$element['urls'] = $productUrls;
                     //$element['ancestors'] = array();
                     //$element['vendors'] = (object) null;
-                    //$element['urls'] = (object) null;
+                    
                 }
                 
                 return $element;
@@ -64,7 +65,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             }
             
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::getArray()', $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::getArray()', $e->message, $e);
             return false;
         }
     }
@@ -164,14 +165,15 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                     $category = Mage::getModel('catalog/category')->load( $catId ) ;
                     $data[] = array(
                         'id' => $catId,
-                        'name' => $category->getName());
+                        'name' => $category->getName(),
+                        'urlPath' => $category->getUrlPath());
                 }
                 return $data;
             } else {
                 return array();
             }
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::_getCategories()', $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::_getCategories()', $e->message, $e);
             return false;
         }
     }
@@ -202,7 +204,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             
             return $obj;
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::_getBaseProducts()', $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::_getBaseProducts()', $e->message, $e);
             return false;
         }
     }
@@ -231,7 +233,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             }
             
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::_getParentIds()', $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::_getParentIds()', $e->message, $e);
             return false;
         }
     }
@@ -263,7 +265,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             
             return $obj;
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::_getAttributes()', $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::_getAttributes()', $e->message, $e);
             return false;
         }
     }
@@ -286,7 +288,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                 return array( 'url' => '' );
             }
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::_getImages()', $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::_getImages()', $e->message, $e);
             return false;
         }
     }
@@ -345,7 +347,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             
             return $data;
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::getHistoricalData()', $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::getHistoricalData()', $e->message, $e);
             return false;
         }
     }

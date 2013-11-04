@@ -44,22 +44,35 @@ class Jirafe_Analytics_Helper_Data extends Mage_Core_Helper_Abstract
     /**
      * Write log messages to db
      *
+     * @param  string $type
+     * @param  string $location
      * @param  string $message
+     * @param  Exception $exception
      * @return boolean
      */
     
-    public function log( $type = null, $location = null, $message = null )
+    public function log( $type = null, $location = null, $message = null, $exception = null )
     {
         try {
-            if ( Mage::getStoreConfig('jirafe_analytics/debug/type') == 'db' ) {
-                $log = Mage::getModel('jirafe_analytics/log');
-                $log->setType( $type );
-                $log->setLocation( $location );
-                $log->setMessage( $message );
-                $log->setCreatedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
-                $log->save();
-            } else {
-                Mage::log( "$location: $message ($type):",null,'jirafe_analytics.log');
+            
+            if (get_class($exception) === 'Exception') {
+                Mage::logException($exception);
+            }
+            
+            if ( Mage::getStoreConfig('jirafe_analytics/debug/logging') ) {
+                
+                if ( Mage::getStoreConfig('jirafe_analytics/debug/type') == 'db' ) {
+                    $log = Mage::getModel('jirafe_analytics/log');
+                    $log->setType( $type );
+                    $log->setLocation( $location );
+                    $log->setMessage( $message );
+                    $log->setCreatedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
+                    $log->save();
+                } else {
+                    if (!$exception) {
+                        Mage::log( '$location: ' . $message . '($type)',null,'jirafe_analytics.log');
+                    }
+                }
             }
             return true;
         } catch (Exception $e) {
@@ -96,11 +109,11 @@ class Jirafe_Analytics_Helper_Data extends Mage_Core_Helper_Abstract
                     
                     return true;
                 } else {
-                    Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Helper_Data::logServerLoad()', $e->getMessage());
+                    Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Helper_Data::logServerLoad()', $e->getMessage(), $e);
                     return false;
                 }
             } catch (Exception $e) {
-                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Helper_Data::logServerLoad()', $e->getMessage());
+                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Helper_Data::logServerLoad()', $e->getMessage(), $e);
             }
         }
     }

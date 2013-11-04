@@ -36,7 +36,7 @@ class Jirafe_Analytics_Model_Order_Payment extends Jirafe_Analytics_Model_Order
                 return array();
             }
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Order_Payment::getPayment()', $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Order_Payment::getPayment()', $e->getMessage(), $e);
             return false;
         }
     }
