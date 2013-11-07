@@ -20,28 +20,28 @@ require_once 'Mage/Adminhtml/controllers/Permissions/RoleController.php';
 class Jirafe_Analytics_Model_Install_Admin_Role extends Mage_Adminhtml_Permissions_RoleController
 {
     /**
-     * override parent constructor to mimic controller behavior
+     * Override parent constructor to mimic controller behavior
      */
     public function __construct()
     {
         $request = new Request;
         $response = new Response;
-        
         parent::__construct ($request, $response, array());
     }
     
     /**
-     * create admin permissions role
+     * Create admin permissions role
+     * 
      * @param string $name
      */
-    public function getId( $name = null )
+    public function create( $name = null )
     {
         try {
             $role = Mage::getModel('admin/roles')
                 ->getCollection()
                 ->addFieldToFilter('role_name',array('eq',$name))
                 ->getFirstItem();
-
+            
             if (!$role->getId()) {
                 $resource = '__root__,admin/report,admin/report/jirafe_analytics,admin/system,admin/system/config,admin/system/config/jirafe_analytics';
                 $role = Mage::getModel('admin/roles');
