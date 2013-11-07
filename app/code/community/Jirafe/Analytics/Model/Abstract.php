@@ -53,20 +53,7 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
             
             foreach ( $this->_rootMap[ $element ] as $key => $row ) {
                     
-                    /**
-                     * Check for multi-dimensional array mapping
-                     * i.e. $order['payment']['amount_paid']
-                     * @var array  $multitkey
-                     * @var string $value
-                     */
-                    
-                    $multitkey = explode( '|', $row['magento'] );
-                    
-                    if ( count( $multitkey ) == 2 ) {
-                        $value = @$data[ $multitkey[0] ][ $multitkey[1] ];
-                    } else {
-                        $value = @$data[ $row['magento'] ];
-                    }
+                    $value = @$data[ $row['magento'] ];
                     
                     /**
                      * If value is empty, replace with default value from mapping table

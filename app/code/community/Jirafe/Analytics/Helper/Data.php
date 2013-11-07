@@ -66,7 +66,7 @@ class Jirafe_Analytics_Helper_Data extends Mage_Core_Helper_Abstract
                     $log->setType( $type );
                     $log->setLocation( $location );
                     $log->setMessage( $message );
-                    $log->setCreatedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
+                    $log->setCreatedDt( $this->getCurrentDt() );
                     $log->save();
                 } else {
                     if (!$exception) {
@@ -102,18 +102,18 @@ class Jirafe_Analytics_Helper_Data extends Mage_Core_Helper_Abstract
                     $message = 'SERVER LOAD AVG: ' . number_format($load[0],2) . ' ' . number_format($load[1],2) . ' '. number_format($load[2],2);
                     
                     if ( Mage::getStoreConfig('jirafe_analytics/debug/type') == 'db' ) {
-                        Mage::helper('jirafe_analytics')->log('DEBUG', $location, $message);
+                        $this->log('DEBUG', $location, $message);
                     } else {
                         Mage::log( "$location: $message",null,'jirafe_analytics.log');
                     }
                     
                     return true;
                 } else {
-                    Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Helper_Data::logServerLoad()', $e->getMessage(), $e);
+                    $this->log('ERROR', 'Jirafe_Analytics_Helper_Data::logServerLoad()', $e->getMessage(), $e);
                     return false;
                 }
             } catch (Exception $e) {
-                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Helper_Data::logServerLoad()', $e->getMessage(), $e);
+                $this->log('ERROR', 'Jirafe_Analytics_Helper_Data::logServerLoad()', $e->getMessage(), $e);
             }
         }
     }
@@ -158,7 +158,7 @@ class Jirafe_Analytics_Helper_Data extends Mage_Core_Helper_Abstract
             ini_set('max_execution_time', $this->_maxExecutionTime );
             
             if ( $this->_logging ) {
-                Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::_overridePhpSettings()', 'max_execution_time = ' . $this->_maxExecutionTime );
+                $this->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::_overridePhpSettings()', 'max_execution_time = ' . $this->_maxExecutionTime );
             }
         }
         
@@ -173,7 +173,7 @@ class Jirafe_Analytics_Helper_Data extends Mage_Core_Helper_Abstract
             ini_set("memory_limit", $this->_memoryLimit );
             
             if ( $this->_logging ) {
-                Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::_overridePhpSettings()', 'memory_limit = ' . $this->_memoryLimit );
+                $this->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::_overridePhpSettings()', 'memory_limit = ' . $this->_memoryLimit );
             }
         }
         
@@ -187,7 +187,7 @@ class Jirafe_Analytics_Helper_Data extends Mage_Core_Helper_Abstract
             proc_nice( $this->_procNice );
             
             if ( $this->_logging ) {
-                Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::_overridePhpSettings()', 'proc_nice = ' . $this->_procNice );
+                $this->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::_overridePhpSettings()', 'proc_nice = ' . $this->_procNice );
             }
         }
     }

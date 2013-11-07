@@ -146,10 +146,19 @@
                     <jirafe_analytics_sales_order_place_after>
                         <type>singleton</type>
                         <class>Jirafe_Analytics_Model_Observer</class>
-                        <method>orderSave</method>
+                        <method>orderPlaced</method>
                     </jirafe_analytics_sales_order_place_after>
                 </observers>
             </sales_order_place_after>
+            <sales_order_payment_pay>
+                <observers>
+                    <jirafe_analytics_sales_order_payment_pay>
+                        <type>singleton</type>
+                        <class>Jirafe_Analytics_Model_Observer</class>
+                        <method>orderAccepted</method>
+                    </jirafe_analytics_sales_order_payment_pay>
+                </observers>
+            </sales_order_payment_pay>
         </events>
         <routers>
             <jirafe_analytics>
@@ -228,21 +237,12 @@
                     </jirafe_analytics_action_catalog_product_delete_before>
                 </observers>
             </catalog_product_delete_before>
-            <!-- sales_order_save_after>
-                <observers>
-                    <jirafe_analytics_sales_order_place_after>
-                        <type>singleton</type>
-                        <class>Jirafe_Analytics_Model_Observer</class>
-                        <method>orderSave</method>
-                    </jirafe_analytics_sales_order_place_after>
-                </observers>
-            </sales_order_save_after -->
             <order_cancel_after>
                 <observers>
                     <jirafe_analytics_action_order_cancel>
                         <type>singleton</type>
                         <class>Jirafe_Analytics_Model_Observer</class>
-                        <method>orderCancel</method>
+                        <method>orderCancelled</method>
                     </jirafe_analytics_action_order_cancel>
                 </observers>
             </order_cancel_after>
@@ -325,6 +325,13 @@
                 <memory_limit></memory_limit>
                 <proc_nice></proc_nice>
             </php>
+            <installer>
+                <enabled>1</enabled>
+                <admin_role>Jirafe</admin_role>
+                <admin_role>Jirafe</admin_role>
+                <api2_role>Jirafe</api2_role>
+                <oauth_customer>Jirafe</oauth_customer>
+            </installer>
         </jirafe_analytics>
     </default>
 </config>

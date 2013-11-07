@@ -15,10 +15,11 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
      * Create cart item array of data required by Jirafe API
      *
      * @param  string $quoteId
+     * @param  string $storeId
      * @return mixed
      */
     
-    public function getItems( $quoteId = null )
+    public function getItems( $quoteId = null, $storeId = null )
     {
         try {
             if ($quoteId) {
@@ -49,7 +50,7 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
                         $fieldMap['quantity']['api'] => $fieldMap['quantity']['magento'],
                         $fieldMap['price']['api'] => $fieldMap['price']['magento'],
                         $fieldMap['discount_price']['api'] => $fieldMap['discount_price']['magento'],
-                        'product' => Mage::getModel('jirafe_analytics/product')->getArray( $item['product_id'], false )
+                        'product' => Mage::getModel('jirafe_analytics/product')->getArray( $item['product_id'], $storeId, false, null )
                     );
                     $count++;
                 }

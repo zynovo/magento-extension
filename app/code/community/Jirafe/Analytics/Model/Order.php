@@ -16,38 +16,35 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
      * Create order array of data required by Jirafe API
      *
      * @param array $order
+     * @param  boolean $isEvent
      * @return mixed
      */
     
-    public function getArray( $order = null, $items = null, $payment = null )
+    public function getArray( $order = null, $isEvent = true )
     {
         try {
-            
-            $status = $this->_mapOrderStatus( $order['status'] );
             /**
              * Get field map array
              */
             
             $fieldMap = $this->_getFieldMap( 'order', $order );
             
-            if ($status == 'cancelled') {
+            if ($order['jirafe_status'] == 'cancelled') {
                 
                 $data = array(
                     $fieldMap['order_number']['api'] => $order['increment_id'],
-                    'status' => $status,
+                    'status' => $order['jirafe_status'],
                     $fieldMap['cancel_date']['api'] => $this->_formatDate( $order['updated_at'] )
                 );
                 
             } else {
                 
-                $order['payment'] = Mage::getModel('jirafe_analytics/order_payment')->getPayment( $order['entity_id'] );
-                
-                $items = Mage::getModel('jirafe_analytics/order_item')->getItems( $order['entity_id'] );
+                $items = Mage::getModel('jirafe_analytics/order_item')->getItems( $order['entity_id'], $order['store_id'] );
                 
                 $data = array(
                     $fieldMap['order_number']['api'] => $fieldMap['order_number']['magento'],
                     $fieldMap['cart_id']['api'] => $fieldMap['cart_id']['magento'],
-                    'status' => $status,
+                    'status' => $order['jirafe_status'],
                     $fieldMap['order_date']['api'] => $fieldMap['order_date']['magento'],
                     $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento'],
                     $fieldMap['change_date']['api'] =>$fieldMap['change_date']['magento'],
@@ -55,14 +52,14 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
                     $fieldMap['total']['api'] => $fieldMap['total']['magento'],
                     $fieldMap['total_tax']['api'] => $fieldMap['total_tax']['magento'],
                     $fieldMap['total_shipping']['api'] => $fieldMap['total_shipping']['magento'],
-                    $fieldMap['total_payment_cost']['api'] => $fieldMap['total_payment_cost']['magento'],
+                    'total_payment_cost' => is_numeric($order['amount_paid']) ? floatval( $order['amount_paid'] ) : 0,
                     $fieldMap['total_discounts']['api'] => $fieldMap['total_discounts']['magento'],
                     $fieldMap['currency']['api'] => $fieldMap['currency']['magento'],
-                    'cookies' => $this->_getCookies(),
+                    'cookies' => $isEvent ? $this->_getCookies() : (object) null,
                     'items' => $items,
-                    'previous_items' => $this->_getPreviousItems( $order['entity_id'] ),
+                    'previous_items' => $isEvent ? $this->_getPreviousItems( $order['entity_id'] ) : (object) null,
                     'customer' => $this->_getCustomer( $order ),
-                    'visit' => $this->_getVisit()
+                    'visit' => $isEvent ? $this->_getVisit() : (object) null
                 );
                 
                 Mage::getSingleton('core/session')->setJirafePrevOrderId( $order['entity_id'] );
@@ -101,45 +98,25 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
      * Convert order array into JSON object
      *
      * @param  array $order
+     * @param  boolean $isEvent
      * @return mixed
      */
     
-    public function getJson( $order = null )
+    public function getJson( $order = null, $isEvent = true )
     {
         if ($order) {
-            return json_encode( $this->getArray( $order ) );
+            return json_encode( $this->getArray( $order, $isEvent ) );
         } else {
             return false;
         }
         
     }
     
-    
-    /**
-     * Map Magento order status values to Jirafe API values
-     *
-     * @param  string $status
-     * @return string
-     */
-    
-    protected function _mapOrderStatus( $status )
-    {
-        switch ( $status ) {
-            case 'pending':
-                return 'placed';
-                break;
-            case 'canceled':
-                return 'cancelled';
-                break; 
-            default:
-                return $status;
-                break;
-        }
-    }
-    
     /**
      * Create array of product historical data
-     *
+     * 
+     * @param string $startDate
+     * @param string $endDate
      * @return array
      */
     
@@ -150,10 +127,16 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
             $columns = $this->_getAttributesToSelect( 'order' );
             $columns[] = 'store_id';
             $columns[] = 'entity_id';
-            $columns[] = 'status';
             $columns[] = 'customer_id';
-            $orders = Mage::getModel('sales/order')->getCollection()->getSelect();
-            $orders->reset(Zend_Db_Select::COLUMNS)->columns( $columns );
+            $columns[] = 'p.amount_paid';
+            
+            $orders = Mage::getModel('sales/order')
+                ->getCollection()
+                ->getSelect()
+                ->joinLeft( array('p'=>Mage::getSingleton('core/resource')->getTableName('sales/order_payment')), 'main_table.entity_id = p.parent_id')
+                ->reset(Zend_Db_Select::COLUMNS)
+                ->columns( $columns )
+                ->columns( "IF(main_table.status = 'canceled', 'canceled', IF(p.amount_paid is NULL, 'placed','accepted')) as jirafe_status");
             
             if ( $startDate && $endDate ){
                 $where = "created_at BETWEEN '$startDate' AND '$endDate'";
@@ -176,7 +159,7 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
                 $data[] = array(
                     'type_id' => Jirafe_Analytics_Model_Data_Type::ORDER,
                     'store_id' => $order['store_id'],
-                    'json' => $this->getJson( $order )
+                    'json' => $this->getJson( $order, false )
                 );
                 
             }

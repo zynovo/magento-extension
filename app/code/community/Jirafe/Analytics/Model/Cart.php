@@ -16,15 +16,16 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
      * Create cart array of data required by Jirafe API
      *
      * @param Mage_Sales_Model_Quote $quote
+     * @param  boolean $isEvent
      * @return mixed
      */
     
-    public function getArray( $quote = null ) 
+    public function getArray( $quote = null, $isEvent = true  ) 
     {
         try {
             if ($quote) {
                 
-                $items = Mage::getModel('jirafe_analytics/cart_item')->getItems( $quote['entity_id'] );
+                $items = Mage::getModel('jirafe_analytics/cart_item')->getItems( $quote['entity_id'], $quote['store_id'] );
                 /**
                  * Get field map array
                  */
@@ -42,11 +43,11 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
                      $fieldMap['total_payment_cost']['api'] => $fieldMap['total_payment_cost']['magento'],
                      $fieldMap['total_discounts']['api'] => $fieldMap['total_discounts']['magento'],
                      $fieldMap['currency']['api'] => $fieldMap['currency']['magento'],
-                    'cookies' => (object) null,
+                    'cookies' => $isEvent ? $this->_getCookies() : (object) null,
                     'items' => $items,
-                    'previous_items' => $this->_getPreviousItems( $quote['entity_id'] ),
+                    'previous_items' => $isEvent ? $this->_getPreviousItems( $quote['entity_id'] ) : (object) null,
                     'customer' => $this->_getCustomer( $quote ),
-                    'visit' => $this->_getVisit()
+                    'visit' => $isEvent ? $this->_getVisit() : (object) null
                     );
                 
                 Mage::getSingleton('core/session')->setJirafePrevQuoteId( $quote['entity_id'] );
@@ -57,7 +58,7 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
                 return false;
             }
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log( 'ERROR', 'Jirafe_Analytics_Model_Cart::getArray()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log( 'ERROR', 'Jirafe_Analytics_Model_Cart::getArray()', $e);
             return false;
         }
     }
@@ -65,7 +66,7 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
     /**
      * Get items from previous instance of cart from session
      * 
-     * @param int $quoteId
+     * @param string $quoteId
      * @return mixed
      */
     
@@ -78,7 +79,7 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
                 return array();
             }
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log( 'ERROR', 'Jirafe_Analytics_Model_Cart::_getPreviousItems()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log( 'ERROR', 'Jirafe_Analytics_Model_Cart::_getPreviousItems()', $e);
             return false;
         }
     }
@@ -87,13 +88,14 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
      * Convert cart array into JSON object
      *
      * @param  array $quote
+     * @param  boolean $isEvent
      * @return mixed
      */
     
-    public function getJson( $quote = null )
+    public function getJson( $quote = null, $isEvent = true   )
     {
         if ($quote) {
-            return json_encode( $this->getArray($quote) );
+            return json_encode( $this->getArray( $quote, $isEvent ) );
         } else {
             return false;
         }
@@ -102,7 +104,9 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
     
     /**
      * Create array of cart historical data
-     *
+     * 
+     * @param string $startDate
+     * @param string $endDate
      * @return array
      */
     public function getHistoricalData( $startDate = null, $endDate = null )
@@ -135,13 +139,13 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
                 $data[] = array( 
                        'type_id' => Jirafe_Analytics_Model_Data_Type::CART,
                        'store_id' => $item['store_id'],
-                       'json' => $this->getJson( $item )
+                       'json' => $this->getJson( $item, false )
                    );
             }
             
             return $data;
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Cart::getHistoricalData()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Cart::getHistoricalData()', $e);
             return false;
         }
     }

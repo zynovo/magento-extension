@@ -155,7 +155,6 @@ $installer->run("
         ('order', 'total', 'total', 'grand_total', 'float', '' ),
         ('order', 'total_tax', 'total_tax', 'tax_amount', 'float', '' ),
         ('order', 'total_shipping', 'total_shipping', 'shipping_amount', 'float', '' ),
-        ('order', 'total_payment_cost', 'total_payment_cost', 'payment|amount_paid', 'float', '' ),
         ('order', 'total_discounts', 'total_discounts', 'discount_amount', 'float', '' ),
         ('order', 'currency', 'currency', 'order_currency_code', 'string', '' ),
         ('order', 'cancel_date', 'cancel_date', 'updated_at', 'datetime', '' ),

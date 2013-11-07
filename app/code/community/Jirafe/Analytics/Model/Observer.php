@@ -139,7 +139,6 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
         }
     }
     
-   
     /**
      * Capture customer save event
      *
@@ -191,7 +190,6 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
         }
     }
     
-    
     /**
      * Capture customer load event
      *
@@ -231,35 +229,95 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
     }
     
     /**
-     * Capture order save event
+     * Capture order placed event
      *
      * @param Varien_Event_Observer $observer
      * @return boolean
      */
     
-    public function orderSave( Varien_Event_Observer $observer )
+    public function orderPlaced( Varien_Event_Observer $observer )
     {
         if ( $this->_isEnabled ) {
             try {
                 $order = $observer->getOrder()->getData();
-                if ($order['status'] == 'pending' || $order['status'] == 'cancelled') {
-                    $data = Mage::getModel('jirafe_analytics/data');
-                    $data->setTypeId( Jirafe_Analytics_Model_Data_Type::ORDER );
-                    $data->setJson( Mage::getModel('jirafe_analytics/order')->getJson( $order ) );
-                    $data->setStoreId( $order['store_id'] );
-                    $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
-                    $data->save();
-                    return true;
-                } else {
-                    return false;
-                }
+                $order['amount_paid'] = null;
+                $order['jirafe_status'] = 'placed';
+                return $this->_orderSave( $order );
             } catch (Exception $e) {
-                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::orderPlaceAfter()', $e->getMessage(), $e);
+                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::orderPlaced()', $e->getMessage(), $e);
                 return false;
             }
         }
     }
     
+    /**
+     * Capture order accepted event
+     *
+     * @param Varien_Event_Observer $observer
+     * @return boolean
+     */
+    
+    public function orderAccepted( Varien_Event_Observer $observer )
+    {
+        if ( $this->_isEnabled ) {
+            try {
+                $order = $observer->getOrder()->getData();
+                $order['amount_paid'] = $observer->getOrder()->getPayment()->getAmountPaid();
+                $order['jirafe_status'] = 'accepted';
+                return $this->_orderSave( $order );
+            } catch (Exception $e) {
+                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::orderAccepted()', $e->getMessage(), $e);
+                return false;
+            }
+        }
+    }
+    
+    /**
+     * Capture order cancelled event
+     *
+     * @param Varien_Event_Observer $observer
+     * @return boolean
+     */
+    
+    public function orderCancelled( Varien_Event_Observer $observer )
+    {
+        if ( $this->_isEnabled ) {
+            try {
+                $order = $observer->getOrder()->getData();
+                $order['jirafe_status'] = 'cancelled';
+                return $this->_orderSave( $order );
+            } catch (Exception $e) {
+                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::orderAccepted()', $e->getMessage(), $e);
+                return false;
+            }
+        }
+    }
+    
+    /**
+     * Convert order to JSON and save
+     *
+     * @param Mage_Sales_Model_Order $order
+     * @param string $status
+     * @return boolean
+     */
+    
+    protected function _orderSave( $order = null )
+    {
+        if ( $this->_isEnabled && $order ) {
+            try {
+                $data = Mage::getModel('jirafe_analytics/data');
+                $data->setTypeId( Jirafe_Analytics_Model_Data_Type::ORDER );
+                $data->setJson( Mage::getModel('jirafe_analytics/order')->getJson( $order ) );
+                $data->setStoreId( $order['store_id'] );
+                $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
+                $data->save();
+                return true;
+            } catch (Exception $e) {
+                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_orderSave()', $e->getMessage(), $e);
+                return false;
+            }
+        }
+    }
     /**
      * Capture order cancel events
      * 

@@ -22,11 +22,12 @@ class Jirafe_Analytics_Model_Install extends Jirafe_Analytics_Model_Abstract
     public function createCredentials()
     {
         try {
-            $apiRoleId = $this->_getApiRoleId('Jirafe');
-            $this->_setApi2AclRoles( $apiRoleId );
-            $this->_setAdminRoleAndAcl('Jirafe');
-            
+           // $apiRoleId = $this->_getApiRoleId(Mage::getStoreConfig('jirafe_analytics/authentication/admin_role'));
+           // $this->_setApi2AclRoles( $apiRoleId );
+            $this->_setAdminRoleAndAcl(Mage::getStoreConfig('jirafe_analytics/authentication/api2_role'));
+            $this->_setOauthCustomer(Mage::getStoreConfig('jirafe_analytics/authentication/oauth_customer'));
         } catch (Exception $e) {
+            Zend_Debug::dump($e);
             Mage::throwException('DATA ERROR: Jirafe_Analytics_Model_Install::createCredentials(): ' . $e->getMessage());
         }
     }
@@ -70,7 +71,7 @@ class Jirafe_Analytics_Model_Install extends Jirafe_Analytics_Model_Abstract
     {
         try {
             if ( $roleName) {
-                return Mage::getModel('jirafe_analytics/install_admin_role')->getId( $roleName );
+                return Mage::getModel('jirafe_analytics/install_admin_role')->create( $roleName );
             } else {
                 return null;
             }
@@ -78,45 +79,23 @@ class Jirafe_Analytics_Model_Install extends Jirafe_Analytics_Model_Abstract
             Mage::throwException('DATA ERROR: Jirafe_Analytics_Model_Install::_setAdminRoleAndAcl(): ' . $e->getMessage());
         }
     }
+
     /**
-     * Get Admin User Id. If doesnt' exist, create new
+     * Set Oauth Customer. If role doesn't exist, createit
      *
-     * @return string
+     * @return string $name
      */
-    protected function _getAdminUserId( $username = null, $firstname = null, $lastname = null, $email = null, $password = null )
+    protected function _setOauthCustomer( $name = null )
     {
-        /*
         try {
-            if ( $username ) {
-                $resource = Mage::getSingleton('core/resource');
-                $user = $resource->getConnection('core_read')
-                    ->fetchCol("SELECT `user_id` FROM `admin_user` WHERE `username` = '$username' LIMIT 1");
-                
-                if (count($user)) {
-                    return $user[0];
-                } else {
-                    $sql = sprintf("INSERT INTO `admin_user` (`firstname`, `lastname`, `email`, `username`, `password`, `created`, `modified`, `is_active`, `extra`) 
-                                    VALUES ('%s', '%s', '%s', '%s', '%s', CURDATE(), CURDATE(), 1, 'N;')",
-                                    $firstname,
-                    $lastname,
-                    $username,
-                    $email;
-                    )
-                    $resource->getConnection('core_write')
-                        ->query("INSERT INTO `admin_user` (`firstname`, `lastname`, `email`, `username`, `password`, `created`, `modified`, `is_active`, `extra`) 
-VALUES ('Jirafe', 'User', 'test@jirafe.com', 'Jirafe2', 'c48b70a36c721f9e0bcc70a3c0edd0fa2d6b0831f3e8c6d36a292fa39395de22:6egPaEJRBCwehhNK9vbTcLJJI2VVjemh', '2013-11-05 21:53:42', '2013-11-05 21:53:42', 1, 'N;')
-                                                        ");
-                    $id = $resource->getConnection('core_read')
-                    ->fetchCol("SELECT LAST_INSERT_ID()");
-                    return $id[0];
-                }
+            if ( $roleName) {
+                return Mage::getModel('jirafe_analytics/install_oauth_customer')->create( $name );
             } else {
-                return false;
+                return null;
             }
         } catch (Exception $e) {
-            Mage::throwException('DATA ERROR: Jirafe_Analytics_Model_Install::_getApiRoleId(): ' . $e->getMessage());
+            Mage::throwException('DATA ERROR: Jirafe_Analytics_Model_Install::_setOauthCustomer(): ' . $e->getMessage());
         }
-        */
     }
     
     /**

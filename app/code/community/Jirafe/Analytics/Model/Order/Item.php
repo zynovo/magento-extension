@@ -19,7 +19,7 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
      * @return mixed
      */
     
-    public function getItems( $orderId = null )
+    public function getItems( $orderId = null, $storeId = null )
     {
         try {
             if ($orderId) {
@@ -54,7 +54,7 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
                         'status' => 'accepted',
                         $fieldMap['price']['api'] => $fieldMap['price']['magento'],
                         $fieldMap['discount_price']['api'] => $fieldMap['discount_price']['magento'],
-                        'product' => Mage::getModel('jirafe_analytics/product')->getArray( $item['product_id'], false )
+                        'product' => Mage::getModel('jirafe_analytics/product')->getArray( $item['product_id'], $storeId, false, null)
                     );
                     
                     $count++;
