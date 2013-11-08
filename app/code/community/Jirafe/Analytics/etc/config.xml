@@ -328,7 +328,6 @@
             <installer>
                 <enabled>1</enabled>
                 <admin_role>Jirafe</admin_role>
-                <admin_role>Jirafe</admin_role>
                 <api2_role>Jirafe</api2_role>
                 <oauth_customer>Jirafe</oauth_customer>
             </installer>

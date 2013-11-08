@@ -11,10 +11,6 @@
  * 
  */
 
-class Request extends Zend_Controller_Request_Abstract {}
-
-class Response extends Zend_Controller_Response_Abstract {}
-
 require_once 'Mage/Oauth/controllers/Adminhtml/Oauth/ConsumerController.php';
 
 class Jirafe_Analytics_Model_Install_Oauth_Customer extends Mage_Oauth_Adminhtml_Oauth_ConsumerController
@@ -24,8 +20,8 @@ class Jirafe_Analytics_Model_Install_Oauth_Customer extends Mage_Oauth_Adminhtml
      */
     public function __construct()
     {
-        $request = new Request;
-        $response = new Response;
+        $request = Mage::getSingleton('jirafe_analytics/install_request');
+        $response = Mage::getSingleton('jirafe_analytics/install_response');
         parent::__construct ($request, $response, array());
     }
     
@@ -41,7 +37,7 @@ class Jirafe_Analytics_Model_Install_Oauth_Customer extends Mage_Oauth_Adminhtml
                 ->getCollection()
                 ->addFieldToFilter('name',array('eq',$name))
                 ->getFirstItem();
-            Zend_Debug::dump($customer);
+            
             if (!$customer->getId()) {
                 $customer = Mage::getModel('oauth/consumer');
                 $customer->setName($name);

@@ -11,10 +11,6 @@
  * 
  */
 
-class Request extends Zend_Controller_Request_Abstract {}
-
-class Response extends Zend_Controller_Response_Abstract {}
-
 require_once 'Mage/Adminhtml/controllers/Permissions/RoleController.php';
 
 class Jirafe_Analytics_Model_Install_Admin_Role extends Mage_Adminhtml_Permissions_RoleController
@@ -24,8 +20,8 @@ class Jirafe_Analytics_Model_Install_Admin_Role extends Mage_Adminhtml_Permissio
      */
     public function __construct()
     {
-        $request = new Request;
-        $response = new Response;
+        $request = Mage::getSingleton('jirafe_analytics/install_request');
+        $response = Mage::getSingleton('jirafe_analytics/install_response');
         parent::__construct ($request, $response, array());
     }
     
