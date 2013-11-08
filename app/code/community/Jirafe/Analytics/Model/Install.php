@@ -17,18 +17,37 @@ class Jirafe_Analytics_Model_Install extends Jirafe_Analytics_Model_Abstract
     /**
      * Create Oauth admin credentials
      *
-     * @return boolean
+     * @return string
      */
     public function createCredentials()
     {
         try {
-            $this->_setApi2Role(Mage::getStoreConfig('jirafe_analytics/installer/api2_role'));
-            $this->_setAdminRole(Mage::getStoreConfig('jirafe_analytics/installer/admin_role'));
-            $this->_setOauthCustomer(Mage::getStoreConfig('jirafe_analytics/installer/oauth_customer'));
-            return true;
+            $message = "Installing administrative credentials for Jirafe Analytics module . .  .<BR/><BR/>";
+            
+            $api2Role = Mage::getStoreConfig('jirafe_analytics/installer/api2_role');
+            $adminRole = Mage::getStoreConfig('jirafe_analytics/installer/admin_role');
+            $oauthCustomer = Mage::getStoreConfig('jirafe_analytics/installer/oauth_customer');
+            
+            if ( $this->_setApi2Role( $api2Role ) ) {
+                $message .= "Successfully installed '$api2Role' Web Services Role.<BR/>";
+            } else {
+                $message .= "Failure installing '$api2Role' Web Services Role.<BR/>";
+            }
+            
+            if ( $this->_setAdminRole( $adminRole ) ) {
+                $message .= "Successfully installed '$adminRole' Admin Permissions Role.<BR/>";
+            } else {
+                $message .= "Failure installing '$adminRole' Admin Permissions Role.<BR/>";
+            }
+            
+            if ( $this->_setOauthCustomer( $oauthCustomer ) ) {
+                $message .= "Successfully installed '$oauthCustomer' Oauth Customer.<BR/>";
+            } else {
+                $message .= "Failure installing '$oauthCustomer' Oauth Customer.<BR/>";
+            }
+            return $message;
         } catch (Exception $e) {
-            Zend_Debug::dump($e);
-            Mage::throwException('DATA ERROR: Jirafe_Analytics_Model_Install::credentials(): ' . $e->getMessage());
+            return 'DATA ERROR: Jirafe_Analytics_Model_Install::credentials(): ' . $e->getMessage();
         }
     }
     
