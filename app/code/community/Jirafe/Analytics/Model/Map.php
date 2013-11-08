@@ -204,11 +204,6 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
             
             if ( $order = Mage::getModel('sales/order')->getCollection()->getFirstItem()->getData() ) {
                 $output = $this->_flattenArray( array_keys( $order ) );
-                
-                if ( $payment = Mage::getModel('sales/order')->getCollection()->getFirstItem()->getPayment()->getData() ) {
-                    $output = array_merge( $output, $this->_flattenArray( array_keys( $payment ), 'payment' ) );
-                }
-                
             }
             
             return $output;

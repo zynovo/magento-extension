@@ -180,12 +180,11 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
      * Flatten arrays structure recursively
      * 
      * @param array   $inArray
-     * @param string  $subkey
      * @return array
      * @throws Exception if unable to flatten array
      */
     
-    protected function _flattenArray( $inArray = null, $subkey = null )
+    protected function _flattenArray( $inArray = null )
     {
         try {
             $outArray = array();
@@ -193,9 +192,8 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
             if ($inArray) {
                 $flatArray = new RecursiveIteratorIterator(new RecursiveArrayIterator($inArray));
                 
-                
                 foreach($flatArray as $field) {
-                    $outArray[] = ($subkey ? $subkey . '|' : '' ) . $field;
+                    $outArray[] = $field;
                 }
             }
             return $outArray;
