@@ -329,6 +329,11 @@
                 <admin_role>Jirafe</admin_role>
                 <api2_role>Jirafe</api2_role>
                 <oauth_customer>Jirafe</oauth_customer>
+                <admin_username>jirafe</admin_username>
+                <admin_firstname>Jirafe</admin_firstname>
+                <admin_lastname>Jirafe</admin_lastname>
+                <admin_email>jirafe@jirafe.com</admin_email>
+                <admin_is_active>1</admin_is_active>
             </installer>
         </jirafe_analytics>
     </default>

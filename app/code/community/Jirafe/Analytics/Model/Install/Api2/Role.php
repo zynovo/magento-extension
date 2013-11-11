@@ -26,13 +26,16 @@ class Jirafe_Analytics_Model_Install_Api2_Role extends Mage_Api2_Adminhtml_Api2_
     }
     
     /**
-     * Create admin permissions role
+     * Get id for api2 role or create new
      * 
      * @param string $name
      */
-    public function create( $name = null )
+    public function getId()
     {
         try {
+         
+            $name = Mage::getStoreConfig('jirafe_analytics/installer/api2_role');
+            
             $role = Mage::getModel('api2/acl_global_role')
                 ->getCollection()
                 ->addFieldToFilter('role_name',array('eq',$name))
@@ -46,11 +49,9 @@ class Jirafe_Analytics_Model_Install_Api2_Role extends Mage_Api2_Adminhtml_Api2_
              
              $rule = Mage::getModel('api2/acl_global_rule');
              
-             $id = $role->getId();
-             
-             if ($id) {
+             if ($role->getId()) {
                  $collection = $rule->getCollection();
-                 $collection->addFilterByRoleId($id);
+                 $collection->addFilterByRoleId($role->getId());
                  foreach ($collection as $model) {
                      $model->delete();
                  }
@@ -67,16 +68,16 @@ class Jirafe_Analytics_Model_Install_Api2_Role extends Mage_Api2_Adminhtml_Api2_
                      $rule->setId(null)
                          ->isObjectNew(true);
                      
-                     $rule->setRoleId($id)
+                     $rule->setRoleId($role->getId())
                          ->setResourceId($resourceId)
                          ->setPrivilege($privilege)
                          ->save();
                  }
              }
              
-             return true;
+             return $role->getId();
          } catch (Exception $e) {
-             Mage::throwException('ADMIN ROLE ERROR: Jirafe_Analytics_Model_Install_Admin_Role::create(): ' . $e->getMessage());
+             Mage::throwException('ADMIN ROLE ERROR: Jirafe_Analytics_Model_Install_Admin_Role::getId(): ' . $e->getMessage());
          }
                  
     }

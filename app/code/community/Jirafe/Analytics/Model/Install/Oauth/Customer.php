@@ -30,9 +30,12 @@ class Jirafe_Analytics_Model_Install_Oauth_Customer extends Mage_Oauth_Adminhtml
      * 
      * @param string $name
      */
-    public function create( $name = null )
+    public function getSecret()
     {
         try {
+            
+            $name = Mage::getStoreConfig('jirafe_analytics/installer/oauth_customer');
+            
             $customer = Mage::getModel('oauth/consumer')
                 ->getCollection()
                 ->addFieldToFilter('name',array('eq',$name))
@@ -46,7 +49,7 @@ class Jirafe_Analytics_Model_Install_Oauth_Customer extends Mage_Oauth_Adminhtml
                 $customer->save();
             }
             
-            return $customer->getId();
+            return $customer->getSecret();
         } catch (Exception $e) {
             Mage::throwException('ADMIN ROLE ERROR: Jirafe_Analytics_Model_Install_Oauth_Customer::create(): ' . $e->getMessage());
         }

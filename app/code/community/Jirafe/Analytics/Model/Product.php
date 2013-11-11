@@ -161,9 +161,22 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                 foreach ($product->getCategoryIds() as $catId) {
                     $category = Mage::getModel('catalog/category')->load( $catId );
                     
+                    $parentCategories = array();
+                    
+                    if( $category->getLevel() > 2 ){
+                        $parent = Mage::getModel('catalog/category')->load($category->getParentId());
+                        if ($parent) {
+                            $parentCategories = array(
+                                'id' => $parent->getId(),
+                                'name' => $parent->getName()
+                            );
+                        }
+                    }
+                    
                     $data['category'] = array(
                         'id' => $category->getId(),
-                        'name' => $category->getName()
+                        'name' => $category->getName(),
+                        'parent_categories' => $parentCategories
                     );
                     
                     $data['url'] = array(

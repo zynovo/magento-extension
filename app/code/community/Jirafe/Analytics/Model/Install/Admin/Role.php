@@ -26,13 +26,16 @@ class Jirafe_Analytics_Model_Install_Admin_Role extends Mage_Adminhtml_Permissio
     }
     
     /**
-     * Create admin permissions role
+     * Get id for admin permissions role or create new
      * 
      * @param string $name
      */
-    public function create( $name = null )
+    public function getId()
     {
         try {
+         
+            $name = Mage::getStoreConfig('jirafe_analytics/installer/admin_role');
+            
             $role = Mage::getModel('admin/roles')
                 ->getCollection()
                 ->addFieldToFilter('role_name',array('eq',$name))
@@ -55,7 +58,7 @@ class Jirafe_Analytics_Model_Install_Admin_Role extends Mage_Adminhtml_Permissio
   
             return $role->getId();
         } catch (Exception $e) {
-            Mage::throwException('ADMIN ROLE ERROR: Jirafe_Analytics_Model_Install_Admin_Role::create(): ' . $e->getMessage());
+            Mage::throwException('ADMIN ROLE ERROR: Jirafe_Analytics_Model_Install_Admin_Role::getId(): ' . $e->getMessage());
         }
 
     }
