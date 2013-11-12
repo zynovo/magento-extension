@@ -254,7 +254,7 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
      * @throws Exception if unable to generate customer object
      */
     
-    protected function _getCustomer( $data = null )
+    protected function _getCustomer( $data = null, $includeCookies = false )
     {
         try {
             if ( is_numeric($data['customer_id']) ) {
@@ -266,15 +266,8 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
             }
             
             if ( $customerId ) {
-                $customer = Mage::getModel('customer/customer')->load( $customerId );
-                return array(
-                    'id' => $customer->getData('entity_id'),
-                    'create_date' => $this->_formatDate( $customer->getData('created_at') ),
-                    'change_date' => $this->_formatDate( $customer->getData('updated_at') ),
-                    'email' => $customer->getData('email'),
-                    'first_name' => $customer->getData('firstname'),
-                    'last_name' => $customer->getData('lastname')
-                );
+                $customer = Mage::getSingleton('customer/customer')->load( $customerId );
+                return Mage::getSingleton('jirafe_analytics/customer')->getArray( $customer, $includeCookies );
             } else {
                 $customer = Mage::getModel('core/session')->getVisitorData();
                 $customerId = is_numeric( @$data['visitor_id'] ) ? $data['visitor_id'] : (is_numeric( @$customer['visitor_id'] ) ? $customer['visitor_id'] : 0 );

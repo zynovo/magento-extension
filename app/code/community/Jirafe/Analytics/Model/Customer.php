@@ -11,36 +11,64 @@
 
 class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract
 {
-
     /**
      * Create user admin array of data required by Jirafe API
      *
      * @param Mage_Customer_Model_Customer $customer
      * @return mixed
      */
-    
-    public function getArray( $customer = null )
+    public function getArray( $customer = null, $includeCookies = false )
     {
         try {
             if ( $customer ) {
                 
-                   
+                $data = $customer->getData();
+                
+                /**
+                 * Get customer address 
+                 */
+                if ($addressId = $customer->getDefaultBilling()) {
+                    $address = Mage::getSingleton('customer/address')->load( $addressId );
+                    foreach ($address->getData() as $key => $value) {
+                        if ( !array_key_exists ( $key,$customer ) ) {
+                            $data[$key] = $value;
+                        }
+                    }
+                }
+                
+                /**
+                 * Get subscriber information
+                 */
+                $marketingOptIn = Mage::getModel('newsletter/subscriber')
+                                      ->load($customer->getEmail(), 'subscriber_email')
+                                      ->getSubscriberStatus();
+                
                 /**
                  * Get field map array
                  */
+                $fieldMap = $this->_getFieldMap( 'customer', $data );
                 
-                $fieldMap = $this->_getFieldMap( 'customer', $customer->getData() );
-                
-                return array(
+                $data = array(
                     $fieldMap['id']['api'] => $fieldMap['id']['magento'],
+                    $fieldMap['email']['api'] => $fieldMap['email']['magento'],
+                    'name' => $fieldMap['first_name']['magento'] . ' ' . $fieldMap['last_name']['magento'],
+                    $fieldMap['first_name']['api'] => $fieldMap['first_name']['magento'],
+                    $fieldMap['last_name']['api'] => $fieldMap['last_name']['magento'],
                     $fieldMap['active_flag']['api'] => $fieldMap['active_flag']['magento'] ,
                     $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
                     $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento'],
-                    $fieldMap['email']['api'] => $fieldMap['email']['magento'],
-                    $fieldMap['first_name']['api'] => $fieldMap['first_name']['magento'],
-                    $fieldMap['last_name']['api'] => $fieldMap['last_name']['magento'],
-                    'name' => $fieldMap['first_name']['magento'] . ' ' . $fieldMap['last_name']['magento']
-                );
+                    'marketing_opt_in' => $marketingOptIn ? true : false
+                 );
+                
+                if ( $addressId ) {
+                    $data[ $fieldMap['company']['api'] ] = $fieldMap['company']['magento'];
+                    $data[ $fieldMap['phone']['api'] ] = $fieldMap['phone']['magento'];
+                }
+                if ($includeCookies) {
+                  $data['cookies'] = $this->_getCookies();
+                }
+                
+                return $data;
             } else {
                return array();
             }
@@ -57,10 +85,10 @@ class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract
      * @return mixed
      */
     
-    public function getJson( $customer = null )
+    public function getJson( $customer = null, $isVisit = false )
     {
         if ($customer) {
-            return json_encode( $this->getArray( $customer ) );
+            return json_encode( $this->getArray( $customer, $isVisit ) );
         } else {
             return false;
         }

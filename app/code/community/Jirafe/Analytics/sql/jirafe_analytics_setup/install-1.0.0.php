@@ -139,6 +139,8 @@ $installer->run("
         ('customer', 'email', 'email', 'email', 'string', '' ),
         ('customer', 'first_name', 'first_name', 'firstname', 'string', '' ),
         ('customer', 'last_name', 'last_name', 'lastname', 'string', '' ),
+        ('customer', 'company', 'company', 'company', 'string', '' ),
+        ('customer', 'phone', 'phone', 'telephone', 'string', '' ),
         ('employee', 'id', 'id', 'user_id', 'string', '' ),
         ('employee', 'active_flag', 'active_flag', 'is_active', 'boolean', 'true' ),
         ('employee', 'change_date', 'change_date', 'created', 'datetime', '' ),

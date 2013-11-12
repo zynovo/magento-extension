@@ -23,19 +23,32 @@ class Jirafe_Analytics_Model_Category extends Jirafe_Analytics_Model_Abstract
     {
         try {
             if ($category) {
-                
-                /**
-                 * Get field map array
-                 */
-                
-                $fieldMap = $this->_getFieldMap( 'category', $category );
-                
-                return array(
-                    $fieldMap['id']['api'] => $fieldMap['id']['magento'],
-                    $fieldMap['name']['api'] => $fieldMap['name']['magento'],
-                    $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
-                    $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento']
-                );
+             
+             /**
+              * Get field map array
+              */
+             $fieldMap = $this->_getFieldMap( 'category', $category );
+             
+             $data = array(
+                 $fieldMap['id']['api'] => $fieldMap['id']['magento'],
+                 $fieldMap['name']['api'] => $fieldMap['name']['magento'],
+                 $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
+                 $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento']
+             );
+             
+             if( $category->getLevel() > 2 ){
+                 if ( $parent = Mage::getModel('catalog/category')->load($category->getParentId()) ) {
+                     $fieldMap = $this->_getFieldMap( 'category', $parent );
+                     $data['parent_categories'] = array(
+                         $fieldMap['id']['api'] => $fieldMap['id']['magento'],
+                         $fieldMap['name']['api'] => $fieldMap['name']['magento'],
+                         $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
+                         $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento']
+                     );
+                 }
+              }
+              
+              return $data;
             } else {
                 return array();
             }

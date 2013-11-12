@@ -36,7 +36,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             try {
                 if ( Mage::getSingleton('core/session')->getJirafeProcessCart() ) {
                     $quote = $observer->getCart()->getQuote();
-                    $json = Mage::getModel('jirafe_analytics/cart')->getJson( $quote );
+                    $json = Mage::getModel('jirafe_analytics/cart')->getJson( $quote, true );
                     $data = Mage::getModel('jirafe_analytics/data');
                     $data->setTypeId( Jirafe_Analytics_Model_Data_Type::CART );
                     $data->setJson( $json );
@@ -151,13 +151,15 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
         if ( $this->_isEnabled ) {
             try {
                 if ( Mage::getSingleton('core/session')->getJirafeProcessCustomer() ) {
+                    $isVisit = Mage::getSingleton('core/session')->getJirafeIsVisit();
                     $data = Mage::getModel('jirafe_analytics/data');
                     $data->setTypeId( Jirafe_Analytics_Model_Data_Type::CUSTOMER );
-                    $data->setJson( Mage::getModel('jirafe_analytics/customer')->getJson( $observer->getCustomer() ) );
+                    $data->setJson( Mage::getModel('jirafe_analytics/customer')->getJson( $observer->getCustomer(), $isVisit ) );
                     $data->setStoreId( $observer->getCustomer()->getStoreId() );
                     $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
                     $data->save();
                     Mage::getSingleton('core/session')->setJirafeProcessCustomer( false );
+                    Mage::getSingleton('core/session')->setJirafeIsVisit( false);
                     return true;
                 } else {
                     return false;
@@ -181,6 +183,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
         if ( $this->_isEnabled ) {
             try {
                 Mage::getSingleton('core/session')->setJirafeProcessCustomer( true );
+                Mage::getSingleton('core/session')->setJirafeIsVisit( false );
                 $this->customerSave( $observer );
                 return true;
             } catch (Exception $e) {
@@ -201,6 +204,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
         if ( $this->_isEnabled ) {
             try {
                 Mage::getSingleton('core/session')->setJirafeProcessCustomer( true );
+                Mage::getSingleton('core/session')->setJirafeIsVisit( true );
                 return true;
             } catch (Exception $e) {
                 Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::customerLoad()', $e->getMessage(), $e);
@@ -220,6 +224,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
         if ( $this->_isEnabled ) {
             try {
                 Mage::getSingleton('core/session')->setJirafeProcessCustomer( true );
+                Mage::getSingleton('core/session')->setJirafeIsVisit( true );
                 return true;
             } catch (Exception $e) {
                 Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::customerRegister()', $e->getMessage(), $e);

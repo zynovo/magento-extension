@@ -26,10 +26,10 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
             if ($quote) {
                 
                 $items = Mage::getModel('jirafe_analytics/cart_item')->getItems( $quote['entity_id'], $quote['store_id'] );
+                
                 /**
                  * Get field map array
                  */
-                
                 $fieldMap = $this->_getFieldMap( 'cart', $quote );
                 
                 $data = array(
@@ -46,7 +46,7 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
                     'cookies' => $isEvent ? $this->_getCookies() : (object) null,
                     'items' => $items,
                     'previous_items' => $isEvent ? $this->_getPreviousItems( $quote['entity_id'] ) : (object) null,
-                    'customer' => $this->_getCustomer( $quote ),
+                    'customer' => $this->_getCustomer( $quote, false ),
                     'visit' => $isEvent ? $this->_getVisit() : (object) null
                     );
                 

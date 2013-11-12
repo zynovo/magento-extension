@@ -161,29 +161,36 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                 foreach ($product->getCategoryIds() as $catId) {
                     $category = Mage::getModel('catalog/category')->load( $catId );
                     
-                    $parentCategories = array();
-                    
-                    if( $category->getLevel() > 2 ){
-                        $parent = Mage::getModel('catalog/category')->load($category->getParentId());
-                        if ($parent) {
-                            $parentCategories = array(
-                                'id' => $parent->getId(),
-                                'name' => $parent->getName()
-                            );
-                        }
-                    }
-                    
-                    $data['category'] = array(
-                        'id' => $category->getId(),
-                        'name' => $category->getName(),
-                        'parent_categories' => $parentCategories
-                    );
+                    /**
+                      * Get field map array
+                      */
+                     $fieldMap = $this->_getFieldMap( 'category', $category );
+                     
+                     $data['category'] = array(
+                         $fieldMap['id']['api'] => $fieldMap['id']['magento'],
+                         $fieldMap['name']['api'] => $fieldMap['name']['magento'],
+                         $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
+                         $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento']
+                     );
+                     
+                     if( $category->getLevel() > 2 ){
+                         if ( $parent = Mage::getModel('catalog/category')->load($category->getParentId()) ) {
+                             $fieldMap = $this->_getFieldMap( 'category', $parent );
+                             $data['category']['parent_categories'] = array(
+                                 $fieldMap['id']['api'] => $fieldMap['id']['magento'],
+                                 $fieldMap['name']['api'] => $fieldMap['name']['magento'],
+                                 $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
+                                 $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento']
+                             );
+                         }
+                      }
                     
                     $data['url'] = array(
                         'admin' => Mage::getUrl() . 'index.php/admin/catalog_product/edit/id/' . $product->getId(),
                         'store' => $product->getUrlInStore()
                     );
                 }
+                
                 return $data;
             } else {
                 return array();
