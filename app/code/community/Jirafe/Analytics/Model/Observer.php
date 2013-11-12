@@ -245,14 +245,9 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
         if ( $this->_isEnabled ) {
             try {
                 $order = $observer->getOrder()->getData();
-                if (isset($observer->getOrder()->getPayment())) {
-                    $payment = $observer->getOrder()->getPayment();
-                    $order['amount_paid'] = $payment->getAmountPaid();
-                    $order['amount_authorized'] = $payment->getAmountAuthorized();
-                } else {
-                    $order['amount_paid'] = $payment->getAmountPaid();
-                    $order['amount_authorized'] = $payment->getAmountAuthorized();
-                }
+                $payment = $observer->getOrder()->getPayment();
+                $order['amount_paid'] = $payment->getAmountPaid();
+                $order['amount_authorized'] = $payment->getAmountAuthorized();
                 $order['jirafe_status'] = 'accepted';
                 $this->_orderSave( $order );
                 return true;
