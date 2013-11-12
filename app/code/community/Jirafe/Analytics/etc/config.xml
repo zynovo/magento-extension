@@ -146,19 +146,10 @@
                     <jirafe_analytics_sales_order_place_after>
                         <type>singleton</type>
                         <class>Jirafe_Analytics_Model_Observer</class>
-                        <method>orderPlaced</method>
+                        <method>orderAccepted</method>
                     </jirafe_analytics_sales_order_place_after>
                 </observers>
             </sales_order_place_after>
-            <sales_order_payment_pay>
-                <observers>
-                    <jirafe_analytics_sales_order_payment_pay>
-                        <type>singleton</type>
-                        <class>Jirafe_Analytics_Model_Observer</class>
-                        <method>orderAccepted</method>
-                    </jirafe_analytics_sales_order_payment_pay>
-                </observers>
-            </sales_order_payment_pay>
         </events>
         <routers>
             <jirafe_analytics>
