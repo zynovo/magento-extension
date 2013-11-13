@@ -26,9 +26,9 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
             /**
              * Get field map array
              */
-            
+           
             $fieldMap = $this->_getFieldMap( 'order', $order );
-            
+
             if ($order['jirafe_status'] == 'cancelled') {
                 
                 $data = array(
@@ -39,7 +39,7 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
                 
             } else {
                 
-                $items = Mage::getModel('jirafe_analytics/order_item')->getItems( $order['entity_id'], $order['store_id'] );
+                $items = Mage::getSingleton('jirafe_analytics/order_item')->getItems( $order['entity_id'], $order['store_id'] );
                 $totalPaymentCost = is_numeric($order['amount_paid']) ? $order['amount_paid'] : ( is_numeric($order['amount_authorized']) ? $order['amount_authorized'] : 0);
                 $data = array(
                     $fieldMap['order_number']['api'] => $fieldMap['order_number']['magento'],
@@ -131,7 +131,7 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
             $columns[] = 'p.amount_paid';
             $columns[] = 'p.amount_authorized';
             
-            $orders = Mage::getModel('sales/order')
+            $orders = Mage::getSingleton('sales/order')
                 ->getCollection()
                 ->getSelect()
                 ->joinLeft( array('p'=>Mage::getSingleton('core/resource')->getTableName('sales/order_payment')), 'main_table.entity_id = p.parent_id')

@@ -33,7 +33,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
     protected function _getStores() 
     {
         try {
-            return Mage::getModel('core/store')->getCollection()
+            return Mage::getSingleton('core/store')->getCollection()
                 ->addFieldToSelect(array('store_id'))
                 ->getSelect()
                 ->join( array('d'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/data')), "`main_table`.`store_id` = `d`.`store_id`", array())
@@ -59,7 +59,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
     {
         try {
             if ( $storeId ) {
-               return Mage::getModel('jirafe_analytics/data_type')
+               return Mage::getSingleton('jirafe_analytics/data_type')
                     ->getCollection()
                     ->addFieldToSelect(array('type'))
                     ->getSelect()
@@ -89,7 +89,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
     {
         try {
             if ( $storeId && $typeId ) {
-                return Mage::getModel('jirafe_analytics/data')
+                return Mage::getSingleton('jirafe_analytics/data')
                 ->getCollection()
                 ->addFieldToSelect(array('json','store_id'))
                 ->addFieldToFilter('`main_table`.`json`', array('neq' => ''))

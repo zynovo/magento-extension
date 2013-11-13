@@ -25,7 +25,7 @@ class Jirafe_Analytics_Model_Order_Payment extends Jirafe_Analytics_Model_Order
             if ($orderId) {
                 $paymentColumns = $this->_getAttributesToSelect( 'order|payment' );
                 
-                return Mage::getModel('sales/order_payment')
+                return Mage::getSingleton('sales/order_payment')
                     ->getCollection()
                     ->getSelect()
                     ->reset(Zend_Db_Select::COLUMNS)
@@ -36,7 +36,7 @@ class Jirafe_Analytics_Model_Order_Payment extends Jirafe_Analytics_Model_Order
                 return array();
             }
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Order_Payment::getPayment()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Order_Payment::getPayment()', $e->getMessage());
             return false;
         }
     }

@@ -284,6 +284,14 @@
                     <model>jirafe_analytics/curl::heartbeat</model>
                 </run>
             </jirafe_analytics_heartbeat>
+            <jirafe_analytics_installer>
+                <schedule>
+                    <cron_expr>*/5 * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>jirafe_analytics/install::run</model>
+                </run>
+            </jirafe_analytics_installer>
         </jobs>
     </crontab>
     <default>

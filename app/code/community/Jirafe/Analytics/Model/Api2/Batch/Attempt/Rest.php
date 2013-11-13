@@ -21,7 +21,7 @@ class Jirafe_Analytics_Model_Api2_Batch_Attempt_Rest extends Jirafe_Analytics_Mo
     {
         $data = array();
         
-        $collection = Mage::getModel('jirafe_analytics/batch_attempt')->getCollection();
+        $collection = Mage::getSingleton('jirafe_analytics/batch_attempt')->getCollection();
         
         foreach ($collection->getData() as $item) {
             $data[] = $item;

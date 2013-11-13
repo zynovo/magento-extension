@@ -72,7 +72,7 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
                  * Convert data into batches before processing
                  */
                 
-                Mage::getModel('jirafe_analytics/data')->convertEventDataToBatchData( $params, false );
+                Mage::getSingleton('jirafe_analytics/data')->convertEventDataToBatchData( $params, false );
             }
             
             if (isset($params['max_records'])) {
@@ -96,11 +96,11 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
              * Update batch with information from attempt
              */
             
-            if (  $response = Mage::getModel('jirafe_analytics/curl')->sendJson( $data->query(), $params ) ) {
+            if (  $response = Mage::getSingleton('jirafe_analytics/curl')->sendJson( $data->query(), $params ) ) {
                 foreach ($response as $batch) {
                     foreach ($batch as $attempt) {
                         $this->updateBatch( $attempt );
-                        Mage::getModel('jirafe_analytics/batch_attempt')->add( $attempt );
+                        Mage::getSingleton('jirafe_analytics/batch_attempt')->add( $attempt );
                     }
                 }
                 return true;
@@ -128,7 +128,7 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
     {
         try {
             if ($attempt) {
-                $batch = Mage::getModel('jirafe_analytics/batch')->load( $attempt['batch_id'] );
+                $batch = Mage::getSingleton('jirafe_analytics/batch')->load( $attempt['batch_id'] );
                 $attemptNum = intval($batch->getAttemptCount()+1);
                 $batch->setAttemptCount($attemptNum);
                 

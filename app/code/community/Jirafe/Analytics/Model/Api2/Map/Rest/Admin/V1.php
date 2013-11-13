@@ -54,9 +54,11 @@ class Jirafe_Analytics_Model_Api2_Map_Rest_Admin_V1 extends Jirafe_Analytics_Mod
                 
                 $this->_successMessage( self::FIELD_MAPPING_UPDATE_SUCCESSFUL, Mage_Api2_Model_Server::HTTP_OK );
                 
-                if (Mage::registry('jirafe_analytics_map')) {
-                    Mage::unregister('jirafe_analytics_map');
-                }
+                /**
+                 *  Remove root map from cache so that it will be rebuilt next time it's called
+                 */
+                $cache = Mage::app()->getCache()->remove('jirafe_analytics_map'');
+                
             }
         }
     }

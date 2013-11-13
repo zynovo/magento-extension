@@ -282,15 +282,15 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
              * Purge processed data older than Mage::getStoreConfig('jirafe_analytics/general/purge_time') minutes
              */
             
-            Mage::getModel('jirafe_analytics/data')->purgeData();
+            Mage::getSingleton('jirafe_analytics/data')->purgeData();
             
-            Mage::getModel('jirafe_analytics/batch')->purgeData();
+            Mage::getSingleton('jirafe_analytics/batch')->purgeData();
             
             /**
              * Purge log messages older than Mage::getStoreConfig('jirafe_analytics/debug/purge_time') minutes
              */
             if ($this->logging) {
-                Mage::getModel('jirafe_analytics/log')->purgeData();
+                Mage::getSingleton('jirafe_analytics/log')->purgeData();
             }
             
             return $response;

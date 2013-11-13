@@ -36,7 +36,7 @@ class Jirafe_Analytics_Model_Install_Admin_Role extends Mage_Adminhtml_Permissio
          
             $name = Mage::getStoreConfig('jirafe_analytics/installer/admin_role');
             
-            $role = Mage::getModel('admin/roles')
+            $role = Mage::getSingleton('admin/roles')
                 ->getCollection()
                 ->addFieldToFilter('role_name',array('eq',$name))
                 ->getFirstItem();

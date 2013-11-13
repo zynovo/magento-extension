@@ -21,7 +21,7 @@ class Jirafe_Analytics_Model_Api2_Data_Type_Rest extends Jirafe_Analytics_Model_
     {
         $data = array();
         
-        $collection = Mage::getModel('jirafe_analytics/data_type')->getCollection();
+        $collection = Mage::getSingleton('jirafe_analytics/data_type')->getCollection();
         
         foreach ($collection->getData() as $item) {
             $data[] = $item;

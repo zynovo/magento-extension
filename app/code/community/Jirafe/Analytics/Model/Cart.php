@@ -25,7 +25,7 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
         try {
             if ($quote) {
                 
-                $items = Mage::getModel('jirafe_analytics/cart_item')->getItems( $quote['entity_id'], $quote['store_id'] );
+                $items = Mage::getSingleton('jirafe_analytics/cart_item')->getItems( $quote['entity_id'], $quote['store_id'] );
                 
                 /**
                  * Get field map array
@@ -116,7 +116,7 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
             $columns = $this->_getAttributesToSelect( 'cart' );
             $columns[] = 'store_id';
             
-            $collection = Mage::getModel('sales/quote')->getCollection()->getSelect();
+            $collection = Mage::getSingleton('sales/quote')->getCollection()->getSelect();
             $collection->reset(Zend_Db_Select::COLUMNS)->columns( $columns );
             
             if ( $startDate && $endDate ){

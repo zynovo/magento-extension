@@ -21,7 +21,7 @@ class Jirafe_Analytics_Model_Api2_Log_Rest extends Jirafe_Analytics_Model_Api2_L
     {
         $data = array();
         
-        $collection = Mage::getModel('jirafe_analytics/log')->getCollection();
+        $collection = Mage::getSingleton('jirafe_analytics/log')->getCollection();
         
         foreach ($collection->getData() as $item) {
             $data[] = $item;

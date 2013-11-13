@@ -39,7 +39,7 @@ class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract
                 /**
                  * Get subscriber information
                  */
-                $marketingOptIn = Mage::getModel('newsletter/subscriber')
+                $marketingOptIn = Mage::getSingleton('newsletter/subscriber')
                                       ->load($customer->getEmail(), 'subscriber_email')
                                       ->getSubscriberStatus();
                 
@@ -107,7 +107,7 @@ class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract
     {
         try {
             $data = array();
-            $customers = Mage::getModel('customer/customer')->getCollection();
+            $customers = Mage::getSingleton('customer/customer')->getCollection();
             
             if ( $startDate ) {
                 $customers->addAttributeToFilter('created_at', array('gteq' => $startDate));

@@ -25,7 +25,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
     {
         try {
             if ( $productId && $storeId ) {
-                $product = Mage::getModel('catalog/product')->setStoreId( $storeId )->load( $productId );
+                $product = Mage::getSingleton('catalog/product')->setStoreId( $storeId )->load( $productId );
             }
             
             if ( $product ) {
@@ -159,7 +159,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                 $data = array();
                 
                 foreach ($product->getCategoryIds() as $catId) {
-                    $category = Mage::getModel('catalog/category')->load( $catId );
+                    $category = Mage::getSingleton('catalog/category')->load( $catId );
                     
                     /**
                       * Get field map array
@@ -174,7 +174,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                      );
                      
                      if( $category->getLevel() > 2 ){
-                         if ( $parent = Mage::getModel('catalog/category')->load($category->getParentId()) ) {
+                         if ( $parent = Mage::getSingleton('catalog/category')->load($category->getParentId()) ) {
                              $fieldMap = $this->_getFieldMap( 'category', $parent );
                              $data['category']['parent_categories'] = array(
                                  $fieldMap['id']['api'] => $fieldMap['id']['magento'],
@@ -217,7 +217,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             if ( $parentIds ) {
                 $obj = array();
                 foreach( $parentIds as $parentId ) {
-                    $parent = Mage::getModel('catalog/product')->load( $parentId );
+                    $parent = Mage::getSingleton('catalog/product')->load( $parentId );
                     $fieldMap = $this->_getFieldMap( 'product', $parent->getData() );
                     $obj[] = array( $fieldMap['id']['api'] => $fieldMap['id']['magento'],
                                     $fieldMap['name']['api'] => $fieldMap['name']['magento'],
@@ -245,9 +245,9 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             if ( $product ) {
                 $parentIds = null;
                 if ( $product->getTypeId() == "simple" ){
-                    $parentIds = Mage::getModel('catalog/product_type_grouped')->getParentIdsByChild( $product->getId() );
+                    $parentIds = Mage::getSingleton('catalog/product_type_grouped')->getParentIdsByChild( $product->getId() );
                     if ( !$parentIds ) {
-                        $parentIds = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild( $product->getId() );
+                        $parentIds = Mage::getSingleton('catalog/product_type_configurable')->getParentIdsByChild( $product->getId() );
                     }
                 }
                 if ($parentIds) {
@@ -346,7 +346,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
         try {
             $data = array();
             
-            $products = Mage::getModel('catalog/product')
+            $products = Mage::getSingleton('catalog/product')
                 ->getCollection()
                 ->getSelect()
                 ->reset(Zend_Db_Select::COLUMNS)

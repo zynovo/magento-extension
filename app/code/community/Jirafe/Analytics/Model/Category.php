@@ -37,7 +37,7 @@ class Jirafe_Analytics_Model_Category extends Jirafe_Analytics_Model_Abstract
              );
              
              if( $category->getLevel() > 2 ){
-                 if ( $parent = Mage::getModel('catalog/category')->load($category->getParentId()) ) {
+                 if ( $parent = Mage::getSingleton('catalog/category')->load($category->getParentId()) ) {
                      $fieldMap = $this->_getFieldMap( 'category', $parent );
                      $data['parent_categories'] = array(
                          $fieldMap['id']['api'] => $fieldMap['id']['magento'],
@@ -87,7 +87,7 @@ class Jirafe_Analytics_Model_Category extends Jirafe_Analytics_Model_Abstract
     {
         try {
             $data = array();
-            $categories = Mage::getModel('catalog/category')
+            $categories = Mage::getSingleton('catalog/category')
                 ->getCollection()
                 ->addAttributeToSelect('name');
             

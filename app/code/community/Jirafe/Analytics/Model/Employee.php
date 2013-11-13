@@ -25,7 +25,7 @@ class Jirafe_Analytics_Model_Employee extends Jirafe_Analytics_Model_Abstract
         try {
             
             if ( $userId && !$user ) {
-                $user = Mage::getModel('admin/user')->load( $userId );
+                $user = Mage::getSingleton('admin/user')->load( $userId );
             }
             
             if ( $user ) {
@@ -83,7 +83,7 @@ class Jirafe_Analytics_Model_Employee extends Jirafe_Analytics_Model_Abstract
     {
         try {
             $data = array();
-            $employees = Mage::getModel('admin/user')->getCollection();
+            $employees = Mage::getSingleton('admin/user')->getCollection();
             
             if ( $startDate && $endDate) {
                 $employees->getSelect()->where("created BETWEEN '$startDate' AND '$endDate'");

@@ -82,7 +82,7 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
             $output = array();
             
             if (!$quote) {
-                $quote = Mage::getModel('sales/quote')->getCollection()->getFirstItem();
+                $quote = Mage::getSingleton('sales/quote')->getCollection()->getFirstItem();
             }
             
             $output= $this->_flattenArray( array_keys( $quote->getData() ) );
@@ -107,7 +107,7 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
             $output = array();
             
             if (!$quote) {
-                $quote = Mage::getModel('sales/quote')->getCollection()->getFirstItem();
+                $quote = Mage::getSingleton('sales/quote')->getCollection()->getFirstItem();
             }
             
             if ( $quoteItem = $quote->getItemsCollection()->getData() ) {
@@ -133,7 +133,7 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
         try {
             $output = array();
             
-            if ( $category = Mage::getModel('catalog/category')->getCollection()->getFirstItem()->getData() ) {
+            if ( $category = Mage::getSingleton('catalog/category')->getCollection()->getFirstItem()->getData() ) {
                 $output = $this->_flattenArray( array_keys( $category ) );
             }
             
@@ -156,7 +156,7 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
         try {
             $output = array();
             
-            if ( $customer = Mage::getModel('customer/customer')->getCollection()->getFirstItem()->getData() ) {
+            if ( $customer = Mage::getSingleton('customer/customer')->getCollection()->getFirstItem()->getData() ) {
                 $output = $this->_flattenArray( array_keys( $customer ) );
             }
             
@@ -179,7 +179,7 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
         try {
             $output = array();
             
-            if ( $employee = Mage::getModel('admin/user')->getCollection()->getFirstItem()->getData() ) {
+            if ( $employee = Mage::getSingleton('admin/user')->getCollection()->getFirstItem()->getData() ) {
                 $output = $this->_flattenArray( array_keys( $employee ) );
             }
             
@@ -202,7 +202,7 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
         try {
             $output = array();
             
-            if ( $order = Mage::getModel('sales/order')->getCollection()->getFirstItem()->getData() ) {
+            if ( $order = Mage::getSingleton('sales/order')->getCollection()->getFirstItem()->getData() ) {
                 $output = $this->_flattenArray( array_keys( $order ) );
             }
             
@@ -225,7 +225,7 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
         try {
             $output = array();
             
-                if ( $order_item = Mage::getModel('sales/order_item')->getCollection()->getFirstItem()->getData() ) {
+                if ( $order_item = Mage::getSingleton('sales/order_item')->getCollection()->getFirstItem()->getData() ) {
                     $output = $this->_flattenArray( array_keys( $order_item ) );
                 }
             
@@ -249,7 +249,7 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
             $output = array();
             
             
-            if ( $product = Mage::getModel('catalog/product')->getCollection()->getFirstItem()->getData() ) {
+            if ( $product = Mage::getSingleton('catalog/product')->getCollection()->getFirstItem()->getData() ) {
                 $output = $this->_flattenArray( array_keys( $product ) );
             }
             

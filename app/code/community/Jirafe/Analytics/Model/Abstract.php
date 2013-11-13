@@ -18,20 +18,27 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
     /**
      * Get API to Magento field map array
      *
-     * @return void
-     * @throws Exception if unable to load or create field map array
+     * @return array
+     * @throws Exception
      */
     
-    protected function _setRootMap()
+    protected function _getRootMap()
     {
         try {
+            /**
+             * Pull map from cache or generate new map
+             */
+            $cache = Mage::app()->getCache();
             
-            if (!$this->_rootMap = Mage::registry('jirafe_analytics_map') ) {
-                $this->_rootMap = Mage::getModel('jirafe_analytics/map')->getArray();
-                Mage::register('jirafe_analytics_map', $this->_rootMap);
+            if ( !$rootMap = $cache->load('jirafe_analytics_map') ) {
+                $rootMap = json_encode( Mage::getSingleton('jirafe_analytics/map')->getArray() );
+                $cache->save( $rootMap, 'jirafe_analytics_map', array('jirafe_analytics_map'), null);
             }
+            
+            return json_decode($rootMap,true);
+            
         } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR Jirafe_Analytics_Model_Abstract::_getMap(): ' . $e->getMessage());
+            Mage::throwException('FIELD MAPPING ERROR Jirafe_Analytics_Model_Abstract::_getRootMap(): ' . $e->getMessage());
         }
     }
     
@@ -45,12 +52,17 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
     protected function _getFieldMap( $element, $data )
     {
         try {
-            if (!$this->_rootMap) {
-                $this->_setRootMap();
-            }
-            
+         
             $fieldMap = array();
             
+            /**
+             * Get root map from cache
+             */
+            $this->_rootMap = $this->_getRootMap();
+            
+            /**
+             * Build map for selected element
+             */
             foreach ( $this->_rootMap[ $element ] as $key => $row ) {
                     
                     $value = @$data[ $row['magento'] ];
@@ -112,7 +124,7 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
         try {
             if ($element) {
                 
-                $magentoFields = Mage::getModel('jirafe_analytics/map')
+                $magentoFields = Mage::getSingleton('jirafe_analytics/map')
                                                 ->getCollection()
                                                 ->addFieldToSelect('magento')
                                                 ->addFilter('element',$element)
@@ -267,7 +279,7 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
                 $customer = Mage::getSingleton('customer/customer')->load( $customerId );
                 return Mage::getSingleton('jirafe_analytics/customer')->getArray( $customer, $includeCookies );
             } else {
-                $customer = Mage::getModel('core/session')->getVisitorData();
+                $customer = Mage::getSingleton('core/session')->getVisitorData();
                 $customerId = is_numeric( @$data['visitor_id'] ) ? $data['visitor_id'] : (is_numeric( @$customer['visitor_id'] ) ? $customer['visitor_id'] : 0 );
                 if ( isset($data['created_at']) && isset($data['customer_email']) && isset($data['customer_firstname']) && isset($data['customer_lastname']) ) {
                     return array(
@@ -308,7 +320,7 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
             if (is_numeric( $storeId )) {
                 return array(
                     'id' => $storeId,
-                    'name' => Mage::getModel('core/store')->load( $storeId )->getName());
+                    'name' => Mage::getSingleton('core/store')->load( $storeId )->getName());
             } else {
                 return array(
                     'id' => '',

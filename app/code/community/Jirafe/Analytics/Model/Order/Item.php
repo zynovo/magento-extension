@@ -26,7 +26,7 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
                 $itemColumns = $this->_getAttributesToSelect( 'order_item' );
                 $itemColumns[] = 'product_id';
                 
-                $items = Mage::getModel('sales/order_item')
+                $items = Mage::getSingleton('sales/order_item')
                     ->getCollection()
                     ->getSelect()
                     ->reset(Zend_Db_Select::COLUMNS)
@@ -54,7 +54,7 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
                         'status' => 'accepted',
                         $fieldMap['price']['api'] => $fieldMap['price']['magento'],
                         $fieldMap['discount_price']['api'] => $fieldMap['discount_price']['magento'],
-                        'product' => Mage::getModel('jirafe_analytics/product')->getArray( $item['product_id'], $storeId, false, null)
+                        'product' => Mage::getSingleton('jirafe_analytics/product')->getArray( $item['product_id'], $storeId, false, null)
                     );
                     
                     $count++;

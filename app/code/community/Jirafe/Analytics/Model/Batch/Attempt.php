@@ -50,7 +50,7 @@ class Jirafe_Analytics_Model_Batch_Attempt extends Jirafe_Analytics_Model_Abstra
                  */
                 
                 if ($attempt['http_code'] != '200') {
-                    Mage::getModel('jirafe_analytics/batch_error')->add( $attempt, $this->getId() );
+                    Mage::getSingleton('jirafe_analytics/batch_error')->add( $attempt, $this->getId() );
                 }
                 
                 return true;

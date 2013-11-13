@@ -20,7 +20,7 @@ class Jirafe_Analytics_Model_Api2_Map_Field_Rest extends Jirafe_Analytics_Model_
      */
     protected function _retrieveCollection()
     {
-        $fieldData = Mage::getModel('jirafe_analytics/map_field')->getArray();
+        $fieldData = Mage::getSingleton('jirafe_analytics/map_field')->getArray();
         
         if ( $fieldData ) {
             return $fieldData;
