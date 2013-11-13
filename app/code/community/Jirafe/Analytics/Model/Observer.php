@@ -244,12 +244,37 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
     {
         if ( $this->_isEnabled ) {
             try {
-                $order = $observer->getOrder()->getData();
-                $payment = $observer->getOrder()->getPayment();
-                $order['amount_paid'] = $payment->getAmountPaid();
-                $order['amount_authorized'] = $payment->getAmountAuthorized();
-                $order['jirafe_status'] = 'accepted';
-                $this->_orderSave( $order );
+                $mem1 = memory_get_usage();
+                $order = $observer->getOrder();
+                $mem2 = memory_get_usage() - $mem1;
+                
+                $start = memory_get_usage();
+                $data = $order->getData();
+                $mem3 = memory_get_usage() - $start;
+                
+                $start = memory_get_usage();
+                $payment = $order->getPayment();
+                $mem4 = memory_get_usage() - $start;
+                
+                $start = memory_get_usage();
+                unset($order);
+                $data['amount_paid'] = $payment->getAmountPaid();
+                $data['amount_authorized'] = $payment->getAmountAuthorized();
+                $mem5 = memory_get_usage() - $start;
+                
+                $start = memory_get_usage();
+                unset($payment);
+                $mem6 = memory_get_usage() - $start;
+                
+                $start = memory_get_usage();
+                $data['jirafe_status'] = 'accepted';
+                $this->_orderSave( $data );
+                unset($data);
+                $mem7 = memory_get_usage() - $start;
+                
+                
+                $total = memory_get_usage() - $mem1;
+                Mage::log("$mem1 > $mem2 > $mem3 > $mem4 > $mem5 > $mem6 > $mem7 = $total",null,'memory.log');
                 return true;
             } catch (Exception $e) {
                 Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::orderAccepted()', $e->getMessage(), $e);
