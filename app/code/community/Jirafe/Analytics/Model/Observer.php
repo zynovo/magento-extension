@@ -244,41 +244,21 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
     {
         if ( $this->_isEnabled ) {
             try {
-                $mem1 = memory_get_usage();
+                
                 $order = $observer->getOrder();
-                $mem2 = memory_get_usage() - $mem1;
-                
-                $start = memory_get_usage();
                 $data = $order->getData();
-                $mem3 = memory_get_usage() - $start;
-                
-                $start = memory_get_usage();
                 $payment = $order->getPayment();
-                $mem4 = memory_get_usage() - $start;
-                
-                $start = memory_get_usage();
                 unset($order);
                 gc_collect_cycles();
+                
                 $data['amount_paid'] = $payment->getAmountPaid();
                 $data['amount_authorized'] = $payment->getAmountAuthorized();
-                $mem5 = memory_get_usage() - $start;
-                
-                $start = memory_get_usage();
-                unset($payment);
-                gc_collect_cycles();
-                $mem6 = memory_get_usage() - $start;
-                
-                $start = memory_get_usage();
                 $data['jirafe_status'] = 'accepted';
-                //Mage::log($data,null,'order_date.log');
                 $this->_orderSave( $data );
+                unset($payment);
                 unset($data);
                 gc_collect_cycles();
-                $mem7 = memory_get_usage() - $start;
                 
-                
-                $total = memory_get_usage() - $mem1;
-                Mage::log("$mem1 > $mem2 > $mem3 > $mem4 > $mem5 > $mem6 > $mem7 = $total",null,'memory.log');
                 return true;
             } catch (Exception $e) {
                 Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::orderAccepted()', $e->getMessage(), $e);
