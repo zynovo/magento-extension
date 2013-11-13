@@ -34,7 +34,6 @@ class Jirafe_Analytics_Model_Install_Admin_User extends Mage_Adminhtml_Permissio
     public function create( $roleId = null, $apiRoleId = null, $password = null )
     {
         try {
-         
             $username = Mage::getStoreConfig('jirafe_analytics/installer/admin_username');
             
             $user = Mage::getModel('admin/user')
@@ -54,21 +53,26 @@ class Jirafe_Analytics_Model_Install_Admin_User extends Mage_Adminhtml_Permissio
                 );
                 
                 $user = Mage::getModel('admin/user');
-                $user->setData($data);
+                $user->setData( $data );
                 $user->save();
             }
             
             $id = $user->getUserId();
             
-            $user->setRoleIds(array( $roleId ))
+            /**
+              * Set admin role
+              */
+            $result = $user->setRoleIds(array( $roleId ))
                 ->setRoleUserId( $id )
                 ->saveRelations();
             
-            $user->setApiRoleIds( array( $apiRoleId ) )
-                ->setRoleUserId( $id )
-                 ->saveRelations();
+            /**
+             * Set api2 role
+             */
+            $api2Role = Mage::getResourceModel('api2/acl_global_role')
+                ->saveAdminToRoleRelation($id, $apiRoleId);
             
-            return $user;
+            return true;
            
         } catch (Exception $e) {
             Mage::throwException('ADMIN ROLE ERROR: Jirafe_Analytics_Model_Install_Admin_User::create(): ' . $e->getMessage());

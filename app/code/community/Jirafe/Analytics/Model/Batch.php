@@ -56,6 +56,13 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
     {
         try {
             
+            if ( !Mage::registry('jirafe_analytics_admin_user_created') ) {
+                if ( $response = Mage::getModel('jirafe_analytics/install')->credentials() ) {
+                    Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Batch::process()', "Unable to install admin user.", null );
+                }
+                Mage::register('jirafe_analytics_admin_user_created', $response);
+            }
+            
             if ( $historical ) {
                 
                 $historicalEQ = 'eq';

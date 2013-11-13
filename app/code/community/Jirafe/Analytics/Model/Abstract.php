@@ -58,7 +58,6 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
                     /**
                      * If value is empty, replace with default value from mapping table
                      */
-                    
                     if ( strval( $value ) === '' ) {
                         $value = $row['default'];
                     }
@@ -66,7 +65,6 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
                     /**
                      * Convert value to proper type according to API requirements
                      */
-                    
                     switch ( $row['type'] ) {
                         case 'float':
                             $value = floatval( $value );

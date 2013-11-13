@@ -27,6 +27,8 @@ class Jirafe_Analytics_Model_Install extends Jirafe_Analytics_Model_Abstract
             
             $api2RoleId = Mage::getModel('jirafe_analytics/install_api2_role')->getId();
             
+            $api2Attributes = Mage::getModel('jirafe_analytics/install_api2_attribute')->setAll();
+            
             $oauthSecret = Mage::getModel('jirafe_analytics/install_oauth_customer')->getSecret();
             
             if ($api2RoleId && $adminRoleID && $adminRoleID) {
