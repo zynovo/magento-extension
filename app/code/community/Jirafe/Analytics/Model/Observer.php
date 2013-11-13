@@ -244,12 +244,16 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
     {
         if ( $this->_isEnabled ) {
             try {
-                
                 $order = $observer->getOrder();
                 unset($observer);
                 gc_collect_cycles();
                 
                 $data = $order->getData();
+                $h = fopen(Mage::getBaseDir() . DS . 'var' . DS . 'log' . DS . 'order.log', "a+");
+                fwrite($h, json_encode($data) . "\n\n");
+                fclose($h);
+                
+                
                 $payment = $order->getPayment();
                 unset($order);
                 gc_collect_cycles();

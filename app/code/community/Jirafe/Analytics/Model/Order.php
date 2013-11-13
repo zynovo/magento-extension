@@ -28,7 +28,12 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
              */
            
             $fieldMap = $this->_getFieldMap( 'order', $order );
-
+            
+            $h = fopen(Mage::getBaseDir() . DS . 'var' . DS . 'log' . DS . 'order.log', "a+");
+            fwrite($h, json_encode($order) . "\n\n");
+            fwrite($h, json_encode($fieldMap) . "\n\n");
+            fclose($h);
+            
             if ($order['jirafe_status'] == 'cancelled') {
                 
                 $data = array(
