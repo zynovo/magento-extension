@@ -268,6 +268,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 
                 $start = memory_get_usage();
                 $data['jirafe_status'] = 'accepted';
+                Mage::log($data,null,'order_date.log');
                 $this->_orderSave( $data );
                 unset($data);
                 $mem7 = memory_get_usage() - $start;
