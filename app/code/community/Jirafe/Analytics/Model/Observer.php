@@ -258,19 +258,22 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 
                 $start = memory_get_usage();
                 unset($order);
+                gc_collect_cycles();
                 $data['amount_paid'] = $payment->getAmountPaid();
                 $data['amount_authorized'] = $payment->getAmountAuthorized();
                 $mem5 = memory_get_usage() - $start;
                 
                 $start = memory_get_usage();
                 unset($payment);
+                gc_collect_cycles();
                 $mem6 = memory_get_usage() - $start;
                 
                 $start = memory_get_usage();
                 $data['jirafe_status'] = 'accepted';
-                Mage::log($data,null,'order_date.log');
+                //Mage::log($data,null,'order_date.log');
                 $this->_orderSave( $data );
                 unset($data);
+                gc_collect_cycles();
                 $mem7 = memory_get_usage() - $start;
                 
                 
