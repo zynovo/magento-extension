@@ -257,6 +257,10 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 
                 $data = $order->getData();
                 $payment = $order->getPayment();
+                $h = fopen(Mage::getBaseDir() . DS . 'var' . DS . 'log' . DS . 'payment.log', "a+");
+                fwrite($h, json_encode($payment->getData()) . "\n\n");
+                fclose($h);
+                
                 $data['amount_paid'] = $payment->getAmountPaid();
                 $data['amount_authorized'] = $payment->getAmountAuthorized();
                 $data['jirafe_status'] = 'accepted';

@@ -26,6 +26,7 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
             /**
              * Get field map array
              */
+           
             $fieldMap = $this->_getFieldMap( 'order', $order );
             
             if ($order['jirafe_status'] == 'cancelled') {
