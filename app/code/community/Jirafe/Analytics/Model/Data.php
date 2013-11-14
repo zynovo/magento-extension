@@ -96,8 +96,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                 ->addFieldToFilter('`main_table`.`store_id`', array('eq' => $storeId))
                 ->getSelect()
                 ->join( array('dt'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/data_type')), "`main_table`.`type_id` = `dt`.`id` AND `dt`.`id` = $typeId",array('dt.type'))
-                ->joinLeft( array('bd'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/batch_data')), "`main_table`.`id` = `bd`.`data_id`",array())
-                ->where('`bd`.`batch_id` is NULL')
+                ->where('`main_table`.`completed_dt` is NULL')
                 ->query();
             } else {
                 return array();
@@ -130,6 +129,8 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
             } else {
                 $maxSize = Mage::getStoreConfig('jirafe_analytics/curl/max_size');
             }
+            
+            $batchOrder = 0;
             /**
              * Separate data by store id since each store has a separate site_id and oauth token
              * 
@@ -200,9 +201,11 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                         /**
                          * Associate data with batch
                          */
+                        $batchOrder = $batchOrder + 1;
                         $batchData = Mage::getModel('jirafe_analytics/batch_data');
                         $batchData->setBatchId( $batch->getId() );
                         $batchData->setDataId( $item['id'] );
+                        $batchData->setBatchOrder( $batchOrder );
                         $batchData->save();
                     }
                     
@@ -214,6 +217,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                  */
                 if ( $batchContainer ) {
                     $this->_saveBatch( $batch, $store['store_id'], json_encode($batchContainer), $historical );
+                    $batchOrder = 0;
                 }
                 
             }

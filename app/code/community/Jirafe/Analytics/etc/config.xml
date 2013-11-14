@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Jirafe_Analytics>
-            <version>1.0.1</version>
+            <version>1.0.0</version>
         </Jirafe_Analytics>
     </modules>
     <global>
@@ -22,18 +22,18 @@
                     <batch>
                         <table>jirafe_analytics_batch</table>
                     </batch>
-                    <batch_attempt>
-                        <table>jirafe_analytics_batch_attempt</table>
-                    </batch_attempt>
                     <batch_data>
                         <table>jirafe_analytics_batch_data</table>
                     </batch_data>
-                    <batch_error>
-                        <table>jirafe_analytics_batch_error</table>
-                    </batch_error>
                     <data>
                         <table>jirafe_analytics_data</table>
                     </data>
+                    <data_attempt>
+                        <table>jirafe_analytics_data_attempt</table>
+                    </data_attempt>
+                    <data_error>
+                        <table>jirafe_analytics_data_error</table>
+                    </data_error>
                     <data_type>
                         <table>jirafe_analytics_data_type</table>
                     </data_type>

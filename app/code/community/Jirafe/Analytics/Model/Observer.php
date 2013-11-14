@@ -278,6 +278,10 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                      $data['amount_authorized'] = $payment->getAmountAuthorized();
                  }
                  
+                 $h = fopen(Mage::getBaseDir() . DS . 'var' . DS . 'log' . DS . 'order.log', "a+");
+                 fwrite($h, json_encode($data) . "\n\n");
+                 fclose($h);
+                 
                  unset($order);
                  unset($payment);
                  gc_collect_cycles();
