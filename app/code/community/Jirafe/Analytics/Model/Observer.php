@@ -266,6 +266,10 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             try {
                 $order = $observer->getOrder();
                 
+                /**
+                 * Core bug workaround for Magento CE 1.8.0.0 with PHP 5.3.3
+                 * Orders are not properly committed for sales_order_* events
+                 */
                 if (!$order->getEntityId()) {
                     $order->save();
                 }
@@ -275,10 +279,6 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                  $data['amount_paid'] = $payment->getAmountPaid();
                  $data['amount_authorized'] = $payment->getAmountAuthorized();
                  $data['jirafe_status'] = 'accepted';
-                 
-                 $h = fopen(Mage::getBaseDir() . DS . 'var' . DS . 'log' . DS . 'order.log', "a+");
-                 fwrite($h, json_encode($data) . "\n\n");
-                 fclose($h);
                  
                  $this->_orderSave( $data );
                  return true;

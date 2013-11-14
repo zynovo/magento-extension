@@ -25,29 +25,28 @@ class Jirafe_Analytics_Model_Data_Error extends Jirafe_Analytics_Model_Abstract
     /**
      * Write response for each API data error
      * 
-     * @param array $attempt        cURL reponse data for single API attempt
-     * @param array $dataAttemptId  data attempt key
+     * @param array $data              data for attempt including cURL reponse
+     * @param string $dataAttemptId    id from jirafe_analytics_data_attempt
      * @return boolean
      * @throws Exception
      */
     
-    public function add( $attempt = null, $dataAttemptId = null )
+    public function add( $data = null, $attemptId = null )
     {
         try {
-            if ( $attempt && $dataAttemptId ) {
-                 
+            if ( $data && is_numeric($attemptId) ) {
                 /**
-                 * Save error data into jirafe_analytics_data_error table
+                 * Save response data into jirafe_analytics_data_error table
                  */
-                
-                $this->setDataId( $attempt['data_id'] );
-                $this->setDataAttemptId( $dataAttemptId );
-                $this->setResponse( $attempt['response'] );
-                $this->setCreatedDt( $attempt['created_dt'] );
+                $this->setDataId( $data['data_id'] );
+                $this->setDataAttemptId( $attemptId );
+                $this->setErrorType( $data['error_type'] );
+                $this->setErrors( $data['errors'] );
+                $this->setCreatedDt( $data['created_dt'] );
                 $this->save();
                 return true;
             } else {
-                Mage::helper('jirafe_analytics')->log( 'ERROR', 'Jirafe_Analytics_Model_Data_Error::add()' , 'Empty attempt record.');
+                Mage::helper('jirafe_analytics')->log( 'ERROR', 'Jirafe_Analytics_Model_Data_Error::add()' , 'Empty attempt error record.');
                 return false;
             }
             

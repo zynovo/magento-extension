@@ -9,7 +9,7 @@ $session = Mage::getSingleton('admin/session');
 $session->start();
 
 if ($session->isLoggedIn()) {
-        echo Mage::getModel('jirafe_analytics/install')->createCredentials();
+        echo Mage::getModel('jirafe_analytics/install')->credentials();
 } else {
    echo "You must be logged in as an administrator to run this script.";
 }

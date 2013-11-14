@@ -22,7 +22,6 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
         $this->_init('jirafe_analytics/data');
     }
     
-    
     /**
      * Return all store ids from unbatched data
      *
@@ -38,7 +37,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                 ->getSelect()
                 ->join( array('d'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/data')), "`main_table`.`store_id` = `d`.`store_id`", array())
                 ->joinLeft( array('bd'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/batch_data')), "`d`.`id` = `bd`.`data_id`", array())
-                ->where('`bd`.`batch_id` is NULL')
+                ->where('`d`.`completed_dt` is NULL')
                 ->distinct(true)
                 ->query();
         } catch (Exception $e) {
@@ -65,7 +64,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                     ->getSelect()
                     ->join( array('d'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/data')), "`main_table`.`id` = `d`.`type_id` AND `d`.`json` is not null AND `d`.`store_id` = $storeId",array())
                     ->joinLeft( array('bd'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/batch_data')), "`d`.`id` = `bd`.`data_id`",array())
-                    ->where('`bd`.`batch_id` is NULL')
+                    ->where('`d`.`completed_dt` is NULL')
                     ->distinct(true)
                     ->query();
             } else {
@@ -130,7 +129,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                 $maxSize = Mage::getStoreConfig('jirafe_analytics/curl/max_size');
             }
             
-            $batchOrder = 0;
+            $batchIndex = 0;
             /**
              * Separate data by store id since each store has a separate site_id and oauth token
              * 
@@ -201,12 +200,13 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                         /**
                          * Associate data with batch
                          */
-                        $batchOrder = $batchOrder + 1;
+                        
                         $batchData = Mage::getModel('jirafe_analytics/batch_data');
                         $batchData->setBatchId( $batch->getId() );
                         $batchData->setDataId( $item['id'] );
-                        $batchData->setBatchOrder( $batchOrder );
+                        $batchData->setBatchOrder( $batchIndex );
                         $batchData->save();
+                        $batchIndex = $batchIndex + 1;
                     }
                     
                     $batchContainer[ $type['type'] ] = $typeContainer;
@@ -217,7 +217,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                  */
                 if ( $batchContainer ) {
                     $this->_saveBatch( $batch, $store['store_id'], json_encode($batchContainer), $historical );
-                    $batchOrder = 0;
+                    $batchIndex = 0;
                 }
                 
             }

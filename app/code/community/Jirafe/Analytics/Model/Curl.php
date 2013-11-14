@@ -175,13 +175,13 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
                             }
                             
                            $item = array(
-                                'data_id' => $row['id'],
+                                'batch_id' => $row['id'],
                                 'url' => $this->eventApiUrl . $this->_getSiteId( $row['store_id'] ) . '/batch',
                                 'token' => $this->_getAccessToken( $row['store_id'] ),
                                 'json' =>  $row['json'] );
                            
                            if ( $this->logging ) {
-                               Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'BATCH ID = ' . $item['data_id'], null  );
+                               Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'BATCH ID = ' . $item['batch_id'], null  );
                                Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'ACCESS TOKEN = ' . $item['token'], null  );
                                Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'EVENT API URL = ' . $item['url'], null  );
                                Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'JSON = ' . $item['json'], null  );
@@ -212,13 +212,13 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
                         foreach($data as $row) {
                             
                             $item = array(
-                                'data_id' => $row['id'],
+                                'batch_id' => $row['id'],
                                 'url' => $this->eventApiUrl . $this->_getSiteId($row['store_id']) . '/batch',
                                 'token' => $this->_getAccessToken( $row['store_id'] ),
                                 'json' =>  $json );
                             
                             if ( $this->logging ) {
-                               Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'BATCH ID = ' . $item['data_id'], null  );
+                               Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'BATCH ID = ' . $item['batch_id'], null  );
                                Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'ACCESS TOKEN = ' . $item['token'], null  );
                                Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'EVENT API URL = ' . $item['url'], null  );
                                Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'JSON = ' . $item['json'], null  );
@@ -339,8 +339,8 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
             $resourceId = intval($thread);
             $resource[ $resourceId ]['created_dt'] = Mage::helper('jirafe_analytics')->getCurrentDt();
             
-            if (isset($item['data_id'])) {
-                $resource[ $resourceId ]['data_id'] = $item['data_id'];
+            if (isset($item['batch_id'])) {
+                $resource[ $resourceId ]['batch_id'] = $item['batch_id'];
             }
             
             $response = curl_exec($thread);
@@ -351,7 +351,7 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
             $resource[ $resourceId ]['total_time'] = $info['total_time'];
             
             curl_close($thread);
-             Mage::helper('jirafe_analytics')->logServerLoad('Jirafe_Analytics_Model_Curl::_processSingle');
+            Mage::helper('jirafe_analytics')->logServerLoad('Jirafe_Analytics_Model_Curl::_processSingle');
             return $resource;
         } catch (Exception $e) {
            Mage::throwException('CURL ERROR: Jirafe_Analytics_Model_Curl::_processSingle(): ' . $e->getMessage());
@@ -425,7 +425,7 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
                     
                     curl_multi_add_handle($mh, $thread);
                     $ch[] = $thread;
-                    $resource[intval($thread)]['data_id'] = $batch[$i]['data_id'];
+                    $resource[intval($thread)]['batch_id'] = $batch[$i]['batch_id'];
                 }
             }
             
@@ -464,6 +464,7 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
             
             curl_multi_close($mh);
             Mage::helper('jirafe_analytics')->logServerLoad('Jirafe_Analytics_Model_Curl::_processMulti');
+            
             return $resource;
         } catch (Exception $e) {
             Mage::throwException('CURL ERROR: Jirafe_Analytics_Model_Curl::_processMulti(): ' . $e->getMessage());

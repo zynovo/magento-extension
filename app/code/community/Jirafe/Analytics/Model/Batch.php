@@ -95,16 +95,14 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
              * Record API attempt. 
              * Update batch with information from attempt
              */
-            
             if (  $response = Mage::getSingleton('jirafe_analytics/curl')->sendJson( $data->query(), $params ) ) {
                 foreach ($response as $batch) {
                     foreach ($batch as $attempt) {
                         $this->updateBatch( $attempt );
-                        Mage::getSingleton('jirafe_analytics/batch_attempt')->add( $attempt );
+                        Mage::getSingleton('jirafe_analytics/data_attempt')->add( $attempt );
                     }
                 }
                 return true;
-                
             } else {
                 /**
                  * No data to process
@@ -129,19 +127,14 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
         try {
             if ($attempt) {
                 $batch = Mage::getSingleton('jirafe_analytics/batch')->load( $attempt['batch_id'] );
-                $attemptNum = intval($batch->getAttemptCount()+1);
-                $batch->setAttemptCount($attemptNum);
-                
-                if ($attempt['http_code'] == '200' || $attemptNum >= $this->maxAttempts) {
+                if ($batch) {
+                    $batch->setHttpCode( $attempt['http_code'] );
+                    $batch->setTotalTime( $attempt['total_time'] );
                     $batch->setCompletedDt( $attempt['created_dt'] );
-                    
-                    if ($attempt['http_code'] == '200') {
-                        $batch->setSuccess( 1 );
-                    }
+                    $batch->save();
+                } else {
+                    return true;
                 }
-                
-                $batch->save();
-                return true;
             } else {
                 Mage::helper('jirafe_analytics')->log( 'ERROR', 'Jirafe_Analytics_Model_Batch::updateBatch()' ,'attempt object null');
                 return false;

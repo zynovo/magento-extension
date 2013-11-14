@@ -217,3 +217,4 @@ app/design/frontend/base/default/template/tag
 app/design/frontend/base/default/template/tax
 app/design/frontend/base/default/template/wishlist
 app/design/frontend/base/default/template/xmlconnect
+/process_queue.php
