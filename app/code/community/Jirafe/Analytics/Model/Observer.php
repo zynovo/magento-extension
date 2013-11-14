@@ -264,34 +264,24 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
     {
         if ( $this->_isEnabled ) {
             try {
-                if ( Mage::getSingleton('core/session')->getJirafeOrderPlaced() ) {
-                    Mage::log('orderAccepted',null,'order.log');
-                    $order = $observer->getOrder();
-                    unset($observer);
-                    gc_collect_cycles();
-                    
-                     $data = $order->getData();
-                     $payment = $order->getPayment();
-                     $data['amount_paid'] = $payment->getAmountPaid();
-                     $data['amount_authorized'] = $payment->getAmountAuthorized();
-                     
-                     $h = fopen(Mage::getBaseDir() . DS . 'var' . DS . 'log' . DS . 'order.log', "a+");
-                     fwrite($h, json_encode($data) . "\n\n");
-                     fclose($h);
-                     
-                     unset($order);
-                     unset($payment);
-                     gc_collect_cycles();
-                     
-                     $data['jirafe_status'] = 'accepted';
-                     $this->_orderSave( $data );
-                     Mage::getSingleton('core/session')->setJirafeOrderPlaced( false );
-                     
-                     return true;
-                 } else {
-                    return false;
-                 }
+                $order = $observer->getOrder();
                 
+                if (!$order->getEntityId()) {
+                    $order->save();
+                }
+                
+                 $data = $order->getData();
+                 $payment = $order->getPayment();
+                 $data['amount_paid'] = $payment->getAmountPaid();
+                 $data['amount_authorized'] = $payment->getAmountAuthorized();
+                 $data['jirafe_status'] = 'accepted';
+                 
+                 $h = fopen(Mage::getBaseDir() . DS . 'var' . DS . 'log' . DS . 'order.log', "a+");
+                 fwrite($h, json_encode($data) . "\n\n");
+                 fclose($h);
+                 
+                 $this->_orderSave( $data );
+                 return true;
             } catch (Exception $e) {
                 Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::orderAccepted()', $e->getMessage(), $e);
                 return false;
