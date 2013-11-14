@@ -32,8 +32,6 @@ class Jirafe_Analytics_Block_Adminhtml_Data_Grid extends Mage_Adminhtml_Block_Wi
     {
         $collection = Mage::getModel('jirafe_analytics/data')->getCollection();
         $collection->getSelect()->join( array('t'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/data_type')), 'main_table.type_id = t.id', array('t.type'), array());
-        $collection->getSelect()->joinLeft( array('bd'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/batch_data')), 'main_table.id = bd.data_id', array('bd.batch_id'), array());
-        $collection->getSelect()->joinLeft( array('b'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/batch')), 'bd.batch_id = b.id', array('b.attempt_count', 'b.success', 'b.completed_dt'), array());
         
         $this->setCollection($collection);
         $collection->addFilterToMap('id', 'main_table.id');
@@ -96,15 +94,6 @@ class Jirafe_Analytics_Block_Adminhtml_Data_Grid extends Mage_Adminhtml_Block_Wi
                 'align'     =>'left',
                 'width'     => '100px',
                 'index'     => 'attempt_count',
-            )
-        );
-        
-        $this->addColumn(
-            'batch_id',
-            array(
-                'header'    => Mage::helper('jirafe_analytics')->__('BATCH'),
-                'align'     =>'left',
-                'index'     => 'batch_id',
             )
         );
         

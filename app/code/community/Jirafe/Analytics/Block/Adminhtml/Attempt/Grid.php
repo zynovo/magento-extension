@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Adminhtml Batch Block Grid
+ * Adminhtml Attempt Block Grid
  *
  * @category  Jirafe
  * @package   Jirafe_Analytics
@@ -9,7 +9,7 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Block_Adminhtml_Batch_Grid extends Mage_Adminhtml_Block_Widget_Grid
+class Jirafe_Analytics_Block_Adminhtml_Attempt_Grid extends Mage_Adminhtml_Block_Widget_Grid
 {
     /**
      * Constructor
@@ -17,33 +17,33 @@ class Jirafe_Analytics_Block_Adminhtml_Batch_Grid extends Mage_Adminhtml_Block_W
     public function __construct()
     {
         parent::__construct();
-        $this->setId('batchId');
+        $this->setId('attemptId');
         $this->setDefaultSort('created_dt');
         $this->setDefaultDir('DESC');
         $this->setSaveParametersInSession(true);
     }
-
+    
     /**
      * Prepare collection
      *
-     * @return Jirafe_Analytics_Block_Adminhtml_Attemp_Grid
+     * @return Jirafe_Analytics_Block_Adminhtml_Attempt_Grid
      */
     protected function _prepareCollection()
     {
-        $collection = Mage::getModel('jirafe_analytics/batch_attempt')->getCollection();
-        $collection->getSelect()->join( array('b'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/batch')), 'main_table.batch_id = b.id', array('b.json'), array());
-        $collection->getSelect()->joinLeft( array('e'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/batch_error')), 'main_table.id = e.batch_attempt_id', array('e.response'), array());
+        $collection = Mage::getModel('jirafe_analytics/data_attempt')->getCollection();
+        $collection->getSelect()->join( array('d'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/data')), 'main_table.data_id = d.id', array('d.json'), array());
+        $collection->getSelect()->joinLeft( array('e'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/data_error')), 'main_table.id = e.data_attempt_id', array('e.error_type','e.errors'), array());
         $this->setCollection($collection);
         $collection->addFilterToMap('id', 'main_table.id');
         $collection->addFilterToMap('created_dt', 'main_table.created_dt');
         parent::_prepareCollection();
         return $this;
     }
-
+    
     /**
      * Prepare columns
      *
-     * @return Jirafe_Analytics_Block_Adminhtml_Attemp_Grid
+     * @return Jirafe_Analytics_Block_Adminhtml_Attempt_Grid
      */
     protected function _prepareColumns()
     {
@@ -58,15 +58,6 @@ class Jirafe_Analytics_Block_Adminhtml_Batch_Grid extends Mage_Adminhtml_Block_W
         );
         
         $this->addColumn(
-            'http_code',
-            array(
-                'header'    => Mage::helper('jirafe_analytics')->__('HTTP CODE'),
-                'align'     =>'left',
-                'index'     => 'http_code',
-            )
-        );
-        
-        $this->addColumn(
             'json',
             array(
                 'header'    => Mage::helper('jirafe_analytics')->__('JSON'),
@@ -74,11 +65,18 @@ class Jirafe_Analytics_Block_Adminhtml_Batch_Grid extends Mage_Adminhtml_Block_W
             )
         );
         $this->addColumn(
-            'response',
+            'error_type',
             array(
-                'header'    => Mage::helper('jirafe_analytics')->__('ERROR'),
-                'index'     => 'response',
+                'header'    => Mage::helper('jirafe_analytics')->__('ERROR TYPE'),
+                'index'     => 'error_type',
             )
+        );
+        $this->addColumn(
+          'errors',
+          array(
+            'header'    => Mage::helper('jirafe_analytics')->__('ERRORS'),
+            'index'     => 'errors',
+          )
         );
         $this->addColumn(
             'created_dt',
@@ -93,5 +91,4 @@ class Jirafe_Analytics_Block_Adminhtml_Batch_Grid extends Mage_Adminhtml_Block_W
         
         return parent::_prepareColumns();
     }
-
 }

@@ -11,10 +11,10 @@
                             <title>Data Captured</title>
                             <action>jirafe_analytics/adminhtml_data</action>
                         </adminhtml_data>
-                        <adminhtml_batch translate="title" module="jirafe_analytics">
+                        <adminhtml_attempt translate="title" module="jirafe_analytics">
                             <title>Data Transfered</title>
-                            <action>jirafe_analytics/adminhtml_batch</action>
-                        </adminhtml_batch>
+                            <action>jirafe_analytics/adminhtml_attempt</action>
+                        </adminhtml_attempt>
                         <adminhtml_log translate="title" module="jirafe_analytics">
                             <title>Log</title>
                             <action>jirafe_analytics/adminhtml_log</action>
