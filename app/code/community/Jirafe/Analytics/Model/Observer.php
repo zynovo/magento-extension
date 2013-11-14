@@ -248,23 +248,24 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 unset($observer);
                 gc_collect_cycles();
                 
+                if (!$order->getEntityId() && $order->getIncrementId()) {
+                    $order = Mage::getSingleton('sales/order')
+                        ->getCollection()
+                        ->addFieldToFilter('increment_id',array('eq',$order->getIncrementId()))
+                        ->getFirstItem();
+                }
+                
                 $data = $order->getData();
-                $h = fopen(Mage::getBaseDir() . DS . 'var' . DS . 'log' . DS . 'order.log', "a+");
-                fwrite($h, json_encode($data) . "\n\n");
-                fclose($h);
-                
-                
                 $payment = $order->getPayment();
-                unset($order);
-                gc_collect_cycles();
-                
                 $data['amount_paid'] = $payment->getAmountPaid();
                 $data['amount_authorized'] = $payment->getAmountAuthorized();
                 $data['jirafe_status'] = 'accepted';
-                $this->_orderSave( $data );
+                
+                unset($order);
                 unset($payment);
-                unset($data);
                 gc_collect_cycles();
+                
+                $this->_orderSave( $data );
                 
                 return true;
             } catch (Exception $e) {
