@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Api2 Batch Error Model
+ * Api2 Data Error Model
  *
  * @category  Jirafe
  * @package   Jirafe_Analytics
@@ -9,6 +9,6 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Model_Api2_Batch_Error extends Jirafe_Analytics_Model_Api2_Resource
+class Jirafe_Analytics_Model_Api2_Data_Error extends Jirafe_Analytics_Model_Api2_Resource
 {
 }
