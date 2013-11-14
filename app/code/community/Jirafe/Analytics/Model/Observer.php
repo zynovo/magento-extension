@@ -234,6 +234,26 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
     }
     
     /**
+     * Capture order placed event
+     *
+     * @return boolean
+     */
+    
+    public function orderPlaced()
+    {
+        if ( $this->_isEnabled ) {
+            try {
+                Mage::getSingleton('core/session')->setJirafeOrderPlaced( true );
+                Mage::log('orderPlaced',null,'order.log');
+                return true;
+            } catch (Exception $e) {
+                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::orderPlaced()', $e->getMessage(), $e);
+                return false;
+            }
+       }
+    }
+    
+    /**
      * Capture order accepted event
      *
      * @param Varien_Event_Observer $observer
@@ -244,52 +264,34 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
     {
         if ( $this->_isEnabled ) {
             try {
-                $order = $observer->getOrder();
-                unset($observer);
-                gc_collect_cycles();
-                
-                if (!$order->getEntityId() && $order->getIncrementId()) {
-                     $columns = $this->_getAttributesToSelect( 'order' );
-                     $columns[] = 'store_id';
-                     $columns[] = 'entity_id';
-                     $columns[] = 'customer_id';
-                     $columns[] = 'p.amount_paid';
-                     $columns[] = 'p.amount_authorized';
-                     
-                     $order = Mage::getSingleton('sales/order')
-                         ->getCollection()
-                         ->getSelect()
-                         ->joinLeft( array('p'=>Mage::getSingleton('core/resource')->getTableName('sales/order_payment')), 'main_table.entity_id = p.parent_id')
-                         ->reset(Zend_Db_Select::COLUMNS)
-                         ->columns( $columns )
-                         ->where( "increment_id = '" . $order->getIncrementId() . "'")
-                         ->limit(1)
-                         ->query();
-                     
-                     foreach($order as $row) {
-                         if ($data = $row) {
-                             break;
-                         }
-                     }
-                 } else {
+                if ( Mage::getSingleton('core/session')->getJirafeOrderPlaced() ) {
+                    Mage::log('orderAccepted',null,'order.log');
+                    $order = $observer->getOrder();
+                    unset($observer);
+                    gc_collect_cycles();
+                    
                      $data = $order->getData();
                      $payment = $order->getPayment();
                      $data['amount_paid'] = $payment->getAmountPaid();
                      $data['amount_authorized'] = $payment->getAmountAuthorized();
+                     
+                     $h = fopen(Mage::getBaseDir() . DS . 'var' . DS . 'log' . DS . 'order.log', "a+");
+                     fwrite($h, json_encode($data) . "\n\n");
+                     fclose($h);
+                     
+                     unset($order);
+                     unset($payment);
+                     gc_collect_cycles();
+                     
+                     $data['jirafe_status'] = 'accepted';
+                     $this->_orderSave( $data );
+                     Mage::getSingleton('core/session')->setJirafeOrderPlaced( false );
+                     
+                     return true;
+                 } else {
+                    return false;
                  }
-                 
-                 $h = fopen(Mage::getBaseDir() . DS . 'var' . DS . 'log' . DS . 'order.log', "a+");
-                 fwrite($h, json_encode($data) . "\n\n");
-                 fclose($h);
-                 
-                 unset($order);
-                 unset($payment);
-                 gc_collect_cycles();
-                 
-                 $data['jirafe_status'] = 'accepted';
-                 $this->_orderSave( $data );
-                 
-                return true;
+                
             } catch (Exception $e) {
                 Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::orderAccepted()', $e->getMessage(), $e);
                 return false;
@@ -330,14 +332,12 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
     {
         if ( $this->_isEnabled && $order ) {
             try {
-             Mage::log('BEGIN JIRAFE _orderSave',null,'events.log');
                 $data = Mage::getModel('jirafe_analytics/data');
                 $data->setTypeId( Jirafe_Analytics_Model_Data_Type::ORDER );
                 $data->setJson( Mage::getSingleton('jirafe_analytics/order')->getJson( $order ) );
                 $data->setStoreId( $order['store_id'] );
                 $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
                 $data->save();
-                Mage::log('END JIRAFE _orderSave',null,'events.log');
                 return true;
             } catch (Exception $e) {
                 Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_orderSave()', $e->getMessage(), $e);
