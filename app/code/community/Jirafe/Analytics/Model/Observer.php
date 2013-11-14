@@ -249,28 +249,42 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 gc_collect_cycles();
                 
                 if (!$order->getEntityId() && $order->getIncrementId()) {
-                    $order = Mage::getSingleton('sales/order')
-                        ->getCollection()
-                        ->addFieldToFilter('increment_id',array('eq',$order->getIncrementId()))
-                        ->getFirstItem();
-                }
-                
-                $data = $order->getData();
-                $payment = $order->getPayment();
-                $h = fopen(Mage::getBaseDir() . DS . 'var' . DS . 'log' . DS . 'payment.log', "a+");
-                fwrite($h, json_encode($payment->getData()) . "\n\n");
-                fclose($h);
-                
-                $data['amount_paid'] = $payment->getAmountPaid();
-                $data['amount_authorized'] = $payment->getAmountAuthorized();
-                $data['jirafe_status'] = 'accepted';
-                
-                unset($order);
-                unset($payment);
-                gc_collect_cycles();
-                
-                $this->_orderSave( $data );
-                
+                     $columns = $this->_getAttributesToSelect( 'order' );
+                     $columns[] = 'store_id';
+                     $columns[] = 'entity_id';
+                     $columns[] = 'customer_id';
+                     $columns[] = 'p.amount_paid';
+                     $columns[] = 'p.amount_authorized';
+                     
+                     $order = Mage::getSingleton('sales/order')
+                         ->getCollection()
+                         ->getSelect()
+                         ->joinLeft( array('p'=>Mage::getSingleton('core/resource')->getTableName('sales/order_payment')), 'main_table.entity_id = p.parent_id')
+                         ->reset(Zend_Db_Select::COLUMNS)
+                         ->columns( $columns )
+                         ->where( "increment_id = '" . $order->getIncrementId() . "'")
+                         ->limit(1)
+                         ->query();
+                     
+                     foreach($order as $row) {
+                         if ($data = $row) {
+                             break;
+                         }
+                     }
+                 } else {
+                     $data = $order->getData();
+                     $payment = $order->getPayment();
+                     $data['amount_paid'] = $payment->getAmountPaid();
+                     $data['amount_authorized'] = $payment->getAmountAuthorized();
+                 }
+                 
+                 unset($order);
+                 unset($payment);
+                 gc_collect_cycles();
+                 
+                 $data['jirafe_status'] = 'accepted';
+                 $this->_orderSave( $data );
+                 
                 return true;
             } catch (Exception $e) {
                 Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::orderAccepted()', $e->getMessage(), $e);
