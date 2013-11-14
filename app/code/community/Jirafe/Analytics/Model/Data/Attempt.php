@@ -31,6 +31,7 @@ class Jirafe_Analytics_Model_Data_Attempt extends Jirafe_Analytics_Model_Abstrac
      */
     public function add( $attempt = null )
     {
+     Mage::log($attempt,null,'attempt.log');
         try {
             
             if ( $attempt ) {

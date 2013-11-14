@@ -464,7 +464,7 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
             
             curl_multi_close($mh);
             Mage::helper('jirafe_analytics')->logServerLoad('Jirafe_Analytics_Model_Curl::_processMulti');
-            
+            Mage::log($resource,null,'curl.log');
             return $resource;
         } catch (Exception $e) {
             Mage::throwException('CURL ERROR: Jirafe_Analytics_Model_Curl::_processMulti(): ' . $e->getMessage());

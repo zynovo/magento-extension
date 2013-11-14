@@ -24,7 +24,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
     public function getArray( $productId = null, $storeId = null, $isRoot = true, $product = null )
     {
         try {
-            if ( $productId && $storeId ) {
+            if ( is_numeric($productId) && is_numeric($storeId) ) {
                 $product = Mage::getSingleton('catalog/product')->setStoreId( $storeId )->load( $productId );
             }
             
@@ -37,6 +37,8 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                  */
                 $fieldMap = $this->_getFieldMap( 'product', $product->getData() );
                 $categoryValues = $this->_getCategoryValues( $product, $storeId);
+                
+                Mage::log($categories,null,'categories.log');
                 $images = $this->_getImages( $product );
                 $element = array(
                     $fieldMap['id']['api'] => $fieldMap['id']['magento'],
@@ -56,6 +58,8 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                     $element['base_product'] = $this->_getBaseProducts( $parentIds );
                     $element['attributes'] = $this->_getAttributes( $product, $fieldMap );
                 }
+                
+                Mage::log(json_encode($element),null,'categories.log');
                 return $element;
             } else {
                 return array();
@@ -157,6 +161,8 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
         try {
             if ($product) {
                 $data = array();
+                $categories = array();
+                $urls = array();
                 
                 foreach ($product->getCategoryIds() as $catId) {
                     $category = Mage::getSingleton('catalog/category')->load( $catId );
@@ -166,7 +172,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                       */
                      $fieldMap = $this->_getFieldMap( 'category', $category );
                      
-                     $data['category'] = array(
+                     $categories[] = array(
                          $fieldMap['id']['api'] => $fieldMap['id']['magento'],
                          $fieldMap['name']['api'] => $fieldMap['name']['magento'],
                          $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
@@ -185,13 +191,16 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                          }
                       }
                     
-                    $data['url'] = array(
+                    $urls[] = array(
                         'admin' => Mage::getUrl() . 'index.php/admin/catalog_product/edit/id/' . $product->getId(),
                         'store' => $product->getUrlInStore()
                     );
                 }
                 
-                return $data;
+                return array(
+                    'category' => json_decode(json_encode($categories), FALSE),
+                    'url' => json_decode(json_encode($urls), FALSE)
+                 );
             } else {
                 return array();
             }

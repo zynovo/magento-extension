@@ -57,14 +57,13 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
     protected function _getStoreTypes( $storeId = null ) 
     {
         try {
-            if ( $storeId ) {
+            if ( is_numeric($storeId) ) {
                return Mage::getSingleton('jirafe_analytics/data_type')
                     ->getCollection()
                     ->addFieldToSelect(array('type'))
                     ->getSelect()
                     ->join( array('d'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/data')), "`main_table`.`id` = `d`.`type_id` AND `d`.`json` is not null AND `d`.`store_id` = $storeId",array())
-                    ->joinLeft( array('bd'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/batch_data')), "`d`.`id` = `bd`.`data_id`",array())
-                    ->where('`d`.`completed_dt` is NULL')
+                    ->where('d.completed_dt is NULL')
                     ->distinct(true)
                     ->query();
             } else {
@@ -87,7 +86,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
     protected function _getItems( $storeId = null, $typeId = null )
     {
         try {
-            if ( $storeId && $typeId ) {
+            if ( is_numeric($storeId) && is_numeric($typeId) ) {
                 return Mage::getSingleton('jirafe_analytics/data')
                 ->getCollection()
                 ->addFieldToSelect(array('json','store_id'))
@@ -135,6 +134,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
              * 
              * Get all stores with data ready to be batched
              */
+            
             foreach( $this->_getStores() as $store ) {
                 
                 /**
@@ -146,6 +146,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                 /**
                  * Get all available object types for each store
                  */
+                Mage::log("storetypes = " . json_encode( $this->_getStoreTypes( $store['store_id'] )) ,null,'data.log');
                 foreach( $this->_getStoreTypes( $store['store_id'] ) as $type ) {
                     
                     /**
@@ -238,7 +239,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
     protected function _saveBatch( $batch = null, $storeId = null, $json = null, $historical = false )
     {
         try {
-            if ( $batch && $storeId && $json) {
+            if ( $batch && is_numeric($storeId) && $json) {
                 $batch->setStoreId( $storeId );
                 $batch->setJson( $json );
                 $batch->setCreatedDt( Mage::helper('jirafe_analytics')->getCurrentDt()  );
