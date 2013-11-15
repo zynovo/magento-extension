@@ -57,9 +57,17 @@ class Jirafe_Analytics_Model_Install_Api2_Role extends Mage_Api2_Adminhtml_Api2_
                  }
              }
              
-             $resources = json_decode('{"map":{"retrieve":1,"update":1},"field":{"retrieve":1},"history":{"update":1},"batch":{"retrieve":1},"batch_attempt":{"retrieve":1},"batch_error":{"retrieve":1},"data":{"retrieve":1},"data_type":{"retrieve":1},"log":{"retrieve":1}}');
+             Mage::app()->getRequest()->setParam('id',$role->getId());
+             Mage::app()->getRequest()->setParam('role_name',$role->getRoleName());
+             Mage::app()->getRequest()->setParam('resource','__root__,group-jirafe_analytics,resource-map,privilege-map-retrieve,privilege-map-update,resource-field,privilege-field-retrieve,resource-history,privilege-history-update,resource-batch,privilege-batch-retrieve,resource-data_attempt,privilege-data_attempt-retrieve,resource-data_error,privilege-data_error-retrieve,resource-data,privilege-data-retrieve,resource-data_type,privilege-data_type-retrieve,resource-log,privilege-log-retrieve');
+             Mage::app()->getRequest()->setParam('filter_in_role_users',0);
              
-             foreach ($resources as $resourceId => $privileges) {
+             $ruleTree = Mage::getSingleton(
+               'api2/acl_global_rule_tree',
+               array('type' => Mage_Api2_Model_Acl_Global_Rule_Tree::TYPE_PRIVILEGE)
+             );
+             
+             foreach ($ruleTree->getPostResources() as $resourceId => $privileges) {
                  foreach ($privileges as $privilege => $allow) {
                      if (!$allow) {
                          continue;
@@ -79,6 +87,5 @@ class Jirafe_Analytics_Model_Install_Api2_Role extends Mage_Api2_Adminhtml_Api2_
          } catch (Exception $e) {
              Mage::throwException('ADMIN ROLE ERROR: Jirafe_Analytics_Model_Install_Admin_Role::getId(): ' . $e->getMessage());
          }
-                 
     }
 }

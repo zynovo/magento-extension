@@ -34,7 +34,6 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
                 
                 $data = array(
                      $fieldMap['id']['api'] => $fieldMap['id']['magento'],
-                     $fieldMap['cart_id']['api'] => $fieldMap['cart_id']['magento'],
                      $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento'],
                      $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
                      $fieldMap['subtotal']['api'] => $fieldMap['subtotal']['magento'],
@@ -117,7 +116,7 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
             $columns = $this->_getAttributesToSelect( 'cart' );
             $columns[] = 'store_id';
             
-            $collection = Mage::getSingleton('sales/quote')->getCollection()->getSelect();
+            $collection = Mage::getModel('sales/quote')->getCollection()->getSelect();
             $collection->reset(Zend_Db_Select::COLUMNS)->columns( $columns );
             
             if ( $startDate && $endDate ){

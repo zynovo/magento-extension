@@ -116,7 +116,6 @@ $installer->run("
     
     INSERT INTO {$this->getTable('jirafe_analytics/map')} ( `element`, `key`, `api`, `magento`, `type`, `default` ) VALUES 
         ('cart', 'id', 'id', 'entity_id', 'string', '' ),
-        ('cart', 'cart_id', 'cart_id', 'entity_id', 'string', '' ),
         ('cart', 'create_date', 'create_date', 'created_at', 'datetime', '' ),
         ('cart', 'change_date', 'change_date', 'updated_at', 'datetime', '' ),
         ('cart', 'subtotal', 'subtotal', 'subtotal', 'float', '' ),

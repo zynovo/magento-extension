@@ -82,7 +82,7 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
             $output = array();
             
             if (!$quote) {
-                $quote = Mage::getSingleton('sales/quote')->getCollection()->getFirstItem();
+                $quote = Mage::getModel('sales/quote')->getCollection()->getFirstItem();
             }
             
             $output= $this->_flattenArray( array_keys( $quote->getData() ) );
@@ -107,7 +107,7 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
             $output = array();
             
             if (!$quote) {
-                $quote = Mage::getSingleton('sales/quote')->getCollection()->getFirstItem();
+                $quote = Mage::getModel('sales/quote')->getCollection()->getFirstItem();
             }
             
             if ( $quoteItem = $quote->getItemsCollection()->getData() ) {
@@ -202,7 +202,7 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
         try {
             $output = array();
             
-            if ( $order = Mage::getSingleton('sales/order')->getCollection()->getFirstItem()->getData() ) {
+            if ( $order = Mage::getModel('sales/order')->getCollection()->getFirstItem()->getData() ) {
                 $output = $this->_flattenArray( array_keys( $order ) );
             }
             
@@ -225,7 +225,7 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
         try {
             $output = array();
             
-                if ( $order_item = Mage::getSingleton('sales/order_item')->getCollection()->getFirstItem()->getData() ) {
+                if ( $order_item = Mage::getModel('sales/order_item')->getCollection()->getFirstItem()->getData() ) {
                     $output = $this->_flattenArray( array_keys( $order_item ) );
                 }
             

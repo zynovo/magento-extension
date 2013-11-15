@@ -25,7 +25,7 @@ class Jirafe_Analytics_Model_Order_Payment extends Jirafe_Analytics_Model_Order
             if ($orderId) {
                 $paymentColumns = $this->_getAttributesToSelect( 'order|payment' );
                 
-                return Mage::getSingleton('sales/order_payment')
+                return Mage::getModel('sales/order_payment')
                     ->getCollection()
                     ->getSelect()
                     ->reset(Zend_Db_Select::COLUMNS)

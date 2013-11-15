@@ -124,7 +124,7 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
         try {
             if ($element) {
                 
-                $magentoFields = Mage::getSingleton('jirafe_analytics/map')
+                $magentoFields = Mage::getModel('jirafe_analytics/map')
                                                 ->getCollection()
                                                 ->addFieldToSelect('magento')
                                                 ->addFilter('element',$element)

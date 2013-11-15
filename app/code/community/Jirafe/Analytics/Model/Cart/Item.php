@@ -27,7 +27,7 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
                 $columns = $this->_getAttributesToSelect( 'cart_item' );
                 $columns[] = 'product_id';
                 
-                $collection = Mage::getSingleton('sales/quote_item')->getCollection()->getSelect();
+                $collection = Mage::getModel('sales/quote_item')->getCollection()->getSelect();
                 $collection->reset(Zend_Db_Select::COLUMNS)->columns( $columns);
                 $collection->where( "`main_table`.`quote_id` = $quoteId" );
                 
@@ -50,7 +50,7 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
                         $fieldMap['quantity']['api'] => $fieldMap['quantity']['magento'],
                         $fieldMap['price']['api'] => $fieldMap['price']['magento'],
                         $fieldMap['discount_price']['api'] => $fieldMap['discount_price']['magento'],
-                        'product' => Mage::getSingleton('jirafe_analytics/product')->getArray( $item['product_id'], $storeId, false, null )
+                        'product' => Mage::getSingleton('jirafe_analytics/product')->getArray( $item['product_id'], $storeId, null )
                     );
                     $count++;
                 }

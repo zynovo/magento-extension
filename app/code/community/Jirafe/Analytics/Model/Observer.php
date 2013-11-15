@@ -375,7 +375,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 $product = $observer->getProduct();
                 $data = Mage::getModel('jirafe_analytics/data');
                 $data->setTypeId( Jirafe_Analytics_Model_Data_Type::PRODUCT );
-                $data->setJson( Mage::getSingleton('jirafe_analytics/product')->getJson( $product->getEntityId() ) );
+                $data->setJson( Mage::getModel('jirafe_analytics/product')->getJson( null, null, $product ) );
                 $data->setStoreId( $product->getStoreId() );
                 $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
                 $data->save();
