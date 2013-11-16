@@ -31,7 +31,7 @@ class Jirafe_Analytics_Model_Install extends Jirafe_Analytics_Model_Abstract
           
           if ( !$installer = $cache->load('jirafe_analytics_installer') ) {
               $response = $this->createCredentials();
-              Mage::log($response,null,'installer.log');
+              
               if ( $response === 'error' ) {
                   Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Install::run()', "Unable to install admin user.", null );
               } else {

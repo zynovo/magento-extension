@@ -146,7 +146,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                 /**
                  * Get all available object types for each store
                  */
-                Mage::log("storetypes = " . json_encode( $this->_getStoreTypes( $store['store_id'] )) ,null,'data.log');
+                
                 foreach( $this->_getStoreTypes( $store['store_id'] ) as $type ) {
                     
                     /**
