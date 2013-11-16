@@ -55,11 +55,9 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
                     'total_payment_cost' => floatval( $totalPaymentCost),
                     $fieldMap['total_discounts']['api'] => $fieldMap['total_discounts']['magento'],
                     $fieldMap['currency']['api'] => $fieldMap['currency']['magento'],
-                    'cookies' => $isEvent ? $this->_getCookies() : (object) null,
                     'items' => $items,
                     'previous_items' => $isEvent ? $this->_getPreviousItems( $order['entity_id'] ) : (object) null,
-                    'customer' => $this->_getCustomer( $order ),
-                    'visit' => $isEvent ? $this->_getVisit() : (object) null
+                    'customer' => $this->_getCustomer( $order )
                 );
                 
                 Mage::getSingleton('core/session')->setJirafePrevOrderId( $order['entity_id'] );

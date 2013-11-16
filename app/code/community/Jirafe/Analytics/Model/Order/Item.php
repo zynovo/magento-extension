@@ -49,9 +49,8 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
                         $fieldMap['id']['api'] => $fieldMap['id']['magento'],
                         $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento'],
                         $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
-                        'order_item_number' => "$count",
+                        'cart_item_number' => "$count",
                         $fieldMap['quantity']['api'] => $fieldMap['quantity']['magento'],
-                        'status' => 'accepted',
                         $fieldMap['price']['api'] => $fieldMap['price']['magento'],
                         $fieldMap['discount_price']['api'] => $fieldMap['discount_price']['magento'],
                         'product' => Mage::getSingleton('jirafe_analytics/product')->getArray( $item['product_id'], $storeId, null)
