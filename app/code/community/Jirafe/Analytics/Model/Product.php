@@ -128,7 +128,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
         if ( $this->_parentIds ) {
             return false;
         } else {
-            switch ( $this->_type_id ) {
+            switch ( $this->_typeId ) {
             case 'simple':
                 return true;
                 break;
@@ -166,7 +166,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
     
     protected function _isSku ()
     {
-        switch ($this->_type_id) {
+        switch ($this->_typeId) {
             case 'simple':
                 return true;
                 break;
@@ -279,7 +279,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
     protected function _getParentIds()
     {
         try {
-            if ( $this->_type_id == "simple" ){
+            if ( $this->_typeId == "simple" ){
                 $this->_parentIds = Mage::getModel('catalog/product_type_grouped')->getParentIdsByChild( $this->_product->getId() );
                 
                 if ( !$this->_parentIds ) {
