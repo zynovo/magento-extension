@@ -31,7 +31,7 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
                     ->getSelect()
                     ->reset(Zend_Db_Select::COLUMNS)
                     ->columns( $itemColumns )
-                    ->where("order_id = $orderId AND base_price is NOT NULL")
+                    ->where("order_id = $orderId AND base_price > 0")
                     ->query();
                 
                 $count = 1;

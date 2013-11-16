@@ -87,6 +87,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                     $this->_fieldMap['change_date']['api'] => $this->_fieldMap['change_date']['magento'],
                     'is_product' => $this->_isProduct(),
                     'is_sku' => $this->_isSku(),
+                    'is_bundle' => $this->_typeId == 'bundle' ? true : false,
                     'catalog' => $this->_getCatalog( $this->_storeId ),
                     $this->_fieldMap['name']['api'] => $this->_fieldMap['name']['magento'],
                     $this->_fieldMap['code']['api'] => $this->_fieldMap['code']['magento'],
@@ -142,7 +143,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                 return true;
                 break;
             case 'bundle':
-                return false;
+                return true;
                 break;
             case 'downloadable':
                 return true;
@@ -180,7 +181,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                 return true;
                 break;
             case 'bundle':
-                return false;
+                return true;
                 break;
             case 'downloadable':
                 return true;
