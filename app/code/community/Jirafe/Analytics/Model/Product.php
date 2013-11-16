@@ -334,21 +334,17 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
     /**
      * Create array of images associated with product
      *
-     * @return mixed
+     * @return array
      */
-    protected function _getImages( )
+    protected function _getImages()
     {
         try {
-            if ( $image = $this->_product->getMediaConfig()->getMediaUrl( $this->_product->getData( 'image' ) ) ) {
-               $images = array();
-               $images[] = $image;
-               return json_decode(json_encode($images), FALSE);
-            } else {
-              return (object) null;
-            }
+            return array(
+                array( 'url' => $this->_product->getMediaConfig()->getMediaUrl( $this->_product->getData( 'image' ) ) )
+            );
         } catch (Exception $e) {
             Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::_getImages()', $e->getMessage(), $e);
-            return false;
+            return array();
         }
     }
     
