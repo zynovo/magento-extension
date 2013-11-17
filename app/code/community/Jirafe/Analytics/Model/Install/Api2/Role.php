@@ -62,7 +62,7 @@ class Jirafe_Analytics_Model_Install_Api2_Role extends Mage_Api2_Adminhtml_Api2_
              Mage::app()->getRequest()->setParam('resource','__root__,group-jirafe_analytics,resource-map,privilege-map-retrieve,privilege-map-update,resource-field,privilege-field-retrieve,resource-history,privilege-history-update,resource-batch,privilege-batch-retrieve,resource-data_attempt,privilege-data_attempt-retrieve,resource-data_error,privilege-data_error-retrieve,resource-data,privilege-data-retrieve,resource-data_type,privilege-data_type-retrieve,resource-log,privilege-log-retrieve');
              Mage::app()->getRequest()->setParam('filter_in_role_users',0);
              
-             $ruleTree = Mage::getSingleton(
+             $ruleTree = Mage::getModel(
                'api2/acl_global_rule_tree',
                array('type' => Mage_Api2_Model_Acl_Global_Rule_Tree::TYPE_PRIVILEGE)
              );

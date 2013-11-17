@@ -42,7 +42,7 @@ class Jirafe_Analytics_Model_Install extends Jirafe_Analytics_Model_Abstract
               $response = 'credentials already installed';
           }
           
-          return "installer=$installer response=$response";
+          return $response;
           
        } catch (Exception $e) {
             return 'DATA ERROR: Jirafe_Analytics_Model_Install::run(): ' . $e->getMessage();
@@ -56,23 +56,23 @@ class Jirafe_Analytics_Model_Install extends Jirafe_Analytics_Model_Abstract
      */
     public function createCredentials()
     {
-       if (!$adminRoleID = Mage::getSingleton('jirafe_analytics/install_admin_role')->getId()) {
+       if (!$adminRoleID = Mage::getModel('jirafe_analytics/install_admin_role')->getId()) {
            Mage::throwException('Error creating admin user role');
        }
        
-       if (!$api2RoleId = Mage::getSingleton('jirafe_analytics/install_api2_role')->getId()) {
+       if (!$api2RoleId = Mage::getModel('jirafe_analytics/install_api2_role')->getId()) {
            Mage::throwException('Error creating api2 user role');
        }
        
-       if (!$api2Attributes = Mage::getSingleton('jirafe_analytics/install_api2_attribute')->setAll()) {
+       if (!$api2Attributes = Mage::getModel('jirafe_analytics/install_api2_attribute')->setAll()) {
            Mage::throwException('Error creating api2 attribures');
        }
        
-       if (!$oauthSecret = Mage::getSingleton('jirafe_analytics/install_oauth_customer')->getSecret()) {
+       if (!$oauthSecret = Mage::getModel('jirafe_analytics/install_oauth_customer')->getSecret()) {
            Mage::throwException('Error creating oauth customer.');
        }
        
-       if (!$user = Mage::getSingleton('jirafe_analytics/install_admin_user')->create( $adminRoleID, $api2RoleId, $oauthSecret)) {
+       if (!$user = Mage::getModel('jirafe_analytics/install_admin_user')->create( $adminRoleID, $api2RoleId, $oauthSecret)) {
            Mage::throwException('Error creating admin user.');
        }
        
