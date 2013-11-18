@@ -27,9 +27,13 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
                 $columns = $this->_getAttributesToSelect( 'cart_item' );
                 $columns[] = 'product_id';
                 
-                $collection = Mage::getModel('sales/quote_item')->getCollection()->getSelect();
-                $collection->reset(Zend_Db_Select::COLUMNS)->columns( $columns);
-                $collection->where( "`main_table`.`quote_id` = $quoteId" );
+                $collection = Mage::getModel('sales/quote_item')
+                    ->getCollection()
+                    ->getSelect()
+                    ->joinLeft( array('parent'=>'sales_flat_quote_item'), "main_table.parent_item_id = parent.item_id")
+                    ->reset(Zend_Db_Select::COLUMNS)
+                    ->columns( $columns)
+                    ->where("main_table.quote_id = $quoteId AND main_table.base_price > 0 AND (parent.product_type != 'bundle' OR parent.product_type is null)");
                 
                 $count = 1;
                 $data = array();

@@ -26,7 +26,9 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
                 $itemColumns = $this->_getAttributesToSelect( 'order_item' );
                 $itemColumns[] = 'product_id';
                 
-                $items = Mage::getModel('sales/order_item')->getCollection()->getSelect();
+                $items = Mage::getModel('sales/order_item')
+                    ->getCollection()
+                    ->getSelect();
                     ->joinLeft( array('parent'=>'sales_flat_order_item'), "main_table.parent_item_id = parent.item_id")
                     ->reset(Zend_Db_Select::COLUMNS)
                     ->columns( $itemColumns )
