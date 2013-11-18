@@ -16,7 +16,7 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
      * Create array of items in order
      *
      * @param array $items
-     * @return mixed
+     * @return array
      */
     
     public function getItems( $orderId = null, $storeId = null )
@@ -26,23 +26,20 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
                 $itemColumns = $this->_getAttributesToSelect( 'order_item' );
                 $itemColumns[] = 'product_id';
                 
-                $items = Mage::getModel('sales/order_item')
-                    ->getCollection()
-                    ->getSelect()
+                $items = Mage::getModel('sales/order_item')->getCollection()->getSelect();
+                    ->joinLeft( array('parent'=>'sales_flat_order_item'), "main_table.parent_item_id = parent.item_id")
                     ->reset(Zend_Db_Select::COLUMNS)
                     ->columns( $itemColumns )
-                    ->where("order_id = $orderId AND base_price > 0")
-                    ->query();
+                    ->where("main_table.order_id = $orderId AND main_table.base_price > 0 AND (parent.product_type != 'bundle' OR parent.product_type is null)");
                 
                 $count = 1;
                 $data = array();
                 
-                foreach( $items as $item ) {
+                foreach( $items->query() as $item ) {
                     
                     /**
                      * Get field map array
                      */
-                    
                     $fieldMap = $this->_getFieldMap( 'order_item', $item );
                     
                     $data[] = array(
@@ -60,11 +57,10 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
                 }
                 return $data;
             } else {
-                return array();
+                return array('error' => 'no items associated with order');
             }
         } catch (Exception $e) {
              Mage::throwException('ORDER ITEM ERROR Jirafe_Analytics_Model_Cart_Item::getItems(): ' . $e->getMessage());
-            return false;
         }
        
     }
