@@ -232,7 +232,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
     {
          try {
              $urls = array(
-                  'admin' => Mage::getUrl() . 'index.php/admin/catalog_product/edit/id/' . $this->_product->getId(),
+                  'admin' => Mage::helper('adminhtml')->getUrl('adminhtml/catalog_product/edit', array('id' => $this->_product->getId())),
                   'store' => $this->_product->getUrlInStore()
              );
              return json_decode(json_encode($urls), FALSE);
