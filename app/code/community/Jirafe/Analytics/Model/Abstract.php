@@ -31,7 +31,7 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
             $cache = Mage::app()->getCache();
             
             if ( !$rootMap = $cache->load('jirafe_analytics_map') ) {
-                $rootMap = json_encode( Mage::getSingleton('jirafe_analytics/map')->getArray() );
+                $rootMap = json_encode( Mage::getModel('jirafe_analytics/map')->getArray() );
                 $cache->save( $rootMap, 'jirafe_analytics_map', array('jirafe_analytics_map'), null);
             }
             
@@ -127,10 +127,9 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
                 $magentoFields = Mage::getModel('jirafe_analytics/map')
                                                 ->getCollection()
                                                 ->addFieldToSelect('magento')
-                                                ->addFilter('element',$element)
-                                                ->getData();
+                                                ->addFieldToFilter('element',array('eq'=>$element));
                 
-                return $this->_flattenArray( $magentoFields );
+                return $this->_flattenArray( $magentoFields->getData() );
             } else {
                 return array();
             }
@@ -144,44 +143,33 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
      * Return string of attributes to select from a collection
      *
      * @param string  $element
-     * @return string
+     * @return array
      *
      */
     
     protected function _getAttributesToSelect( $element = null )
     {
         try {
-            if ($element) {
-                $compositeElement = explode('|',$element);
-                
-                if (count($compositeElement) > 1) {
-                    $element = $compositeElement[0];
-                    $subElement = $compositeElement[1];
-                } else {
-                    $subElement = null;
-                }
-                
-                $attributes = array();
-                
-                $fields = $this->_getMagentoFieldsByElement( $element );
-                
-                foreach( $fields as $field ) {
-                    $compositeField = explode('|',$field);
+            $attributes = array();
+         /*   if ($element) {
+                 $cache = Mage::app()->getCache();
+                 $cacheKey = "jirafe_analytics_fields_$element";
+                 
+                 if ( $cachedAttributes = $cache->load( $cacheKey ) ) {
+                     $attributes = json_decode( $cachedAttributes );
+                 } else {*/
+                    $fields = $this->_getMagentoFieldsByElement( $element );
                     
-                    if ( !$subElement && count($compositeField) == 1) {
+                    foreach( $fields as $field ) {
                         $attributes[] = $field;
-                    } else if ( $compositeField[0] == $subElement ) {
-                        $attributes[] = $compositeField[1];
                     }
-                }
-                
-                return $attributes;
-            } else {
-                return array();
-            }
-            
+                    
+                   // $cache->save( json_encode($attributes), $cacheKey, array($cacheKey), null);
+         //       }
+        //   }
+            return $attributes;
         } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR Jirafe_Analytics_Model_Abstract::_getFieldMap(): ' . $e->getMessage());
+            Mage::throwException('FIELD MAPPING ERROR Jirafe_Analytics_Model_Abstract::_getAttributesToSelect(): ' . $e->getMessage());
         }
     }
     

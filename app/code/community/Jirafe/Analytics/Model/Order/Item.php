@@ -23,21 +23,27 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
     {
         try {
             if ($orderId) {
-                $itemColumns = $this->_getAttributesToSelect( 'order_item' );
-                $itemColumns[] = 'product_id';
+             
+                $columns = $this->_getAttributesToSelect( 'order_item' );
+                $columns[] = 'product_id';
+                $columns[] = 'option.value as attributes';
+                $columns[] = 'IF(main_table.price > 0, main_table.price, parent.price) AS price';
+                $columns[] = 'IF(main_table.discount_amount > 0,main_table.discount_amount ,COALESCE(parent.discount_amount,0)) AS discount_amount';
                 
-                $items = Mage::getModel('sales/order_item')
+                $collection = Mage::getModel('sales/order_item')
                     ->getCollection()
                     ->getSelect()
+                    ->join( array('quote'=>'sales_flat_quote_item'), 'main_table.quote_item_id = quote.item_id')
                     ->joinLeft( array('parent'=>'sales_flat_order_item'), "main_table.parent_item_id = parent.item_id")
+                    ->joinLeft( array('option'=>'sales_flat_quote_item_option'), "parent.item_id = option.item_id AND option.code = 'attributes'",array('option.value'))
                     ->reset(Zend_Db_Select::COLUMNS)
-                    ->columns( $itemColumns )
-                    ->where("main_table.order_id = $orderId AND main_table.base_price > 0 AND (parent.product_type != 'bundle' OR parent.product_type is null)");
+                    ->columns( $columns )
+                    ->where("main_table.order_id = $orderId AND main_table.product_type != 'configurable' AND (parent.product_type != 'bundle' OR parent.product_type is null)");
                 
                 $count = 1;
                 $data = array();
                 
-                foreach( $items->query() as $item ) {
+                foreach( $collection->query() as $item ) {
                     
                     /**
                      * Get field map array
@@ -48,11 +54,12 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
                         $fieldMap['id']['api'] => $fieldMap['id']['magento'],
                         $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento'],
                         $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
-                        'cart_item_number' => "$count",
+                        'order_item_number' => "$count",
                         $fieldMap['quantity']['api'] => $fieldMap['quantity']['magento'],
-                        $fieldMap['price']['api'] => $fieldMap['price']['magento'],
-                        $fieldMap['discount_price']['api'] => $fieldMap['discount_price']['magento'],
-                        'product' => Mage::getSingleton('jirafe_analytics/product')->getArray( $item['product_id'], $storeId, null)
+                        'status' => 'accepted',
+                        'price' => floatval($item['price']),
+                        'discount_price' => floatval($item['discount_amount']),
+                        'product' => Mage::getModel('jirafe_analytics/product')->getArray( $item['product_id'], $storeId, null, $item['attributes'])
                     );
                     
                     $count++;

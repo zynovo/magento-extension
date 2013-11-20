@@ -12,6 +12,23 @@
 class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
 {
     
+    
+    /**
+     * Convert cart array into JSON object
+     *
+     * @param  array $quote
+     * @param  boolean $isEvent
+     * @return mixed
+     */
+    public function getJson( $quote = null, $isEvent = true   )
+    {
+        if ($quote) {
+            return json_encode( $this->getArray( $quote, $isEvent ) );
+        } else {
+            return false;
+        }
+    }
+    
     /**
      * Create cart array of data required by Jirafe API
      *
@@ -25,12 +42,14 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
         try {
             if ($quote) {
                 
-                $items = Mage::getSingleton('jirafe_analytics/cart_item')->getItems( $quote['entity_id'], $quote['store_id'] );
+                $items = Mage::getModel('jirafe_analytics/cart_item')->getItems( $quote['entity_id'], $quote['store_id'] );
                 
                 /**
                  * Get field map array
                  */
                 $fieldMap = $this->_getFieldMap( 'cart', $quote );
+                
+                $previousItems =  $isEvent ? $this->_getPreviousItems( $quote['entity_id'] ) : null;
                 
                 $data = array(
                      $fieldMap['id']['api'] => $fieldMap['id']['magento'],
@@ -45,7 +64,7 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
                      $fieldMap['currency']['api'] => $fieldMap['currency']['magento'],
                     'cookies' => $isEvent ? $this->_getCookies() : (object) null,
                     'items' => $items,
-                    'previous_items' => $isEvent ? $this->_getPreviousItems( $quote['entity_id'] ) : (object) null,
+                    'previous_items' => $previousItems ? $previousItems : array(),
                     'customer' => $this->_getCustomer( $quote, false ),
                     'visit' => $isEvent ? $this->_getVisit() : (object) null
                     );
@@ -85,24 +104,6 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
     }
     
     /**
-     * Convert cart array into JSON object
-     *
-     * @param  array $quote
-     * @param  boolean $isEvent
-     * @return mixed
-     */
-    
-    public function getJson( $quote = null, $isEvent = true   )
-    {
-        if ($quote) {
-            return json_encode( $this->getArray( $quote, $isEvent ) );
-        } else {
-            return false;
-        }
-        
-    }
-    
-    /**
      * Create array of cart historical data
      * 
      * @param string $startDate
@@ -116,8 +117,11 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
             $columns = $this->_getAttributesToSelect( 'cart' );
             $columns[] = 'store_id';
             
-            $collection = Mage::getModel('sales/quote')->getCollection()->getSelect();
-            $collection->reset(Zend_Db_Select::COLUMNS)->columns( $columns );
+            $collection = Mage::getModel('sales/quote')
+                ->getCollection()
+                ->getSelect()
+                ->reset(Zend_Db_Select::COLUMNS)
+                ->columns( $columns );
             
             if ( $startDate && $endDate ){
                 $where = "created_at BETWEEN '$startDate' AND '$endDate'";

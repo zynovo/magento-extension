@@ -26,15 +26,20 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
                 
                 $columns = $this->_getAttributesToSelect( 'cart_item' );
                 $columns[] = 'product_id';
+                $columns[] = 'option.value as attributes';
+                $columns[] = 'IF(main_table.price > 0, main_table.price, parent.price) AS price';
+                $columns[] = 'IF(main_table.discount_amount > 0,main_table.discount_amount ,parent.discount_amount) AS discount_amount';
                 
                 $collection = Mage::getModel('sales/quote_item')
                     ->getCollection()
                     ->getSelect()
-                    ->joinLeft( array('parent'=>'sales_flat_quote_item'), "main_table.parent_item_id = parent.item_id")
+                    ->joinLeft( array('parent'=>'sales_flat_quote_item'), "main_table.parent_item_id = parent.item_id",array('parent.price'))
+                    ->joinLeft( array('option'=>'sales_flat_quote_item_option'), "parent.item_id = option.item_id AND option.code = 'attributes'",array('option.value'))
                     ->reset(Zend_Db_Select::COLUMNS)
                     ->columns( $columns)
-                    ->where("main_table.quote_id = $quoteId AND main_table.base_price > 0 AND (parent.product_type != 'bundle' OR parent.product_type is null)");
-                
+                    ->where("main_table.quote_id = $quoteId AND main_table.product_type != 'configurable' AND (parent.product_type != 'bundle' OR parent.product_type is null)")
+                    ->distinct(true);
+                    
                 $count = 1;
                 $data = array();
                 
@@ -43,7 +48,6 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
                     /**
                      * Get field map array
                      */
-                    
                     $fieldMap = $this->_getFieldMap( 'cart_item', $item );
                     
                     $data[] = array(
@@ -51,10 +55,10 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
                         $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento'],
                         $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
                         'cart_item_number' => "$count",
-                        $fieldMap['quantity']['api'] => $fieldMap['quantity']['magento'],
-                        $fieldMap['price']['api'] => $fieldMap['price']['magento'],
-                        $fieldMap['discount_price']['api'] => $fieldMap['discount_price']['magento'],
-                        'product' => Mage::getSingleton('jirafe_analytics/product')->getArray( $item['product_id'], $storeId, null )
+                        'quantity' => intval( $item['qty'] ),
+                        'price' => floatval( $item['price'] ),
+                        'discount_price' => floatval( $item['discount_amount'] ),
+                        'product' => Mage::getModel('jirafe_analytics/product')->getArray( $item['product_id'], $storeId, null, $item['attributes'] )
                     );
                     $count++;
                 }

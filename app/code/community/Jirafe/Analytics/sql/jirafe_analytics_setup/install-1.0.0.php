@@ -129,8 +129,6 @@ $installer->run("
         ('cart_item', 'create_date', 'create_date', 'created_at', 'datetime', '' ),
         ('cart_item', 'change_date', 'change_date', 'updated_at', 'datetime', '' ),
         ('cart_item', 'quantity', 'quantity', 'qty', 'int', '' ),
-        ('cart_item', 'price', 'price', 'price', 'float', '' ),
-        ('cart_item', 'discount_price', 'discount_price', 'discount_amount', 'float', '0' ),
         ('category', 'id','id', 'entity_id', 'string', '' ),
         ('category', 'name','name', 'name', 'string', '' ),
         ('category', 'change_date','change_date', 'updated_at', 'datetime', '' ),

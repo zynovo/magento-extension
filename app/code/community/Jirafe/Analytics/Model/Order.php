@@ -39,7 +39,7 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
                 
             } else {
                 
-                $items = Mage::getSingleton('jirafe_analytics/order_item')->getItems( $order['entity_id'], $order['store_id'] );
+                $items = Mage::getModel('jirafe_analytics/order_item')->getItems( $order['entity_id'], $order['store_id'] );
                 $totalPaymentCost = is_numeric($order['amount_paid']) ? $order['amount_paid'] : ( is_numeric($order['amount_authorized']) ? $order['amount_authorized'] : 0);
                 $data = array(
                     $fieldMap['order_number']['api'] => $fieldMap['order_number']['magento'],
