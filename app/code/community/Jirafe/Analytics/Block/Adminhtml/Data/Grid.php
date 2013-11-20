@@ -100,7 +100,7 @@ class Jirafe_Analytics_Block_Adminhtml_Data_Grid extends Mage_Adminhtml_Block_Wi
         $this->addColumn(
             'success',
             array(
-                'header'    => Mage::helper('jirafe_analytics')->__('TRANSFERED'),
+                'header'    => Mage::helper('jirafe_analytics')->__('SUCCESS'),
                 'align'     =>'left',
                 'index'     => 'success',
                 'type' => 'options',

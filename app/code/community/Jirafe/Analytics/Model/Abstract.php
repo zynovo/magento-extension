@@ -211,10 +211,10 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
     {
         try {
             return array(
-                'visit_id' => isset($_COOKIE['jirafe_vid']) ? $_COOKIE['jirafe_vid'] : '',
-                'visitor_id' => isset($_COOKIE['jirafe_vis']) ? $_COOKIE['jirafe_vis'] : '',
-                'pageview_id' => '',
-                'last_pageview_id' => ''
+                'visit_id' => isset($_COOKIE['jirafe_vid']) ? $_COOKIE['jirafe_vid'] : '1',
+                'visitor_id' => isset($_COOKIE['jirafe_vis']) ? $_COOKIE['jirafe_vis'] : '1',
+                'pageview_id' => isset($_COOKIE['jirafe_pvid']) ? $_COOKIE['jirafe_pvid'] : '1',
+                'last_pageview_id' => isset($_COOKIE['jirafe_lpvid']) ? $_COOKIE['jirafe_lpvid'] : '1'
             );
         } catch (Exception $e) {
             Mage::throwException('VISIT OBJECT ERROR Jirafe_Analytics_Model_Abstract::_getVisit(): ' . $e->getMessage());
@@ -271,7 +271,7 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
                 $customerId = is_numeric( @$data['visitor_id'] ) ? $data['visitor_id'] : (is_numeric( @$customer['visitor_id'] ) ? $customer['visitor_id'] : 0 );
                 if ( isset($data['created_at']) && isset($data['customer_email']) && isset($data['customer_firstname']) && isset($data['customer_lastname']) ) {
                     return array(
-                        'id' =>  $customerId,
+                        'id' =>  "$customerId",
                         'create_date' => $this->_formatDate( $data['created_at'] ),
                         'change_date' => $this->_formatDate( $data['created_at'] ),
                         'email' => $data['customer_email'],
@@ -280,7 +280,7 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
                     );
                 } else {
                     return array(
-                        'id' =>  $customerId,
+                        'id' =>  "$customerId",
                         'create_date' => $this->_formatDate( $customer['first_visit_at'] ),
                         'change_date' => $this->_formatDate( $customer['last_visit_at'] ),
                         'email' => '',

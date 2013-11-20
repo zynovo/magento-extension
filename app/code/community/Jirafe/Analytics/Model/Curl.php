@@ -70,7 +70,6 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
              * Set account properties to Mage::getStoreConfig() values
              */
             
-            $this->orgId = Mage::getStoreConfig('jirafe_analytics/general/org_id');
             $this->siteId = Mage::getStoreConfig('jirafe_analytics/general/site_id');
             
             /**

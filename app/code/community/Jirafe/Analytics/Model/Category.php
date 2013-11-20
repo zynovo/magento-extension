@@ -39,12 +39,12 @@ class Jirafe_Analytics_Model_Category extends Jirafe_Analytics_Model_Abstract
              if( $category->getLevel() > 2 ){
                  if ( $parent = Mage::getSingleton('catalog/category')->load($category->getParentId()) ) {
                      $fieldMap = $this->_getFieldMap( 'category', $parent );
-                     $data['parent_categories'] = array(
-                         $fieldMap['id']['api'] => $fieldMap['id']['magento'],
-                         $fieldMap['name']['api'] => $fieldMap['name']['magento'],
-                         $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
-                         $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento']
+                     $parent = array();
+                     $parent[] = array(
+                         $fieldMap['id']['api'] => $fieldMap['id']['magento']
                      );
+                     
+                     $data['parent_categories'] = $parent;
                  }
               }
               
