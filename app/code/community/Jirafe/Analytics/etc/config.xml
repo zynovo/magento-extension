@@ -203,31 +203,13 @@
             </catalog_controller_category_delete>
             <catalog_product_save_after>
                 <observers>
-                    <jirafe_analytics_action_product_save>
+                    <jirafe_analytics_action_product_save_after>
                         <type>singleton</type>
                         <class>Jirafe_Analytics_Model_Observer</class>
-                        <method>productSave</method>
-                    </jirafe_analytics_action_product_save>
+                        <method>productSaveAfter</method>
+                    </jirafe_analytics_action_product_save_after>
                 </observers>
             </catalog_product_save_after>
-            <catalog_product_status_update>
-                <observers>
-                    <jirafe_analytics_action_product_status_update>
-                        <type>singleton</type>
-                        <class>Jirafe_Analytics_Model_Observer</class>
-                        <method>productStatusUpdate</method>
-                    </jirafe_analytics_action_product_status_update>
-                </observers>
-            </catalog_product_status_update>
-            <catalog_product_delete_before>
-                <observers>
-                    <jirafe_analytics_action_catalog_product_delete_before>
-                        <type>singleton</type>
-                        <class>Jirafe_Analytics_Model_Observer</class>
-                        <method>productDelete</method>
-                    </jirafe_analytics_action_catalog_product_delete_before>
-                </observers>
-            </catalog_product_delete_before>
             <order_cancel_after>
                 <observers>
                     <jirafe_analytics_action_order_cancel>
@@ -264,6 +246,15 @@
                     </jirafe_analytics_admin_user_save_after>
                 </observers>
             </admin_user_save_after>
+            <sales_order_place_after>
+                <observers>
+                    <jirafe_analytics_sales_order_place_after>
+                        <type>singleton</type>
+                        <class>Jirafe_Analytics_Model_Observer</class>
+                        <method>orderAccepted</method>
+                    </jirafe_analytics_sales_order_place_after>
+                </observers>
+            </sales_order_place_after>
         </events>
     </adminhtml>
      <crontab>

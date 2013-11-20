@@ -36,7 +36,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             try {
                 if ( Mage::getSingleton('core/session')->getJirafeProcessCart() ) {
                     $quote = $observer->getCart()->getQuote();
-                    $json = Mage::getSingleton('jirafe_analytics/cart')->getJson( $quote, true );
+                    $json = Mage::getModel('jirafe_analytics/cart')->getJson( $quote, true );
                     $data = Mage::getModel('jirafe_analytics/data');
                     $data->setTypeId( Jirafe_Analytics_Model_Data_Type::CART );
                     $data->setJson( $json );
@@ -104,7 +104,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             try {
                 $data = Mage::getModel('jirafe_analytics/data');
                 $data->setTypeId( Jirafe_Analytics_Model_Data_Type::CATEGORY );
-                $data->setJson( Mage::getSingleton('jirafe_analytics/category')->getJson( $observer->getCategory() ) );
+                $data->setJson( Mage::getModel('jirafe_analytics/category')->getJson( $observer->getCategory() ) );
                 $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
                 $data->save();
                 return true;
@@ -128,7 +128,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             try {
                 $data = Mage::getModel('jirafe_analytics/data');
                 $data->setTypeId( Jirafe_Analytics_Model_Data_Type::CATEGORY );
-                $data->setJson( Mage::getSingleton('jirafe_analytics/category')->getDeleteJson( $observer->getCategory() ) );
+                $data->setJson( Mage::getModel('jirafe_analytics/category')->getDeleteJson( $observer->getCategory() ) );
                 $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
                 $data->save();
                 return true;
@@ -154,7 +154,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                     $isVisit = Mage::getSingleton('core/session')->getJirafeIsVisit();
                     $data = Mage::getModel('jirafe_analytics/data');
                     $data->setTypeId( Jirafe_Analytics_Model_Data_Type::CUSTOMER );
-                    $data->setJson( Mage::getSingleton('jirafe_analytics/customer')->getJson( $observer->getCustomer(), $isVisit ) );
+                    $data->setJson( Mage::getModel('jirafe_analytics/customer')->getJson( $observer->getCustomer(), $isVisit ) );
                     $data->setStoreId( $observer->getCustomer()->getStoreId() );
                     $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
                     $data->save();
@@ -324,7 +324,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             try {
                 $data = Mage::getModel('jirafe_analytics/data');
                 $data->setTypeId( Jirafe_Analytics_Model_Data_Type::ORDER );
-                $data->setJson( Mage::getSingleton('jirafe_analytics/order')->getJson( $order ) );
+                $data->setJson( Mage::getModel('jirafe_analytics/order')->getJson( $order ) );
                 $data->setStoreId( $order['store_id'] );
                 $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
                 $data->save();
@@ -349,7 +349,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 $order = $observer->getOrder()->getData();
                 $data = Mage::getModel('jirafe_analytics/data');
                 $data->setTypeId( Jirafe_Analytics_Model_Data_Type::ORDER );
-                $data->setJson( Mage::getSingleton('jirafe_analytics/order')->getJson( $order ) );
+                $data->setJson( Mage::getModel('jirafe_analytics/order')->getJson( $order ) );
                 $data->setStoreId( $order['store_id'] );
                 $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
                 $data->save();
@@ -363,19 +363,83 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
     
     /**
      *
-     * Capture product save event
+     * Capture product to check for variant changes
+     *
      * @param Varien_Event_Observer $observer
      * @return boolean
      */
      
-    public function productSave( Varien_Event_Observer $observer )
+    public function productSaveAfter( Varien_Event_Observer $observer )
     {
         if ( $this->_isEnabled ) {
             try {
                 $product = $observer->getProduct();
+                $this->_productSave( $product );
+                
+                if ($product->getTypeId() === 'configurable') {
+                 
+                    /** 
+                     * Attach or detach simple variants from configurable parents
+                     */
+                    $originalIds = Mage::getModel('catalog/product_type_configurable')->getUsedProductIds( $product );
+                    $newIds = array_keys( $product->getConfigurableProductsData() );
+                    
+                    /**
+                     * Get product attributes from parent configurable
+                     */
+                    if ( $options = $product->getTypeInstance(true)->getConfigurableAttributesAsArray($product) ) {
+                        $attributes = serialize($options);
+                    } else {
+                        $attributes = null;
+                    }
+                    
+                    /**
+                     * Check for removed variants
+                     */
+                    foreach($originalIds as $id) {
+                        if ( !in_array( intval($id),$newIds ) ) {
+                            if ( $variant = Mage::getModel('catalog/product')->load( intval($id) ) ) {
+                                $this->_productSave( $variant, $attributes );
+                            }
+                        }
+                    }
+                    
+                    /**
+                     * Check for added variants
+                     */
+                    foreach($newIds as $id) {
+                        if ( !in_array( strval($id),$originalIds ) ) {
+                            if ( $variant = Mage::getModel('catalog/product')->load( $id ) ) {
+                             Mage::log('add new variant!',null,'variant.log');
+                                $this->_productSave( $variant );
+                            }
+                        }
+                    }
+                }
+                
+                return true;
+            } catch (Exception $e) {
+                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::productSaveBefore()', $e->getMessage(), $e);
+                return false;
+            }
+        }
+    }
+    
+    /**
+     *
+     * Capture product save event
+     * @param Mage_Catalog_Model_Product $product
+     * @param string $attributes
+     * @return boolean
+     */
+    
+    protected function _productSave( Mage_Catalog_Model_Product $product, $attributes = null )
+    {
+        if ( $this->_isEnabled ) {
+            try {
                 $data = Mage::getModel('jirafe_analytics/data');
                 $data->setTypeId( Jirafe_Analytics_Model_Data_Type::PRODUCT );
-                $data->setJson( Mage::getModel('jirafe_analytics/product')->getJson( null, null, $product ) );
+                $data->setJson( Mage::getModel('jirafe_analytics/product')->getJson( null, null, $product, $attributes ) );
                 $data->setStoreId( $product->getStoreId() );
                 $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
                 $data->save();
@@ -401,7 +465,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 $userId = $observer->getObject()->getUserId();
                 $data = Mage::getModel('jirafe_analytics/data');
                 $data->setTypeId( Jirafe_Analytics_Model_Data_Type::EMPLOYEE );
-                $data->setJson( Mage::getSingleton('jirafe_analytics/employee')->getJson( null, $userId ) );
+                $data->setJson( Mage::getModel('jirafe_analytics/employee')->getJson( null, $userId ) );
                 $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
                 $data->save();
                 return true;

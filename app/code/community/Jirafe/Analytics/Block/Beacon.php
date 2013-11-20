@@ -25,7 +25,7 @@ class Jirafe_Analytics_Block_Beacon extends Mage_Core_Block_Template
     public function __construct()
     {
         if ( $this->_isEnabled = Mage::getStoreConfig('jirafe_analytics/general/enabled') ) {
-            $this->_beaconApiUrl = Mage::getStoreConfig('jirafe_analytics/general/beacon_api') ;
+            $this->_beaconApiUrl = Mage::getStoreConfig('jirafe_analytics/general/beacon_api');
             $this->_siteId = Mage::getStoreConfig('jirafe_analytics/general/site_id') ;
             $this->_orgId = Mage::getStoreConfig('jirafe_analytics/general/org_id');
         }
