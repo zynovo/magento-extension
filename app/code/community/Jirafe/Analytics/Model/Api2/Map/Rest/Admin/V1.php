@@ -47,6 +47,7 @@ class Jirafe_Analytics_Model_Api2_Map_Rest_Admin_V1 extends Jirafe_Analytics_Mod
             }
             
             if ( $continue ) {
+                
                 $map->setDefault( $default );
                 $map->setMagento( $magento );
                 $map->setUpdatedDt( $obj->getCurrentDt() );
@@ -54,10 +55,25 @@ class Jirafe_Analytics_Model_Api2_Map_Rest_Admin_V1 extends Jirafe_Analytics_Mod
                 
                 $this->_successMessage( self::FIELD_MAPPING_UPDATE_SUCCESSFUL, Mage_Api2_Model_Server::HTTP_OK );
                 
+                $cache = Mage::app()->getCache();
+                
                 /**
-                 *  Remove root map from cache so that it will be rebuilt next time it's called
+                 *  Remove root map from cache. It will be repopulated next time it's called.
                  */
-                $cache = Mage::app()->getCache()->remove('jirafe_analytics_map'');
+                $cache->remove('jirafe_analytics_map');
+                
+                /**
+                 *  Remove select fields from cache. It will be repopulated next time it's called.
+                 */
+                $types = Mage::getModel('jirafe_analytics/map')
+                    ->getCollection()
+                    ->addFieldToSelect('element')
+                    ->distinct(true);
+                
+                foreach ( $types as $element ) {
+                    $cache->remove("jirafe_analytics_fields_$element");
+                }
+                
                 
             }
         }

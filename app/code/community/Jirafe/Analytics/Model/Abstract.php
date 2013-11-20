@@ -151,22 +151,22 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
     {
         try {
             $attributes = array();
-         /*   if ($element) {
+            if ($element) {
                  $cache = Mage::app()->getCache();
                  $cacheKey = "jirafe_analytics_fields_$element";
                  
                  if ( $cachedAttributes = $cache->load( $cacheKey ) ) {
                      $attributes = json_decode( $cachedAttributes );
-                 } else {*/
+                 } else {
                     $fields = $this->_getMagentoFieldsByElement( $element );
                     
                     foreach( $fields as $field ) {
                         $attributes[] = $field;
                     }
                     
-                   // $cache->save( json_encode($attributes), $cacheKey, array($cacheKey), null);
-         //       }
-        //   }
+                    $cache->save( json_encode($attributes), $cacheKey, array($cacheKey), null);
+                }
+           }
             return $attributes;
         } catch (Exception $e) {
             Mage::throwException('FIELD MAPPING ERROR Jirafe_Analytics_Model_Abstract::_getAttributesToSelect(): ' . $e->getMessage());
