@@ -242,7 +242,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
              if ($categories) {
                  return json_decode(json_encode($categories), FALSE);
              } else {
-                 return (object) null;
+                 return null;
              }
         } catch (Exception $e) {
             Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::_getCategoryValues()', $e->getMessage(), $e);
