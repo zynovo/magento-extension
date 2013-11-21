@@ -49,8 +49,6 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
                  */
                 $fieldMap = $this->_getFieldMap( 'cart', $quote );
                 
-                $previousItems =  $isEvent ? $this->_getPreviousItems( $quote['entity_id'] ) : null;
-                
                 $data = array(
                      $fieldMap['id']['api'] => $fieldMap['id']['magento'],
                      $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento'],
@@ -62,12 +60,23 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
                      $fieldMap['total_payment_cost']['api'] => $fieldMap['total_payment_cost']['magento'],
                      $fieldMap['total_discounts']['api'] => $fieldMap['total_discounts']['magento'],
                      $fieldMap['currency']['api'] => $fieldMap['currency']['magento'],
-                    'cookies' => $isEvent ? $this->_getCookies() : (object) null,
+                    'cookies' => $isEvent ?  : (object) null,
                     'items' => $items,
                     'previous_items' => $previousItems ? $previousItems : array(),
                     'customer' => $this->_getCustomer( $quote, false ),
-                    'visit' => $isEvent ? $this->_getVisit() : (object) null
                     );
+                
+                if ( $isEvent && $previousItems = $this->_getPreviousItems( $quote['entity_id'] ) ) {
+                    $data['previous_items'] = $previousItems;
+                }
+                
+                if ( $isEvent && $cookies = $this->_getCookies() ) {
+                    $data['cookies'] = $cookies;
+                }
+                
+                if ( $isEvent && $visit = $this->_getVisit() ) {
+                    $data['visit'] = $visit;
+                }
                 
                 Mage::getSingleton('core/session')->setJirafePrevQuoteId( $quote['entity_id'] );
                 Mage::getSingleton('core/session')->setJirafePrevQuoteItems( $items );
