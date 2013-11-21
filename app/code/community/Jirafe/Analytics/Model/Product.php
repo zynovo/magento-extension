@@ -110,8 +110,8 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                     'catalog' => $this->_getCatalog( $this->_storeId ),
                     $this->_fieldMap['name']['api'] => $this->_fieldMap['name']['magento'],
                     $this->_fieldMap['code']['api'] => $this->_fieldMap['code']['magento'],
-                    'categories' => $categories ? $categories : (object) null,
-                    'images' => $images ? $images : (object) null,
+                    'categories' => $categories ? $categories : array(),
+                    'images' => $images ? $images : array(),
                     'url' => $urls
                  );
                 
