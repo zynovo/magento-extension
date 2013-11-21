@@ -96,36 +96,45 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                  */
                 $this->_fieldMap = $this->_getFieldMap( 'product', $this->_product->getData() );
                 
-                $categories = $this->_getCategories();
-                $images = $this->_getImages();
-                $urls = $this->_getUrls();
-                
                 $element = array(
                     $this->_fieldMap['id']['api'] => $this->_fieldMap['id']['magento'],
                     $this->_fieldMap['create_date']['api'] => $this->_fieldMap['create_date']['magento'],
                     $this->_fieldMap['change_date']['api'] => $this->_fieldMap['change_date']['magento'],
                     'is_product' => $this->_isProduct(),
                     'is_sku' => $this->_isSku(),
-                    'is_bundle' => $this->_typeId == 'bundle' ? true : false,
                     'catalog' => $this->_getCatalog( $this->_storeId ),
                     $this->_fieldMap['name']['api'] => $this->_fieldMap['name']['magento'],
                     $this->_fieldMap['code']['api'] => $this->_fieldMap['code']['magento'],
-                    'categories' => $categories ? $categories : array(),
-                    'images' => $images ? $images : array(),
-                    'url' => $urls
                  );
                 
+                if ( $this->_typeId == 'bundle' ) {
+                    $element['is_bundle'] = true;
+                }
+                
                 if ( $brand = $this->_product->getAttributeText('manufacturer') ) {
-                   $element['brand'] = $brand;
+                    $element['brand'] = $brand;
+                }
+                
+                if ( $this->_attributes ) {
+                    $element['attributes'] = $this->_attributes;
                 }
                 
                 if ( $this->_baseProducts ) {
                     $element['base_product'] = $this->_baseProducts;
                 }
                 
-                if ( $this->_attributes ) {
-                    $element['attributes'] = $this->_attributes;
+                if ( $categories = $this->_getCategories() ) {
+                    $element['categories'] = $categories;
                 }
+                
+                if ( $images = $this->_getImages() ) {
+                    $element['images'] = $images;
+                }
+                
+                if ( $urls = $this->_getUrls() ) {
+                    $element['url'] = $urls;
+                }
+                
                 return $element;
             } else {
                 return array();
