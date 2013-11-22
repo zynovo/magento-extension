@@ -49,6 +49,8 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
                  */
                 $fieldMap = $this->_getFieldMap( 'cart', $quote );
                 
+                $previousItems = $this->_getPreviousItems( $quote['entity_id'] );
+                
                 $data = array(
                      $fieldMap['id']['api'] => $fieldMap['id']['magento'],
                      $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento'],
@@ -62,13 +64,11 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
                      $fieldMap['currency']['api'] => $fieldMap['currency']['magento'],
                     'cookies' => $isEvent ?  : (object) null,
                     'items' => $items,
-                    'previous_items' => $previousItems ? $previousItems : array(),
+                    'previous_items' => $isEvent && $previousItems ? $previousItems : array(),
                     'customer' => $this->_getCustomer( $quote, false ),
                     );
                 
-                if ( $isEvent && $previousItems = $this->_getPreviousItems( $quote['entity_id'] ) ) {
-                    $data['previous_items'] = $previousItems;
-                }
+                
                 
                 if ( $isEvent && $cookies = $this->_getCookies() ) {
                     $data['cookies'] = $cookies;

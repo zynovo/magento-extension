@@ -113,7 +113,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
     public function convertEventDataToBatchData( $params = null,  $historical = false )
     {
         try {
-         Mage::log("convertEventDataToBatchData",null,'debug.log');
+            
             /**
              * Performance tuning options: override server php settings
              */
@@ -134,7 +134,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
              * 
              * Get all stores with data ready to be batched
              */
-            Mage::log($this->_getStores(),null,'debug.log');
+            
             foreach( $this->_getStores() as $store ) {
                 
                 /**
@@ -162,7 +162,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                     /**
                      * Separate data by object type for batching
                      */
-                    Mage::log($this->_getItems( $store['store_id'], $type['id'] ),null,'debug.log');
+                    
                     foreach( $this->_getItems( $store['store_id'], $type['id'] ) as $item ) {
                         
                         if (!$batch) {

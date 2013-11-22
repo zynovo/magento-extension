@@ -12,35 +12,6 @@
 class Jirafe_Analytics_Helper_Data extends Mage_Core_Helper_Abstract
 {
     
-    public $logging = false;
-    
-    protected $_maxExecutionTime = null;
-    
-    protected $_memoryLimit = null;
-    
-    protected $_procNice = null;
-    
-    /**
-     * Class construction & resource initialization
-     */
-    
-    protected function _construct()
-    {
-         /**
-         * Set debug properties to Mage::getStoreConfig() values
-         */
-        
-        $this->logging = Mage::getStoreConfig('jirafe_analytics/debug/logging');
-        
-        /**
-         * Set PHP override properties to Mage::getStoreConfig() values
-         */
-        
-        $this->_maxExecutionTime = Mage::getStoreConfig('jirafe_analytics/php/max_execution_time');
-        $this->_memoryLimit = Mage::getStoreConfig('jirafe_analytics/php/memory_limit');
-        $this->_procNice = Mage::getStoreConfig('jirafe_analytics/php/proc_nice');
-    }
-    
     /**
      * Write log messages to db
      *
@@ -137,15 +108,21 @@ class Jirafe_Analytics_Helper_Data extends Mage_Core_Helper_Abstract
     {
         
         if (isset($params['max_execution_time'])) {
-            $this->_maxExecutionTime = $params['max_execution_time'];
+            $maxExecutionTime = $params['max_execution_time'];
+        } else {
+            $maxExecutionTime = Mage::getStoreConfig('jirafe_analytics/php/max_execution_time')
         }
         
         if (isset($params['memory_limit'])) {
-            $this->_memoryLimit = $params['memory_limit'];
+            $memoryLimit = $params['memory_limit'];
+        } else {
+            $memoryLimit = Mage::getStoreConfig('jirafe_analytics/php/memory_limit')
         }
         
         if (isset($params['proc_nice'])) {
-            $this->procNice = $params['proc_nice'];
+            $procNice = $params['proc_nice'];
+        } else {
+            $procNice = Mage::getStoreConfig('jirafe_analytics/php/proc_nice');
         }
         
         /**
@@ -153,12 +130,12 @@ class Jirafe_Analytics_Helper_Data extends Mage_Core_Helper_Abstract
          * Excessively large numbers or 0 (infinite) will hurt server performance
          */
         
-        if ( is_numeric( $this->_maxExecutionTime ) ) {
+        if ( is_numeric( $maxExecutionTime ) ) {
             
-            ini_set('max_execution_time', $this->_maxExecutionTime );
+            ini_set('max_execution_time', $maxExecutionTime );
             
-            if ( $this->_logging ) {
-                $this->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::_overridePhpSettings()', 'max_execution_time = ' . $this->_maxExecutionTime );
+            if ( Mage::getStoreConfig('jirafe_analytics/debug/logging') ) {
+                $this->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::_overridePhpSettings()', 'max_execution_time = ' . $maxExecutionTime );
             }
         }
         
@@ -168,12 +145,12 @@ class Jirafe_Analytics_Helper_Data extends Mage_Core_Helper_Abstract
          * Format: 1024M or 1G
          */
         
-        if (strlen( $this->_memoryLimit ) > 1) {
+        if (strlen( $memoryLimit ) > 1) {
             
-            ini_set("memory_limit", $this->_memoryLimit );
+            ini_set("memory_limit", $memoryLimit );
             
-            if ( $this->_logging ) {
-                $this->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::_overridePhpSettings()', 'memory_limit = ' . $this->_memoryLimit );
+            if ( Mage::getStoreConfig('jirafe_analytics/debug/logging') ) {
+                $this->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::_overridePhpSettings()', 'memory_limit = ' . $memoryLimit );
             }
         }
         
@@ -182,12 +159,12 @@ class Jirafe_Analytics_Helper_Data extends Mage_Core_Helper_Abstract
          * Lower numbers = lower priority
          */
         
-        if (is_numeric( $this->_procNice )) {
+        if (is_numeric( $procNice )) {
             
-            proc_nice( $this->_procNice );
+            proc_nice( $procNice );
             
-            if ( $this->_logging ) {
-                $this->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::_overridePhpSettings()', 'proc_nice = ' . $this->_procNice );
+            if ( Mage::getStoreConfig('jirafe_analytics/debug/logging') ) {
+                $this->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::_overridePhpSettings()', 'proc_nice = ' . $procNice );
             }
         }
     }

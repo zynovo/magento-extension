@@ -43,7 +43,6 @@ abstract class Jirafe_Analytics_Model_Api2_Resource extends Mage_Api2_Model_Reso
      */
     public function dispatch()
     {
-        Mage::log($this->getActionType() . $this->getOperation());
         switch ($this->getActionType() . $this->getOperation()) {
             /* Function */
             case self::ACTION_TYPE_FUNCTION . self::OPERATION_UPDATE:
