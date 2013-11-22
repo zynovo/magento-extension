@@ -110,13 +110,13 @@ class Jirafe_Analytics_Helper_Data extends Mage_Core_Helper_Abstract
         if (isset($params['max_execution_time'])) {
             $maxExecutionTime = $params['max_execution_time'];
         } else {
-            $maxExecutionTime = Mage::getStoreConfig('jirafe_analytics/php/max_execution_time')
+            $maxExecutionTime = Mage::getStoreConfig('jirafe_analytics/php/max_execution_time');
         }
         
         if (isset($params['memory_limit'])) {
             $memoryLimit = $params['memory_limit'];
         } else {
-            $memoryLimit = Mage::getStoreConfig('jirafe_analytics/php/memory_limit')
+            $memoryLimit = Mage::getStoreConfig('jirafe_analytics/php/memory_limit');
         }
         
         if (isset($params['proc_nice'])) {
