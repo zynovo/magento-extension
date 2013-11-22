@@ -67,7 +67,7 @@ class Jirafe_Analytics_Model_Api2_History_Rest extends Jirafe_Analytics_Model_Ap
                 $history = array_merge($history, Mage::getModel('jirafe_analytics/category')->getHistoricalData( $startDate, $endDate ) );
             }
             
-            if ( $element === 'customer' || !$all ) {
+            if ( $element === 'customer' || $all ) {
                 $history = array_merge($history, Mage::getModel('jirafe_analytics/customer')->getHistoricalData( $startDate, $endDate ) );
             }
             
