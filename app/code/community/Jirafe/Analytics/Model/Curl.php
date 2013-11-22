@@ -250,53 +250,6 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
         }
     }
     
-    
-    /**
-     * Send heartbeat to Jirafe via REST + purge old data
-     * Trigger by cron
-     * @return array
-     * @throws Exception if unable to send heartbeat
-     */
-    public function heartbeat()
-    {
-        try {
-            $storeId = Mage::app()->getStore('default')->getId();
-            $json = json_encode( array(
-                'instance_id' => (string) Mage::getStoreConfig('jirafe_analytics/general/heartbeat_id'),
-                'version' => (string) Mage::getConfig()->getNode()->modules->Jirafe_Analytics->version,
-                'is_enabled' => (boolean) Mage::getStoreConfig('jirafe_analytics/general/enabled')
-            ) );
-            $params = array(
-                'url' => $this->eventApiUrl . $this->_getSiteId( $storeId ) . '/heartbeat',
-                'token' => $this->_getAccessToken( $storeId ),
-                'json' => $json );
-            
-            $response = $this->_processSingle( $params );
-            
-            if ( @$response['http_code'] != '200' ) {
-                Mage::helper('jirafe_analytics')->log( 'ERROR', 'Jirafe_Analytics_Model_Curl::heartbeat()', json_encode( $response ) );
-            }
-            
-            /**
-             * Purge processed data older than Mage::getStoreConfig('jirafe_analytics/general/purge_time') minutes
-             */
-            
-            Mage::getSingleton('jirafe_analytics/data')->purgeData();
-            
-            Mage::getSingleton('jirafe_analytics/batch')->purgeData();
-            
-            /**
-             * Purge log messages older than Mage::getStoreConfig('jirafe_analytics/debug/purge_time') minutes
-             */
-            if ($this->logging) {
-                Mage::getSingleton('jirafe_analytics/log')->purgeData();
-            }
-            
-            return $response;
-        } catch (Exception $e) {
-            Mage::throwException('HEARTBEAT ERROR: Jirafe_Analytics_Model_Curl::heartbeat(): ' . $e->getMessage());
-        }
-    }
     /**
      * Send batch data using standard single threaded cURL
      *
@@ -350,7 +303,9 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
             $resource[ $resourceId ]['total_time'] = $info['total_time'];
             
             curl_close($thread);
+            
             Mage::helper('jirafe_analytics')->logServerLoad('Jirafe_Analytics_Model_Curl::_processSingle');
+            
             return $resource;
         } catch (Exception $e) {
            Mage::throwException('CURL ERROR: Jirafe_Analytics_Model_Curl::_processSingle(): ' . $e->getMessage());

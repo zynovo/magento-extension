@@ -272,7 +272,7 @@
                     <cron_expr>*/30 * * * *</cron_expr>
                 </schedule>
                 <run>
-                    <model>jirafe_analytics/curl::heartbeat</model>
+                    <model>jirafe_analytics/heartbeat::send</model>
                 </run>
             </jirafe_analytics_heartbeat>
             <jirafe_analytics_installer>
