@@ -39,7 +39,7 @@ class Jirafe_Analytics_Model_Data_Attempt extends Jirafe_Analytics_Model_Abstrac
                  /**
                   * Get data ids associated with batch
                   */
-                 $batch = Mage::getSingleton('jirafe_analytics/batch_data')
+                 $batch = Mage::getModel('jirafe_analytics/batch_data')
                      ->getCollection()
                      ->addFieldToFilter('batch_id',array('eq',$attempt['batch_id']))
                      ->load()
@@ -79,7 +79,7 @@ class Jirafe_Analytics_Model_Data_Attempt extends Jirafe_Analytics_Model_Abstrac
                      /**
                       *   Update data element with success or failure
                       */
-                     $element = Mage::getSingleton('jirafe_analytics/data')->load( $data['data_id'] );
+                     $element = Mage::getModel('jirafe_analytics/data')->load( $data['data_id'] );
                      $element->setAttemptCount( intval( $element->getAttemptCount() ) + 1);
                      $element->setSuccess( $data['success'] ? 1 : 0 );
                      $element->setCompletedDt( $data['success'] ? $data['created_dt'] : null);

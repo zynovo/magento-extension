@@ -32,7 +32,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
     protected function _getStores() 
     {
         try {
-            return Mage::getSingleton('core/store')->getCollection()
+            return Mage::getModel('core/store')->getCollection()
                 ->addFieldToSelect(array('store_id'))
                 ->getSelect()
                 ->join( array('d'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/data')), "`main_table`.`store_id` = `d`.`store_id`", array())
@@ -58,7 +58,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
     {
         try {
             if ( is_numeric($storeId) ) {
-               return Mage::getSingleton('jirafe_analytics/data_type')
+               return Mage::getModel('jirafe_analytics/data_type')
                     ->getCollection()
                     ->addFieldToSelect(array('type'))
                     ->getSelect()
@@ -265,7 +265,6 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
      */
     public function purgeData()
     {
-     /*
         try {
             $minutes = Mage::getStoreConfig('jirafe_analytics/general/purge_time');
             if ( intval($minutes) > 15 ) {
@@ -281,8 +280,36 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                 return false;
             }
         } catch (Exception $e) {
-            Mage::throwException('DATA ERROR: Jirafe_Analytics_Model_Data::purge(): ' . $e->getMessage());
+            Mage::throwException('DATA ERROR: Jirafe_Analytics_Model_Data::purgeData(): ' . $e->getMessage());
         }
-        */
+    }
+    
+    
+    /**
+     * Reset data
+     *
+     * @return boolean
+     * @throws Exception 
+     */
+    public function resetData()
+    {
+      try {
+           $db = Mage::getSingleton('core/resource')->getConnection('core_write');
+           $result = $db->query('SET FOREIGN_KEY_CHECKS = 0');
+           $result = $db->query('TRUNCATE TABLE jirafe_analytics_batch');
+           $result = $db->query('TRUNCATE TABLE jirafe_analytics_data');
+           $result = $db->query('TRUNCATE TABLE jirafe_analytics_batch_data');
+           $result = $db->query('TRUNCATE TABLE jirafe_analytics_data_attempt');
+           $result = $db->query('TRUNCATE TABLE jirafe_analytics_data_error');
+           $result = $db->query('ALTER TABLE jirafe_analytics_batch AUTO_INCREMENT = 1');
+           $result = $db->query('ALTER TABLE jirafe_analytics_data AUTO_INCREMENT = 1');
+           $result = $db->query('ALTER TABLE jirafe_analytics_batch_data AUTO_INCREMENT = 1');
+           $result = $db->query('ALTER TABLE jirafe_analytics_data_attempt AUTO_INCREMENT = 1');
+           $result = $db->query('ALTER TABLE jirafe_analytics_data_error AUTO_INCREMENT = 1');
+           $result = $db->query('SET FOREIGN_KEY_CHECKS = 1');
+           return true;
+       } catch (Exception $e) {
+          Mage::throwException('DATA ERROR: Jirafe_Analytics_Model_Data::resetData(): ' . $e->getMessage());
+       }
     }
 }

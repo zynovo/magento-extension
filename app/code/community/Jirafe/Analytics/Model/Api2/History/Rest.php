@@ -60,27 +60,27 @@ class Jirafe_Analytics_Model_Api2_History_Rest extends Jirafe_Analytics_Model_Ap
             $history = array();
             
             if ( $element === 'cart' || $all ) {
-                $history = array_merge($history, Mage::getSingleton('jirafe_analytics/cart')->getHistoricalData( $startDate, $endDate ) );
+                $history = array_merge($history, Mage::getModel('jirafe_analytics/cart')->getHistoricalData( $startDate, $endDate ) );
             }
             
             if ( $element === 'category' || $all ) {
-                $history = array_merge($history, Mage::getSingleton('jirafe_analytics/category')->getHistoricalData( $startDate, $endDate ) );
+                $history = array_merge($history, Mage::getModel('jirafe_analytics/category')->getHistoricalData( $startDate, $endDate ) );
             }
             
             if ( $element === 'customer' || !$all ) {
-                $history = array_merge($history, Mage::getSingleton('jirafe_analytics/customer')->getHistoricalData( $startDate, $endDate ) );
+                $history = array_merge($history, Mage::getModel('jirafe_analytics/customer')->getHistoricalData( $startDate, $endDate ) );
             }
             
             if ( $element === 'employee' || $all ) {
-                $history = array_merge($history, Mage::getSingleton('jirafe_analytics/employee')->getHistoricalData( $startDate, $endDate ) );
+                $history = array_merge($history, Mage::getModel('jirafe_analytics/employee')->getHistoricalData( $startDate, $endDate ) );
             }
             
             if ( $element === 'order' || $all ) {
-                $history = array_merge($history, Mage::getSingleton('jirafe_analytics/order')->getHistoricalData( $startDate, $endDate ) );
+                $history = array_merge($history, Mage::getModel('jirafe_analytics/order')->getHistoricalData( $startDate, $endDate ) );
             }
             
             if ( $element === 'product' || $all ) {
-                $history = array_merge($history, Mage::getSingleton('jirafe_analytics/product')->getHistoricalData( $startDate, $endDate ) );
+                $history = array_merge($history, Mage::getModel('jirafe_analytics/product')->getHistoricalData( $startDate, $endDate ) );
             }
             
             foreach ($history as $item) {

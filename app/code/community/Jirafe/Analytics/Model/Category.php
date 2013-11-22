@@ -86,8 +86,10 @@ class Jirafe_Analytics_Model_Category extends Jirafe_Analytics_Model_Abstract
     public function getHistoricalData( $startDate = null, $endDate = null )
     {
         try {
+            
             $data = array();
-            $categories = Mage::getSingleton('catalog/category')
+            
+            $categories = Mage::getModel('catalog/category')
                 ->getCollection()
                 ->addAttributeToSelect('name');
             
@@ -100,6 +102,7 @@ class Jirafe_Analytics_Model_Category extends Jirafe_Analytics_Model_Abstract
             }
             
             foreach($categories as $category) {
+                
                 $data[] = array(
                     'type_id' => Jirafe_Analytics_Model_Data_Type::CATEGORY,
                     'store_id' => $category->getStoreId(),

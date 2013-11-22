@@ -21,7 +21,7 @@ class Jirafe_Analytics_Model_Api2_Data_Attempt_Rest extends Jirafe_Analytics_Mod
     {
         $data = array();
         
-        $collection = Mage::getSingleton('jirafe_analytics/data_attempt')->getCollection();
+        $collection = Mage::getModel('jirafe_analytics/data_attempt')->getCollection();
         
         foreach ($collection->getData() as $item) {
             $data[] = $item;

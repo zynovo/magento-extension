@@ -28,7 +28,7 @@ class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract
                  * Get customer address 
                  */
                 if ($addressId = $customer->getDefaultBilling()) {
-                    $address = Mage::getSingleton('customer/address')->load( $addressId );
+                    $address = Mage::getModel('customer/address')->load( $addressId );
                     foreach ($address->getData() as $key => $value) {
                         if ( !array_key_exists ( $key,$customer ) ) {
                             $data[$key] = $value;
@@ -39,7 +39,7 @@ class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract
                 /**
                  * Get subscriber information
                  */
-                $marketingOptIn = Mage::getSingleton('newsletter/subscriber')
+                $marketingOptIn = Mage::getModel('newsletter/subscriber')
                                       ->load($customer->getEmail(), 'subscriber_email')
                                       ->getSubscriberStatus();
                 
@@ -107,7 +107,7 @@ class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract
     {
         try {
             $data = array();
-            $customers = Mage::getSingleton('customer/customer')->getCollection();
+            $customers = Mage::getModel('customer/customer')->getCollection();
             
             if ( $startDate ) {
                 $customers->addAttributeToFilter('created_at', array('gteq' => $startDate));
