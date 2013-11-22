@@ -87,15 +87,15 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
     {
         try {
             if ( is_numeric($storeId) && is_numeric($typeId) ) {
-                return Mage::getSingleton('jirafe_analytics/data')
-                ->getCollection()
-                ->addFieldToSelect(array('json','store_id'))
-                ->addFieldToFilter('`main_table`.`json`', array('neq' => ''))
-                ->addFieldToFilter('`main_table`.`store_id`', array('eq' => $storeId))
-                ->getSelect()
-                ->join( array('dt'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/data_type')), "`main_table`.`type_id` = `dt`.`id` AND `dt`.`id` = $typeId",array('dt.type'))
-                ->where('`main_table`.`completed_dt` is NULL')
-                ->query();
+                return Mage::getModel('jirafe_analytics/data')
+                    ->getCollection()
+                    ->addFieldToSelect(array('json','store_id'))
+                    ->addFieldToFilter('`main_table`.`json`', array('neq' => ''))
+                    ->addFieldToFilter('`main_table`.`store_id`', array('eq' => $storeId))
+                    ->getSelect()
+                    ->join( array('dt'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/data_type')), "`main_table`.`type_id` = `dt`.`id` AND `dt`.`id` = $typeId",array('dt.type'))
+                    ->where('`main_table`.`completed_dt` is NULL')
+                    ->query();
             } else {
                 return array();
             }
@@ -113,7 +113,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
     public function convertEventDataToBatchData( $params = null,  $historical = false )
     {
         try {
-            
+         Mage::log("convertEventDataToBatchData",null,'debug.log');
             /**
              * Performance tuning options: override server php settings
              */
@@ -134,7 +134,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
              * 
              * Get all stores with data ready to be batched
              */
-            
+            Mage::log($this->_getStores(),null,'debug.log');
             foreach( $this->_getStores() as $store ) {
                 
                 /**
@@ -162,7 +162,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                     /**
                      * Separate data by object type for batching
                      */
-                   
+                    Mage::log($this->_getItems( $store['store_id'], $type['id'] ),null,'debug.log');
                     foreach( $this->_getItems( $store['store_id'], $type['id'] ) as $item ) {
                         
                         if (!$batch) {
@@ -265,6 +265,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
      */
     public function purgeData()
     {
+     /*
         try {
             $minutes = Mage::getStoreConfig('jirafe_analytics/general/purge_time');
             if ( intval($minutes) > 15 ) {
@@ -282,5 +283,6 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
         } catch (Exception $e) {
             Mage::throwException('DATA ERROR: Jirafe_Analytics_Model_Data::purge(): ' . $e->getMessage());
         }
+        */
     }
 }
