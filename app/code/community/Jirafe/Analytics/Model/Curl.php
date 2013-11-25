@@ -64,6 +64,13 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
         $this->eventApiUrl = 'https://' . Mage::getStoreConfig('jirafe_analytics/general/event_api_url');
         
         /**
+         * Set cURL properties to Mage::getStoreConfig() values
+         */
+        
+        $this->threading  = Mage::getStoreConfig('jirafe_analytics/curl/threading');
+        $this->threads = Mage::getStoreConfig('jirafe_analytics/curl/threads');
+        $this->maxAttempts = Mage::getStoreConfig('jirafe_analytics/curl/max_attempts');
+        /**
          * If threads not supplied by user, set to default
          */
         
@@ -98,7 +105,7 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
              */
             
             $resource = array();
-            
+           
             if (count( $data )) {
              
                 if ( $this->logging ) {
@@ -135,31 +142,29 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
                      */
                     
                     foreach($data as $row) {
-                        
-                        if ( Mage::getStoreConfig('jirafe_analytics/general/enabled', $row['store_id'] ) ) {
-                            
-                            if ($count > $this->threads) {
-                                $resource[] = $this->_processMulti( $threadBatch );
-                                $threadBatch = array();
-                                $count = 1;
-                            }
-                            
-                            $item = array(
-                                'batch_id' => $row['id'],
-                                'url' => $this->eventApiUrl . $this->_getSiteId( $row['store_id'] ) . '/batch',
-                                'token' => $this->_getAccessToken( $row['store_id'] ),
-                                'json' =>  $row['json'] );
-                            
-                            if ( $this->logging ) {
-                                Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'BATCH ID = ' . $item['batch_id'], null  );
-                                Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'ACCESS TOKEN = ' . $item['token'], null  );
-                                Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'EVENT API URL = ' . $item['url'], null  );
-                                Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'JSON = ' . $item['json'], null  );
-                            }
-                            
-                            $threadBatch[] = $item;
-                            $count++;
+                     
+                        if ($count > $this->threads) {
+                            $resource[] = $this->_processMulti( $threadBatch );
+                            $threadBatch = array();
+                            $count = 1;
                         }
+                        
+                        $item = array(
+                            'batch_id' => $row['id'],
+                            'url' => $this->eventApiUrl . $this->_getSiteId( $row['store_id'] ) . '/batch',
+                            'token' => $this->_getAccessToken( $row['store_id'] ),
+                            'json' =>  $row['json'] );
+                        
+                        if ( $this->logging ) {
+                            Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'BATCH ID = ' . $item['batch_id'], null  );
+                            Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'ACCESS TOKEN = ' . $item['token'], null  );
+                            Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'EVENT API URL = ' . $item['url'], null  );
+                            Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'JSON = ' . $item['json'], null  );
+                        }
+                        
+                        $threadBatch[] = $item;
+                        $count++;
+                        
                     }
                     
                     /**
