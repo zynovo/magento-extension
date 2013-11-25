@@ -274,16 +274,21 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
         try {
             $minutes = Mage::getStoreConfig('jirafe_analytics/general/purge_time');
             if ( intval($minutes) > 15 ) {
-                $db = Mage::getSingleton('core/resource');
-                $result = $db->getConnection('core_write')->query( sprintf("DELETE FROM %s WHERE `id` IN (SELECT `data_id` FROM %s) AND TIMESTAMPDIFF(MINUTE,`captured_dt`,'%s') > %d",
-                                $resource->getTableName('jirafe_analytics/data'),
-                                $resource->getTableName('jirafe_analytics/batch_data'),
-                                Mage::helper('jirafe_analytics')->getCurrentDt(),
-                                $minutes) );
-                $result = $db->getConnection('core_write')->query( sprintf("DELETE FROM %s WHERE TIMESTAMPDIFF(MINUTE,`completed_dt`,'%s') > %d",
-                                $resource->getTableName('jirafe_analytics/batch'),
-                                Mage::helper('jirafe_analytics')->getCurrentDt(),
-                                $minutes) );
+                $resource = Mage::getSingleton('core/resource');
+                
+                $result = $resource->getConnection('core_write')->query( sprintf("DELETE FROM %s WHERE `id` IN (SELECT `data_id` FROM %s) AND TIMESTAMPDIFF(MINUTE,`captured_dt`,'%s') > %d",
+                              $resource->getTableName('jirafe_analytics/data'),
+                              $resource->getTableName('jirafe_analytics/batch_data'),
+                              Mage::helper('jirafe_analytics')->getCurrentDt(),
+                              $minutes) 
+                          );
+                
+                $result = $resource->getConnection('core_write')->query( sprintf("DELETE FROM %s WHERE TIMESTAMPDIFF(MINUTE,`completed_dt`,'%s') > %d",
+                              $resource->getTableName('jirafe_analytics/batch'),
+                              Mage::helper('jirafe_analytics')->getCurrentDt(),
+                              $minutes) 
+                          );
+                
                 return true;
             } else {
                 return false;
