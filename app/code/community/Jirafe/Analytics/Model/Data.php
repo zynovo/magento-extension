@@ -288,7 +288,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
     /**
      * Reset data
      *
-     * @return boolean
+     * @return string
      * @throws Exception 
      */
     public function resetData()
@@ -307,8 +307,9 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
            $result = $db->query('ALTER TABLE jirafe_analytics_data_attempt AUTO_INCREMENT = 1');
            $result = $db->query('ALTER TABLE jirafe_analytics_data_error AUTO_INCREMENT = 1');
            $result = $db->query('SET FOREIGN_KEY_CHECKS = 1');
-           return true;
+           return 'Successfully truncated Jirafe Analytics batch and data tables.';
        } catch (Exception $e) {
+          return 'ERROR truncating Jirafe Analytics batch and data tables.';
           Mage::throwException('DATA ERROR: Jirafe_Analytics_Model_Data::resetData(): ' . $e->getMessage());
        }
     }
