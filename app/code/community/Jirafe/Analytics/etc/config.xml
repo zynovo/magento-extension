@@ -251,7 +251,7 @@
                     <jirafe_analytics_sales_order_place_after>
                         <type>singleton</type>
                         <class>Jirafe_Analytics_Model_Observer</class>
-                        <method>orderAccepted</method>
+                        <method>orderAcceptedAdmin</method>
                     </jirafe_analytics_sales_order_place_after>
                 </observers>
             </sales_order_place_after>

@@ -1,6 +1,7 @@
 .modgit/
 app/code/community/Find/
 app/code/community/Phoenix/
+app/code/community/Aoe/
 app/code/core/
 app/design/adminhtml/default/default/
 app/design/adminhtml/default/find/
@@ -15,6 +16,7 @@ app/etc/modules/Enterprise_*
 app/etc/modules/Find_Feed.xml
 app/etc/modules/Mage_*
 app/etc/modules/Phoenix_Moneybookers.xml
+app/etc/modules/Aoe_Scheduler.xml
 app/etc/*.xml
 app/etc/local.xml.additional
 app/etc/local.xml.template
