@@ -65,7 +65,8 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
            
            return $map;
         } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map::getArray(): ' . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Map::getArray()', $e->getMessage(), $e);
+            return false;
         }
     }
     
@@ -90,7 +91,8 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
             return $output;
             
         } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map::_getCartFields(): ' . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Map::_getCartFields()', $e->getMessage(), $e);
+            return false;
         }
     }
     
@@ -117,7 +119,8 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
             return $output;
             
         } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map::_getCartItemFields(): ' . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Map::_getCartItemFields()', $e->getMessage(), $e);
+            return false;
         }
     }
     
@@ -140,7 +143,8 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
             return $output;
             
         } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map::_getCategoryFields(): ' . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Map::_getCategoryFields()', $e->getMessage(), $e);
+            return false;
         }
     }
     
@@ -163,7 +167,8 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
             return $output;
             
         } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map::_getCustomerFields(): ' . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Map::_getCustomerFields()', $e->getMessage(), $e);
+            return false;
         }
     }
     
@@ -186,7 +191,8 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
             return $output;
             
         } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map::_getEmployeeFields(): ' . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Map::_getEmployeeFields()', $e->getMessage(), $e);
+            return false;
         }
     }
     
@@ -209,7 +215,8 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
             return $output;
             
         } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map::_getOrderFields(): ' . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Map::_getOrderFields()', $e->getMessage(), $e);
+            return false;
         }
     }
     
@@ -232,7 +239,8 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
             return $output;
             
         } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map::_getOrderItemFields(): ' . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Map::_getOrderItemFields()', $e->getMessage(), $e);
+            return false;
         }
     }
     
@@ -269,7 +277,8 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
             return $output;
             
         } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map::_getProductFields(): ' . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Map::_getProductFields()', $e->getMessage(), $e);
+            return false;
         }
     }
     
@@ -317,7 +326,8 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
             }
             return null;
         } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map::_getMagentoFieldsByElement(): ' . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Map::_getMagentoFieldsByElement()', $e->getMessage(), $e);
+            return false;
         }
          
     }
@@ -343,7 +353,8 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
             }
     
         } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map::validateElement(): ' . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Map::validateElement()', $e->getMessage(), $e);
+            return false;
         }
     }
     
@@ -369,7 +380,8 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
             }
             
         } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map::validateKey(): ' . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Map::validateKey()', $e->getMessage(), $e);
+            return false;
         }
     }
     
@@ -391,7 +403,8 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
             }
         
         } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map::validateField(): ' . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Map::validateField()', $e->getMessage(), $e);
+            return false;
         }
     }
     
@@ -414,7 +427,8 @@ class Jirafe_Analytics_Model_Map extends Jirafe_Analytics_Model_Abstract
                 return null;
             }
         } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR: Jirafe_Analytics_Model_Map::getMap(): ' . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Map::getMapByElementKey()', $e->getMessage(), $e);
+            return false;
         }
     }
     

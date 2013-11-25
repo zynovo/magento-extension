@@ -102,7 +102,7 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
             if (count( $data )) {
              
                 if ( $this->logging ) {
-                    $startTime = time();                   
+                    $startTime = time();
                     Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'START TIME = ' . date("H:i:s", $startTime) . ' UTC', null );
                     Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'EVENT API URL = ' . $this->eventApiUrl, null );
                     Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'BATCH SIZE = ' . $this->threads, null );
@@ -219,7 +219,8 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
             
             return $resource;
         } catch (Exception $e) {
-            Mage::throwException('CURL ERROR: Jirafe_Analytics_ModelJirafe_Analytics_Model_Curl::sendJson(): ' . $e->getMessage(), null );
+            Mage::logException($e);
+            return false;
         }
     }
     
@@ -281,7 +282,8 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
             
             return $resource;
         } catch (Exception $e) {
-           Mage::throwException('CURL ERROR: Jirafe_Analytics_Model_Curl::_processSingle(): ' . $e->getMessage());
+           Mage::logException($e);
+           return false;
         }
     }
     
@@ -394,7 +396,8 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
             
             return $resource;
         } catch (Exception $e) {
-            Mage::throwException('CURL ERROR: Jirafe_Analytics_Model_Curl::_processMulti(): ' . $e->getMessage());
+           Mage::logException($e);
+           return false;
         }
     }
     
@@ -417,7 +420,8 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
             } while ($rv == CURLM_CALL_MULTI_PERFORM);
             return $rv;
         } catch (Exception $e) {
-            Mage::throwException('CURL ERROR: Jirafe_Analytics_Model_Curl::_curl_multi_exec(): ' . $e->getMessage());
+            Mage::logException($e);
+            return false;
         }
     }
     
@@ -443,7 +447,8 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
             }
             return $siteId;
         } catch (Exception $e) {
-            Mage::throwException('API ERROR: Jirafe_Analytics_Model_Curl::_getSiteId(): ' . $e->getMessage());
+            Mage::logException($e);
+            return false;
         }
     }
     
@@ -459,7 +464,8 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
         try {
             return Mage::getStoreConfig( 'jirafe_analytics/general/access_token', $storeId );
         } catch (Exception $e) {
-            Mage::throwException('API ERROR: Jirafe_Analytics_Model_Curl::_getAccessToken(): ' . $e->getMessage());
+            Mage::logException($e);
+            return false;
         }
     }
     

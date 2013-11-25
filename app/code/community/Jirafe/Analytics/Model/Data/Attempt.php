@@ -103,7 +103,8 @@ class Jirafe_Analytics_Model_Data_Attempt extends Jirafe_Analytics_Model_Abstrac
                 return false;
             }
         } catch (Exception $e) {
-            Mage::throwException(' Jirafe_Analytics_Model_Data_Attempt::add(): ' . $e->getMessage());
+            Mage::logException($e);
+            return false;
         }
     }
 }

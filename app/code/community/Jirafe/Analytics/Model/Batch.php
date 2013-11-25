@@ -72,7 +72,7 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
                  * Convert data into batches before processing
                  */
                 
-                Mage::getSingleton('jirafe_analytics/data')->convertEventDataToBatchData( $params, false );
+                Mage::getModel('jirafe_analytics/data')->convertEventDataToBatchData( $params, false );
             }
             
             if (isset($params['max_records'])) {
@@ -99,7 +99,7 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
                 foreach ($response as $batch) {
                     foreach ($batch as $attempt) {
                         $this->updateBatch( $attempt );
-                        Mage::getSingleton('jirafe_analytics/data_attempt')->add( $attempt );
+                        Mage::getModel('jirafe_analytics/data_attempt')->add( $attempt );
                     }
                 }
                 return true;
@@ -110,7 +110,8 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
                 return false;
             }
         } catch (Exception $e) {
-            Mage::throwException('ERROR: Jirafe_Analytics_Model_Batch::process()' . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Batch::process()', $e->getMessage(), $e);
+            return false;
         }
     }
     
@@ -126,7 +127,7 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
     {
         try {
             if ($attempt) {
-                $batch = Mage::getSingleton('jirafe_analytics/batch')->load( $attempt['batch_id'] );
+                $batch = Mage::getModel('jirafe_analytics/batch')->load( $attempt['batch_id'] );
                 if ($batch) {
                     $batch->setHttpCode( $attempt['http_code'] );
                     $batch->setTotalTime( $attempt['total_time'] );
@@ -140,33 +141,9 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
                 return false;
             }
         } catch (Exception $e) {
-             Mage::throwException('ERROR: Jirafe_Analytics_Model_Batch::updateBatch()'  . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Batch::updateBatch()', $e->getMessage(), $e);
+            return false;
         }
     }
     
-    /**
-     * Purge data
-     *
-     * @return boolean
-     * @throws Exception if failure to purge data
-     */
-    public function purgeData()
-    {
-        try {
-            $minutes = Mage::getStoreConfig('jirafe_analytics/general/purge_time');
-            if ( is_numeric($minutes) ) {
-                $resource = Mage::getSingleton('core/resource');
-                $sql = sprintf("DELETE FROM %s WHERE TIMESTAMPDIFF(MINUTE,`completed_dt`,'%s') > %d",
-                                    $resource->getTableName('jirafe_analytics/batch'),
-                                    Mage::helper('jirafe_analytics')->getCurrentDt(),
-                                    $minutes);
-                $connection = $resource->getConnection('core_write')->query($sql);
-                return true;
-            } else {
-                return false;
-            }
-        } catch (Exception $e) {
-            Mage::throwException('DATA ERROR: Jirafe_Analytics_Model_Data::purge(): ' . $e->getMessage());
-        }
-    }
 }

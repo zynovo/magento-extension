@@ -38,7 +38,6 @@ class Jirafe_Analytics_Model_Data_Error extends Jirafe_Analytics_Model_Abstract
                 /**
                  * Save response data into jirafe_analytics_data_error table
                  */
-                $this->setDataId( $data['data_id'] );
                 $this->setDataAttemptId( $attemptId );
                 $this->setErrorType( $data['error_type'] );
                 $this->setErrors( $data['errors'] );
@@ -51,7 +50,8 @@ class Jirafe_Analytics_Model_Data_Error extends Jirafe_Analytics_Model_Abstract
             }
             
         } catch (Exception $e) {
-            Mage::throwException('BATCH ERROR ERROR Jirafe_Analytics_Model_Data_Attempt::add(): ' . $e->getMessage());
+            Mage::logException($e);
+            return false;
         }
     }
 }

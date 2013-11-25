@@ -47,7 +47,7 @@ class Jirafe_Analytics_Helper_Data extends Mage_Core_Helper_Abstract
             }
             return true;
         } catch (Exception $e) {
-            Mage::throwException('HELPER ERROR Jirafe_Analytics_Helper_Data::log(): ' . $e->getMessage());
+            Mage::logException($e);
         }
     }
     

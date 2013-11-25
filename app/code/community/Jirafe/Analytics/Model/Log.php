@@ -46,7 +46,8 @@ class Jirafe_Analytics_Model_Log extends Jirafe_Analytics_Model_Abstract
                 return false;
             }
         } catch (Exception $e) {
-            Mage::throwException('LOG ERROR: Jirafe_Analytics_Model_Log::purgeData(): ' . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Log::purgeData()', $e->getMessage(), $e);
+            return false;
         }
     }
 }

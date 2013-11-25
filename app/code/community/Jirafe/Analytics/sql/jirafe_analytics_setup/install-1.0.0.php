@@ -78,16 +78,13 @@ $installer->run("
     DROP TABLE IF EXISTS {$this->getTable('jirafe_analytics/data_error')};
     CREATE TABLE {$this->getTable('jirafe_analytics/data_error')} (
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-        `data_id` int(10) unsigned NOT NULL,
         `data_attempt_id` int(10) unsigned NOT NULL,
         `error_type` varchar(64) DEFAULT NULL,
         `errors` text,
         `created_dt` datetime DEFAULT NULL,
         PRIMARY KEY (`id`),
-        KEY `data_id` (`data_id`),
         KEY `data_attempt_id` (`data_attempt_id`),
-        CONSTRAINT `jirafe_analytics_data_error_ibfk_1` FOREIGN KEY (`data_id`) REFERENCES {$this->getTable('jirafe_analytics/data')} (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-        CONSTRAINT `jirafe_analytics_data_error_ibfk_2` FOREIGN KEY (`data_attempt_id`) REFERENCES {$this->getTable('jirafe_analytics/data_attempt')} (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+        CONSTRAINT `jirafe_analytics_data_error_ibfk_1` FOREIGN KEY (`data_attempt_id`) REFERENCES {$this->getTable('jirafe_analytics/data_attempt')} (`id`) ON DELETE CASCADE ON UPDATE CASCADE
     ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
     
     DROP TABLE IF EXISTS {$this->getTable('jirafe_analytics/log')};

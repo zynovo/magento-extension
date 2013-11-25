@@ -38,7 +38,8 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
             return json_decode($rootMap,true);
             
         } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR Jirafe_Analytics_Model_Abstract::_getRootMap(): ' . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Abstract::_getRootMap()', $e->getMessage(), $e);
+            return false;
         }
     }
     
@@ -107,7 +108,8 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
             return $fieldMap;
             
         } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR Jirafe_Analytics_Model_Abstract::_getFieldMap(): ' . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Abstract::_getFieldMap()', $e->getMessage(), $e);
+            return false;
         }
     }
     
@@ -135,7 +137,8 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
             }
             
         } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR Jirafe_Analytics_Model_Abstract::_getFieldMap(): ' . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Abstract::_getMagentoFieldsByElement()', $e->getMessage(), $e);
+            return false;
         }
     }
     
@@ -169,7 +172,8 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
            }
             return $attributes;
         } catch (Exception $e) {
-            Mage::throwException('FIELD MAPPING ERROR Jirafe_Analytics_Model_Abstract::_getAttributesToSelect(): ' . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Abstract::_getAttributesToSelect()', $e->getMessage(), $e);
+            return false;
         }
     }
     
@@ -217,7 +221,8 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
                 'last_pageview_id' => isset($_COOKIE['jirafe_lpvid']) ? $_COOKIE['jirafe_lpvid'] : '1'
             );
         } catch (Exception $e) {
-            Mage::throwException('VISIT OBJECT ERROR Jirafe_Analytics_Model_Abstract::_getVisit(): ' . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Abstract::_getVisit()', $e->getMessage(), $e);
+            return false;
         }
     }
     
@@ -241,7 +246,8 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
                 'jirafe_vid' => isset($_COOKIE['jirafe_vid']) ? $_COOKIE['jirafe_vid'] : '' 
             );
         } catch (Exception $e) {
-             Mage::throwException('COOKIE OBJECT ERROR Jirafe_Analytics_Model_Abstract::_getCookies(): ' . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Abstract::_getCookies()', $e->getMessage(), $e);
+            return false;
         }
     }
     /**
@@ -290,7 +296,8 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
                 }
             }
         } catch (Exception $e) {
-             Mage::throwException('CUSTOMER OBJECT ERROR Jirafe_Analytics_Model_Abstract::_getCustomer(): ' . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Abstract::_getCustomer()', $e->getMessage(), $e);
+            return false;
         }
     }
     
@@ -315,7 +322,8 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
                     'name' => '');
             }
         } catch (Exception $e) {
-             Mage::throwException('CATALOG OBJECT ERROR Jirafe_Analytics_Model_Abstract::_getCatalog(): ' . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Abstract::_getCatalog()', $e->getMessage(), $e);
+            return false;
         }
     
     }
@@ -332,7 +340,8 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
         try {
             return date( DATE_ISO8601, strtotime( $date) );
         } catch (Exception $e) {
-            Mage::throwException('UTILITY ERROR Jirafe_Analytics_Model_Abstract::_formatDate(): ' . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Abstract::_formatDate()', $e->getMessage(), $e);
+            return false;
         }
     }
     

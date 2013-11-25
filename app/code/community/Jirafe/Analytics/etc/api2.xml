@@ -197,7 +197,6 @@
                 </routes>
                 <attributes module="jirafe_analytics">
                     <id>Id</id>
-                    <data_id>Data Id</data_id>
                     <data_attempt_id>Data Attempt Id</data_attempt_id>
                     <error_type>Error Type</error_type>
                     <errors>Errors</errors>

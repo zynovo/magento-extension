@@ -13,7 +13,6 @@
 
 class Jirafe_Analytics_Model_Heartbeat extends Jirafe_Analytics_Model_Curl
 {
-    
     /**
      * Get site info for heartbeat
      * 
@@ -74,7 +73,8 @@ class Jirafe_Analytics_Model_Heartbeat extends Jirafe_Analytics_Model_Curl
             
             return $site;
         } catch (Exception $e) {
-            Mage::logException($e);
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Heartbeat::_getSites()', $e->getMessage(), $e);
+            return false;
         }
     }
     
@@ -121,8 +121,6 @@ class Jirafe_Analytics_Model_Heartbeat extends Jirafe_Analytics_Model_Curl
              
             Mage::getModel('jirafe_analytics/data')->purgeData();
              
-            Mage::getModel('jirafe_analytics/batch')->purgeData();
-             
             /**
              * Purge log messages older than Mage::getStoreConfig('jirafe_analytics/debug/purge_time') minutes
             */
@@ -133,7 +131,8 @@ class Jirafe_Analytics_Model_Heartbeat extends Jirafe_Analytics_Model_Curl
             return json_encode($returnData);
             
         } catch (Exception $e) {
-            Mage::logException($e);
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Heartbeat::send()', $e->getMessage(), $e);
+            return false;
         }
     }
 }
