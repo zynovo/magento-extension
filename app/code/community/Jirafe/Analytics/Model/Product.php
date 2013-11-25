@@ -29,7 +29,6 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
     
     protected $_fieldMap = null;
     
-    
     /**
      * Get JSON version of product object
      *
@@ -61,7 +60,19 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
     public function getArray( $productId = null, $storeId = null, $product = null, $itemAttributes = null  )
     {
         try {
-           
+         
+            /**
+             * Initialize object
+            */
+            $this->_product = null;
+            $this->_storeId =null;
+            $this->_parent = null;
+            $this->_parentTypeId = null;
+            $this->_baseProducts = null;
+            $this->_attributes = null;
+            $this->_typeId = null;
+            $this->_fieldMap = null;
+             
             if ( $productId ) {
                 $this->_product = Mage::getModel('catalog/product')->load( $productId );
             } else {
@@ -78,10 +89,8 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                 
                 $this->_typeId =  $this->_product->getTypeId();
                 
-                if ($this->_typeId === 'simple') {
-                 
+                if ($this->_typeId == 'simple') {
                     if ($this->_parent = $this->_getParent()) {
-                     
                         $this->_parentTypeId = $this->_parent->getTypeId();
                         $this->_baseProducts = $this->_getBaseProducts();
                         
