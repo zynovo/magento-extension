@@ -138,7 +138,7 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
                 ->joinLeft( array('p'=>Mage::getSingleton('core/resource')->getTableName('sales/order_payment')), 'main_table.entity_id = p.parent_id')
                 ->reset(Zend_Db_Select::COLUMNS)
                 ->columns( $columns )
-                ->columns( "IF(main_table.status = 'cancelled', 'canceled', 'accepted') as jirafe_status");
+                ->columns( "IF(main_table.status = 'canceled' OR main_table.status = 'cancelled', 'cancelled', 'accepted') as jirafe_status");
             
             if ( $startDate && $endDate ){
                 $where = "created_at BETWEEN '$startDate' AND '$endDate'";
