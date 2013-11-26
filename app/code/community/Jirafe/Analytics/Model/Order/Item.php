@@ -33,7 +33,6 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
                 $collection = Mage::getModel('sales/order_item')
                     ->getCollection()
                     ->getSelect()
-                    ->join( array('quote'=>'sales_flat_quote_item'), 'main_table.quote_item_id = quote.item_id')
                     ->joinLeft( array('parent'=>'sales_flat_order_item'), "main_table.parent_item_id = parent.item_id")
                     ->joinLeft( array('option'=>'sales_flat_quote_item_option'), "parent.item_id = option.item_id AND option.code = 'attributes'",array('option.value'))
                     ->reset(Zend_Db_Select::COLUMNS)
