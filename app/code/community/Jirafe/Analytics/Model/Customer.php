@@ -107,7 +107,10 @@ class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract
     {
         try {
             $data = array();
-            $customers = Mage::getModel('customer/customer')->getCollection();
+            $customers = Mage::getModel('customer/customer')
+                ->getCollection()
+                ->addAttributeToSelect('firstname')
+                ->addAttributeToSelect('lastname');
             
             if ( $startDate ) {
                 $customers->addAttributeToFilter('created_at', array('gteq' => $startDate));
