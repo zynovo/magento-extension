@@ -126,6 +126,18 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
             $columns = $this->_getAttributesToSelect( 'cart' );
             $columns[] = 'store_id';
             
+            /**
+             * After an quote is converted to an order, tax, shipping
+             * and discount values are added to quote. After these additions, 
+             * the quote represents the cart object. 
+             */
+            
+            if( ( $key = array_search('grand_total', $columns)) !== false ) {
+                unset($columns[$key]);
+            }
+            
+            $columns[] = 'subtotal as grand_total';
+            
             $collection = Mage::getModel('sales/quote')
                 ->getCollection()
                 ->getSelect()

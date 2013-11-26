@@ -164,7 +164,9 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
                     $fields = $this->_getMagentoFieldsByElement( $element );
                     
                     foreach( $fields as $field ) {
+                        if ( trim($field) && !in_array($field,$attributes) ) {
                         $attributes[] = $field;
+                        }
                     }
                     
                     $cache->save( json_encode($attributes), $cacheKey, array($cacheKey), null);
