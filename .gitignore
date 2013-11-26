@@ -75,7 +75,14 @@ skin/frontend/default/iphone/
 skin/frontend/default/modern/
 skin/frontend/enterprise/
 skin/install/
-var/
+var/cache
+var/debug
+var/cache
+var/locks
+var/log
+var/full_page_cache
+var/package
+var/session
 *.dmg
 *.gz
 *.iso
