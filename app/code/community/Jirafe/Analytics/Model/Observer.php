@@ -57,13 +57,8 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
     public function cartUpdateItem( Varien_Event_Observer $observer )
     {
         try {
-            if ( Mage::getStoreConfig('jirafe_analytics/general/enabled', $observer->getItem()->getQuote()->getStoreId() ) ) {
-                Mage::getSingleton('core/session')->setJirafeProcessCart( true );
-                return true;
-            } else {
-                return false;
-            }
-            
+            Mage::getSingleton('core/session')->setJirafeProcessCart( true );
+            return true;
         } catch (Exception $e) {
              Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
             return false;
@@ -80,13 +75,8 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
     public function cartRemoveItem( Varien_Event_Observer $observer )
     {
         try {
-            if ( Mage::getStoreConfig('jirafe_analytics/general/enabled', $observer->getItem()->getQuote()->getStoreId() ) ) {
-                Mage::getSingleton('core/session')->setJirafeProcessCart( true );
-                return true;
-            } else {
-                return false;
-            }
-            
+            Mage::getSingleton('core/session')->setJirafeProcessCart( true );
+            return true;
         } catch (Exception $e) {
              Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
             return false;

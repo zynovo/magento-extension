@@ -92,10 +92,10 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                 if ($this->_typeId == 'simple') {
                     if ($this->_parent = $this->_getParent()) {
                         $this->_parentTypeId = $this->_parent->getTypeId();
-                        $this->_baseProducts = $this->_getBaseProducts();
                         
                         if ( $this->_parentTypeId == 'configurable' ) {
-                         $this->_attributes = $this->_getAttributes( $itemAttributes ) ;
+                            $this->_baseProducts = $this->_getBaseProducts();
+                            $this->_attributes = $this->_getAttributes( $itemAttributes ) ;
                         }
                     }
                 }
@@ -161,12 +161,13 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
     
     protected function _isProduct ()
     {
-        if ( $this->_parent ) {
-            return false;
-        } else {
-            switch ( $this->_typeId ) {
+        switch ( $this->_typeId ) {
             case 'simple':
-                return true;
+                if ( $this->_parentTypeId == 'configurable') {
+                    return false;
+                } else {
+                    return true;
+                }
                 break;
             case 'configurable':
                 return true;
@@ -189,7 +190,6 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             default:
                 return false;
                 break;
-            }
         }
     }
     

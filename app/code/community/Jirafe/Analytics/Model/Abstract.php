@@ -287,10 +287,13 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
                         'last_name' => $data['customer_lastname']
                     );
                 } else {
+                    $createDate = $customer['first_visit_at'] ? $customer['first_visit_at'] : ( isset($data['updated_at']) ? $data['updated_at'] : Mage::helper('jirafe_analytics')->getCurrentDt() );
+                    $changeDate = $customer['last_visit_at'] ? $customer['last_visit_at'] : ( isset($data['updated_at']) ? $data['updated_at'] : Mage::helper('jirafe_analytics')->getCurrentDt() );
+                    
                     return array(
                         'id' =>  "$customerId",
-                        'create_date' => $this->_formatDate( $customer['first_visit_at'] ),
-                        'change_date' => $this->_formatDate( $customer['last_visit_at'] ),
+                        'create_date' => $this->_formatDate( $createDate ),
+                        'change_date' => $this->_formatDate( $changeDate ),
                         'email' => '',
                         'first_name' => 'GUEST',
                         'last_name' => 'USER'
