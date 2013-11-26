@@ -99,12 +99,16 @@ class Jirafe_Analytics_Model_Heartbeat extends Jirafe_Analytics_Model_Curl
                     'token' => $site['params']['token'],
                     'json' => json_encode( $site['request'] )
                 );
+                Mage::log( $params,null,'heartbeat.log');
                 
                 Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Heartbeat::send()', "request: " . json_encode( $site ) );
                 
                 $results = $this->_processSingle( $params );
                 
                 foreach($results as $result) { 
+                 
+                    Mage::log( $result,null,'heartbeat.log');
+                    
                     $response = json_decode( $result['response'] );
                     if (!$response->success) {
                         Mage::helper('jirafe_analytics')->log( 'ERROR', 'Jirafe_Analytics_Model_Heartbeat::send()', $result );
