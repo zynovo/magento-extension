@@ -272,11 +272,12 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
             }
             
             if ( is_numeric($customerId) ) {
-                $customer = Mage::getSingleton('customer/customer')->load( $customerId );
-                return Mage::getSingleton('jirafe_analytics/customer')->getArray( $customer, $includeCookies );
+                $customer = Mage::getModel('customer/customer')->load( $customerId );
+                return Mage::getModel('jirafe_analytics/customer')->getArray( $customer, $includeCookies );
             } else {
                 $customer = Mage::getSingleton('core/session')->getVisitorData();
                 $customerId = is_numeric( @$data['visitor_id'] ) ? $data['visitor_id'] : (is_numeric( @$customer['visitor_id'] ) ? $customer['visitor_id'] : 0 );
+                
                 if ( isset($data['created_at']) && isset($data['customer_email']) && isset($data['customer_firstname']) && isset($data['customer_lastname']) ) {
                     return array(
                         'id' =>  "$customerId",

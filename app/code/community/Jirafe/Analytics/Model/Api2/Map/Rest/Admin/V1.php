@@ -20,7 +20,7 @@ class Jirafe_Analytics_Model_Api2_Map_Rest_Admin_V1 extends Jirafe_Analytics_Mod
     protected function _update(array $data)
     {
         $map = $this->_getMap();
-        $obj = Mage::getSingleton('jirafe_analytics/map');
+        $obj = Mage::getModel('jirafe_analytics/map');
         $element = $this->getRequest()->getParam('element');
         $magento = isset($data['magento']) ? trim($data['magento']) : '';
         $continue = true;

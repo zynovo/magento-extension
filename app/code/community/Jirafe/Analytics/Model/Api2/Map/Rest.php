@@ -74,7 +74,7 @@ class Jirafe_Analytics_Model_Api2_Map_Rest extends Jirafe_Analytics_Model_Api2_M
                 $this->_critical( self::FIELD_MAPPING_REQUEST_DATA_INVALID );
             } else {
                 
-                $obj = Mage::getSingleton('jirafe_analytics/map');
+                $obj = Mage::getModel('jirafe_analytics/map');
                 
                 if ( !$obj->validateElement($element) ) {
                     $this->_critical( self::FIELD_MAPPING_ERROR_INVALID_ELEMENT );

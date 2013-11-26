@@ -173,7 +173,7 @@ class Jirafe_Analytics_Model_Map_Field extends Jirafe_Analytics_Model_Abstract
         try {
             $output = array();
             
-            if ( $employee = Mage::getSingleton('admin/user')->getCollection()->getFirstItem()->getData() ) {
+            if ( $employee = Mage::getModel('admin/user')->getCollection()->getFirstItem()->getData() ) {
                 $output = $this->_flattenArray( array_keys( $employee ) );
             }
             
