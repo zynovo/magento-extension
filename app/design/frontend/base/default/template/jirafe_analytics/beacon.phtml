@@ -1,4 +1,3 @@
-<?php if ($this->_isEnabled): ?>
 <script type="text/javascript">
 /* Jirafe Analytics */
 (function(){
@@ -7,8 +6,8 @@
         s.parentNode.insertBefore(g,s);
 })();
 var jirafe_site_id = "<?php echo $this->_siteId ?>";
+var jirafe_org_id = "0";
 function jirafe_deferred(jirafe_api){
-    jirafe_api.pageview(jirafe_site_id, "<?php echo $this->_getPage(); ?>");
+    jirafe_api.pageview(jirafe_org_id, jirafe_site_id, "<?php echo $this->_getPage(); ?>");
 }
 </script>
-<?php endif; 
