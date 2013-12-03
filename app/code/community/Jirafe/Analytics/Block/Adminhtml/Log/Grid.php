@@ -51,7 +51,6 @@ class Jirafe_Analytics_Block_Adminhtml_Log_Grid extends Mage_Adminhtml_Block_Wid
                 'align'     => 'left',
                 'type'      => 'datetime',
                 'index'     => 'created_dt',
-                'format'    => Mage::app()->getLocale()->getDateTimeFormat(),
                 'width'     => '125px',
             )
         );
