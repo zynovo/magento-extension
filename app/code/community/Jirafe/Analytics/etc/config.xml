@@ -292,17 +292,16 @@
         <jirafe_analytics>
             <general>
                 <enabled>1</enabled>
-                <site_id>9</site_id>
-                <client_id>e59ea083e5b8c08cc81d</client_id>
-                <client_secret>d40d27963a4f9e53710cc054f495798b757bb7ef</client_secret>
-                <access_token>582fc79df0434793ecf74c78cdcedd7ca9f0a119</access_token>
-                <beacon_api>sandbox-beacon.jirafe.net/jirafe_api.js</beacon_api>
-                <event_api_url>sandbox-event-api.jirafe.net/v2/</event_api_url>
-                <heartbeat_id></heartbeat_id>
+                <site_id></site_id>
+                <client_id></client_id>
+                <client_secret></client_secret>
+                <access_token></access_token>
+                <beacon_api>beacon.jirafe.com/jirafe_api.js</beacon_api>
+                <event_api_url>event.jirafe.com/v2/</event_api_url>
                 <purge_time>10080</purge_time>
             </general>
             <debug>
-                <logging>0</logging>
+                <logging>1</logging>
                 <server_load>0</server_load>
                 <type>database</type>
                 <purge_time>10080</purge_time>
