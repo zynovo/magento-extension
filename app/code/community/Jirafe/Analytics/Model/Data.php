@@ -318,8 +318,8 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
             $element = isset($params['element'] ) ? trim( $params['element'] ) : null;
             $startDate = isset($params['start_date'] ) ? trim( $params['start_date'] ) : null;
             $endDate = isset($params['end_date'] ) ? trim( $params['end_date'] ) : null;
-            $useLastIds = isset($params['use_last_ids']) ? true : false;
-            Mage::log($params,null,'data.log');
+            $useLastIds = isset($params['use_last_ids']) ? (boolean) $params['use_last_ids'] : false;
+            
             if ( $useLastIds ) { 
                 if ( $success = Mage::getModel('jirafe_analytics/data_type')->captureLastIds() ) {
                     Mage::helper('jirafe_analytics')->log( 'INSTALLER', 'Jirafe_Analytics_Model_Data::convertHistoricalData()', 'Captured last ids', null );
