@@ -14,7 +14,12 @@
 class Jirafe_Analytics_Block_Beacon extends Mage_Core_Block_Template
 {
     protected $_beaconApiUrl = null;
+    
     protected $_siteId = null;
+    
+    protected $_page = null;
+    
+    protected $_orderNumber = null;
     
     /**
      * Class construction & variable initialization
@@ -24,6 +29,11 @@ class Jirafe_Analytics_Block_Beacon extends Mage_Core_Block_Template
     {
         $this->_beaconApiUrl = Mage::getStoreConfig('jirafe_analytics/general/beacon_api');
         $this->_siteId = Mage::getStoreConfig('jirafe_analytics/general/site_id');
+        $this->_page = $this->_getPage();
+        
+        if ($this->_page == 'order_success') {
+            $this->_orderNumber = Mage::getSingleton('checkout/session')->getLastRealOrderId();
+        }
     }
     
     /**
