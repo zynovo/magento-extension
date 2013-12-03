@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Install Oauth Customer Model
+ * Install Oauth Consumer Model
  *
  * @category  Jirafe
  * @package   Jirafe_Analytics
@@ -13,7 +13,7 @@
 
 require_once 'Mage/Oauth/controllers/Adminhtml/Oauth/ConsumerController.php';
 
-class Jirafe_Analytics_Model_Install_Oauth_Customer extends Mage_Oauth_Adminhtml_Oauth_ConsumerController
+class Jirafe_Analytics_Model_Install_Oauth_Consumer extends Mage_Oauth_Adminhtml_Oauth_ConsumerController
 {
     /**
      * Override parent constructor to mimic controller behavior
@@ -34,24 +34,24 @@ class Jirafe_Analytics_Model_Install_Oauth_Customer extends Mage_Oauth_Adminhtml
     {
         try {
             
-            $name = Mage::getStoreConfig('jirafe_analytics/installer/oauth_customer');
+            $name = Mage::getStoreConfig('jirafe_analytics/installer/oauth_consumer');
             
-            $customer = Mage::getModel('oauth/consumer')
+            $consumer = Mage::getModel('oauth/consumer')
                 ->getCollection()
                 ->addFieldToFilter('name',array('eq',$name))
                 ->getFirstItem();
             
-            if (!$customer->getId()) {
-                $customer = Mage::getModel('oauth/consumer');
-                $customer->setName($name);
-                $customer->setKey(Mage::helper('oauth')->generateConsumerKey());
-                $customer->setSecret(Mage::helper('oauth')->generateConsumerSecret());
-                $customer->save();
+            if (!$consumer->getId()) {
+                $consumer = Mage::getModel('oauth/consumer');
+                $consumer->setName($name);
+                $consumer->setKey(Mage::helper('oauth')->generateConsumerKey());
+                $consumer->setSecret(Mage::helper('oauth')->generateConsumerSecret());
+                $consumer->save();
             }
             
-            return $customer->getSecret();
+            return $consumer->getSecret();
         } catch (Exception $e) {
-            Mage::throwException('ADMIN ROLE ERROR: Jirafe_Analytics_Model_Install_Oauth_Customer::create(): ' . $e->getMessage());
+            Mage::throwException('ADMIN ROLE ERROR: Jirafe_Analytics_Model_Install_Oauth_Consumer::create(): ' . $e->getMessage());
         }
 
     }

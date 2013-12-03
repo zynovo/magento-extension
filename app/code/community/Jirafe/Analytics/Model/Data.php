@@ -318,6 +318,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
             $element = isset($params['element'] ) ? trim( $params['element'] ) : null;
             $startDate = isset($params['start_date'] ) ? trim( $params['start_date'] ) : null;
             $endDate = isset($params['end_date'] ) ? trim( $params['end_date'] ) : null;
+            $siteId = isset($params['site_id'] ) ? trim( $params['site_id'] ) : null;
             $useLastIds = isset($params['use_last_ids']) ? (boolean) $params['use_last_ids'] : false;
             
             if ( $useLastIds ) { 

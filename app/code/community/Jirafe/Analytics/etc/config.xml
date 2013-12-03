@@ -322,7 +322,7 @@
             <installer>
                 <admin_role>Jirafe</admin_role>
                 <api2_role>Jirafe</api2_role>
-                <oauth_customer>Jirafe</oauth_customer>
+                <oauth_consumer>Jirafe</oauth_consumer>
                 <admin_username>jirafe</admin_username>
                 <admin_firstname>Jirafe</admin_firstname>
                 <admin_lastname>Jirafe</admin_lastname>

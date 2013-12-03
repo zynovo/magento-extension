@@ -160,7 +160,7 @@ class Jirafe_Analytics_Model_Install extends Jirafe_Analytics_Model_Abstract
               $this->_saveStatus();
               
               return $message;
-          }
+              
        } catch (Exception $e) {
             Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Installer::_construct()', $e->getMessage(), $e);
             return 'INSTALLER ERROR: Jirafe_Analytics_Model_Install::run(): ' . $e->getMessage();
@@ -190,8 +190,8 @@ class Jirafe_Analytics_Model_Install extends Jirafe_Analytics_Model_Abstract
               Mage::throwException('Error creating api2 attribures');
           }
           
-          if (!$oauthSecret = Mage::getModel('jirafe_analytics/install_oauth_customer')->getSecret()) {
-              Mage::throwException('Error creating oauth customer.');
+          if (!$oauthSecret = Mage::getModel('jirafe_analytics/install_oauth_consumer')->getSecret()) {
+              Mage::throwException('Error creating oauth consumer.');
           }
           
           if (!$user = Mage::getModel('jirafe_analytics/install_admin_user')->create( $adminRoleID, $api2RoleId, $oauthSecret)) {
