@@ -36,7 +36,4 @@ $installer->run("
         (3, 'batch'),
         (4, 'export');
     ");
-    
-    
-    ");
 $installer->endSetup();
