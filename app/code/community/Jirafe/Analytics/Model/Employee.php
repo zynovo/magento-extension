@@ -74,18 +74,25 @@ class Jirafe_Analytics_Model_Employee extends Jirafe_Analytics_Model_Abstract
     /**
      * Create array of employee historical data
      *
-     * @param string $startDate
-     * @param string $endDate
+     * @param string $filter
      * @return array
      */
     
-    public function getHistoricalData( $startDate = null, $endDate = null )
+    public function getHistoricalData( $filter = null )
     {
         try {
+         
+            $lastId = isset($filter['last_id']) ? (is_numeric($filter['last_id']) ?  $filter['last_id'] : null): null;
+            $startDate = isset($filter['start_date']) ? $filter['start_date'] : null;
+            $endDate = isset($filter['end_date']) ? $filter['end_date'] : null;
+            
             $data = array();
+            
             $employees = Mage::getModel('admin/user')->getCollection();
             
-            if ( $startDate && $endDate) {
+            if ( $lastId ) {
+                $where = "user_id <= $lastId";
+            } else if ( $startDate && $endDate) {
                 $employees->getSelect()->where("created BETWEEN '$startDate' AND '$endDate'");
             } else if ( $startDate ) {
                 $employees->getSelect()->where("created >= '$startDate'");

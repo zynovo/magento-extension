@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Jirafe_Analytics>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </Jirafe_Analytics>
     </modules>
     <global>
@@ -37,6 +37,9 @@
                     <data_type>
                         <table>jirafe_analytics_data_type</table>
                     </data_type>
+                    <install>
+                        <table>jirafe_analytics_install</table>
+                    </install>
                     <log>
                         <table>jirafe_analytics_log</table>
                     </log>
@@ -325,6 +328,9 @@
                 <admin_lastname>Jirafe</admin_lastname>
                 <admin_email>jirafe@jirafe.com</admin_email>
                 <admin_is_active>1</admin_is_active>
+                <max_records>5000</max_records>
+                <max_execution_time>1800</max_execution_time>
+                <memory_limit>2048M</memory_limit>
             </installer>
         </jirafe_analytics>
     </default>

@@ -40,6 +40,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                 ->where('`d`.`completed_dt` is NULL')
                 ->distinct(true)
                 ->query();
+            
         } catch (Exception $e) {
             Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Data::_getStores()', $e->getMessage(), $e);
             return false;
@@ -59,6 +60,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
     {
         try {
             if ( is_numeric($storeId) ) {
+             
                return Mage::getModel('jirafe_analytics/data_type')
                     ->getCollection()
                     ->addFieldToSelect(array('type'))
@@ -67,6 +69,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                     ->where('d.completed_dt is NULL')
                     ->distinct(true)
                     ->query();
+               
             } else {
                 return array();
             }
@@ -89,6 +92,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
     {
         try {
             if ( is_numeric($storeId) && is_numeric($typeId) ) {
+             
                 return Mage::getModel('jirafe_analytics/data')
                     ->getCollection()
                     ->addFieldToSelect(array('json','store_id'))
@@ -98,6 +102,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                     ->join( array('dt'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/data_type')), "`main_table`.`type_id` = `dt`.`id` AND `dt`.`id` = $typeId",array('dt.type'))
                     ->where('`main_table`.`completed_dt` is NULL')
                     ->query();
+                
             } else {
                 return array();
             }
@@ -299,34 +304,146 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
         }
     }
     
+    /**
+     * Convert historical data into JSON
+     *
+     * @return array
+     */
+    public function convertHistoricalData( $params = null )
+    {
+        try {
+            
+            Mage::helper('jirafe_analytics')->overridePhpSettings( $params );
+            
+            $element = isset($params['element'] ) ? trim( $params['element'] ) : null;
+            $startDate = isset($params['start_date'] ) ? trim( $params['start_date'] ) : null;
+            $endDate = isset($params['end_date'] ) ? trim( $params['end_date'] ) : null;
+            $useLastIds = isset($params['use_last_ids']) ? true : false;
+            Mage::log($params,null,'data.log');
+            if ( $useLastIds ) { 
+                if ( $success = Mage::getModel('jirafe_analytics/data_type')->captureLastIds() ) {
+                    Mage::helper('jirafe_analytics')->log( 'INSTALLER', 'Jirafe_Analytics_Model_Data::convertHistoricalData()', 'Captured last ids', null );
+                }
+            }
+            
+            /**
+             * If element name not passed through parameters, convert all element types
+             */
+            
+            $all = $element ? false : true;
+            
+            $history = array();
+            
+            $filters = array('start_date'=> $startDate, 
+                             'end_date' => $endDate, 
+                             'last_id' => null);
+            
+            if ( $element === 'cart' || $all ) {
+                if ( $useLastIds ) { 
+                    $filters['last_id'] = $this->_getLastId( 'cart'); 
+                }
+                
+                if ( $carts =  Mage::getModel('jirafe_analytics/cart')->getHistoricalData( $filters ) ) {
+                    $history = array_merge( $history, $carts );
+                }
+            }
+            
+            if ( $element === 'category' || $all ) {
+                if ( $useLastIds ) {
+                    $filters['last_id'] = $this->_getLastId( 'category');
+                }
+                
+                if ( $categories = Mage::getModel('jirafe_analytics/category')->getHistoricalData( $filters ) ) {
+                    $history = array_merge( $history, $categories );
+                }
+            }
+            
+            if ( $element === 'customer' || $all ) {
+                if ( $useLastIds ) {
+                    $filters['last_id'] = $this->_getLastId( 'customer');
+                }
+                
+                if ( $customers = Mage::getModel('jirafe_analytics/customer')->getHistoricalData( $filters ) ) {
+                    $history = array_merge( $history, $customers );
+                }
+               
+            }
+            
+            if ( $element === 'employee' || $all ) {
+                
+                if ( $useLastIds ) {
+                    $filters['last_id'] = $this->_getLastId( 'employee');
+                }
+                
+                if ( $employees = Mage::getModel('jirafe_analytics/employee')->getHistoricalData( $filters ) ) {
+                    $history = array_merge( $history, $employees );
+                }
+            }
+            
+            if ( $element === 'order' || $all ) {
+                if ( $useLastIds ) {
+                    $filters['last_id'] = $this->_getLastId( 'order');
+                }
+                
+                if ( $orders = Mage::getModel('jirafe_analytics/order')->getHistoricalData( $filters ) ) {
+                    $history = array_merge( $history, $orders );
+                }
+            }
+            
+            if ( $element === 'product' || $all ) {
+                if ( $useLastIds ) {
+                    $filters['last_id'] = $this->_getLastId( 'product');
+                }
+                
+                if ( $products = Mage::getModel('jirafe_analytics/product')->getHistoricalData( $filters ) ) {
+                    $history = array_merge( $history,$products  );
+                }
+            }
+            
+            if ( $history ) {
+                foreach ($history as $item) {
+                    $data = Mage::getModel('jirafe_analytics/data');
+                    $data->setStoreId( $item['store_id'] );
+                    $data->setTypeId( $item['type_id'] );
+                    $data->setHistorical( 1 );
+                    $data->setJson( $item['json'] );
+                    $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
+                    $data->save();
+                    $data = null;
+                }
+                Mage::helper('jirafe_analytics')->log( 'INSTALLER', 'Jirafe_Analytics_Model_Data::convertHistoricalData()', count($history) . ' historical records converted.', null );
+                return true;
+            } else {
+                Mage::helper('jirafe_analytics')->log( 'ERROR', 'Jirafe_Analytics_Model_Data::convertHistoricalData()', 'No Historical Data', null );
+                return false;
+            }
+            
+        } catch (Exception $e) {
+            Mage::helper('jirafe_analytics')->log( 'ERROR', 'Jirafe_Analytics_Model_Data::convertHistoricalData()', $e->getMessage(), $e );
+            return false;
+        }
+    }
     
     /**
-     * Reset data
-     *
-     * @return string
-     * @throws Exception 
+     * Get last id of a entity type
      */
-    public function resetData()
+    private function _getLastId( $type ) 
     {
-      try {
-           $db = Mage::getSingleton('core/resource')->getConnection('core_write');
-           $result = $db->query('SET FOREIGN_KEY_CHECKS = 0');
-           $result = $db->query('TRUNCATE TABLE jirafe_analytics_batch');
-           $result = $db->query('TRUNCATE TABLE jirafe_analytics_data');
-           $result = $db->query('TRUNCATE TABLE jirafe_analytics_batch_data');
-           $result = $db->query('TRUNCATE TABLE jirafe_analytics_data_attempt');
-           $result = $db->query('TRUNCATE TABLE jirafe_analytics_data_error');
-           $result = $db->query('ALTER TABLE jirafe_analytics_batch AUTO_INCREMENT = 1');
-           $result = $db->query('ALTER TABLE jirafe_analytics_data AUTO_INCREMENT = 1');
-           $result = $db->query('ALTER TABLE jirafe_analytics_batch_data AUTO_INCREMENT = 1');
-           $result = $db->query('ALTER TABLE jirafe_analytics_data_attempt AUTO_INCREMENT = 1');
-           $result = $db->query('ALTER TABLE jirafe_analytics_data_error AUTO_INCREMENT = 1');
-           $result = $db->query('SET FOREIGN_KEY_CHECKS = 1');
-           return 'Successfully truncated Jirafe Analytics batch and data tables.';
-       } catch (Exception $e) {
-           Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Data::resetData()', $e->getMessage(), $e);
-           Mage::throwException('DATA ERROR: Jirafe_Analytics_Model_Data::resetData(): ' . $e->getMessage());
+     try {
+         $type = Mage::getModel('jirafe_analytics/data_type')
+                     ->getCollection()
+                     ->addFieldToFilter( 'type',array( 'eq',$type ) )
+                     ->getFirstItem();
+         
+         if ( is_numeric($type->getLastId() )) {
+             return $type->getLastId();
+         } else {
+             return null;
+         }
+     } catch (Exception $e) {
+           Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Data::_getLastId()', $e->getMessage(), $e);
            return false;
        }
     }
+
 }

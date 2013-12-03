@@ -412,14 +412,18 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
     /**
      * Create array of product historical data
      * 
-     * @param string $startDate
-     * @param string $endDate
+     * @param string $filter
      * @return array
      */
     
-    public function getHistoricalData( $startDate = null, $endDate = null )
+    public function getHistoricalData( $filter = null )
     {
         try {
+         
+            $lastId = isset($filter['last_id']) ? $filter['last_id'] : null;
+            $startDate = isset($filter['start_date']) ? $filter['start_date'] : null;
+            $endDate = isset($filter['end_date']) ? $filter['end_date'] : null;
+            
             $data = array();
             
             $collection = Mage::getModel('catalog/product')
@@ -431,7 +435,9 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                 ->distinct(true)
                 ->order('pw.website_id ASC');
             
-            if ( $startDate && $endDate ){
+            if ( is_numeric( $lastId ) ) {
+                $where = "e.entity_id <= $lastId";
+            } else if ( $startDate && $endDate ){
                 $where = "created_at BETWEEN '$startDate' AND '$endDate'";
             } else if ( $startDate && !$endDate ){
                 $where = "created_at >= '$startDate'";
@@ -444,7 +450,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             if ($where) {
                 $collection->where( $where );
             }
-            
+            Mage::log($collection->__toString(),null,'products.log');
             foreach($collection->query() as $item) {
                 $data[] = array(
                     'type_id' => Jirafe_Analytics_Model_Data_Type::PRODUCT,

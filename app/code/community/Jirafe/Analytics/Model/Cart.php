@@ -115,13 +115,16 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
     /**
      * Create array of cart historical data
      * 
-     * @param string $startDate
-     * @param string $endDate
+     * @param string $filter
      * @return array
      */
-    public function getHistoricalData( $startDate = null, $endDate = null )
+    public function getHistoricalData( $filter = null )
     {
         try {
+            
+            $lastId = isset($filter['last_id']) ? (is_numeric($filter['last_id']) ?  $filter['last_id'] : null): null;
+            $startDate = isset($filter['start_date']) ? $filter['start_date'] : null;
+            $endDate = isset($filter['end_date']) ? $filter['end_date'] : null;
             
             $columns = $this->_getAttributesToSelect( 'cart' );
             $columns[] = 'store_id';
@@ -144,7 +147,9 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
                 ->reset(Zend_Db_Select::COLUMNS)
                 ->columns( $columns );
             
-            if ( $startDate && $endDate ){
+            if ( $lastId ) {
+                $where = "main_table.entity_id <= $lastId";
+            } else if ( $startDate && $endDate ) {
                 $where = "created_at BETWEEN '$startDate' AND '$endDate'";
             } else if ( $startDate && !$endDate ){
                 $where = "created_at >= '$startDate'";

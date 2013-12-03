@@ -26,6 +26,7 @@ abstract class Jirafe_Analytics_Model_Api2_Resource extends Mage_Api2_Model_Reso
     const FIELD_MAPPING_REQUEST_DATA_INVALID = 'Request data is invalid.';
     const REQUEST_FUNCTION_INVALID = 'Request function invalid.';
     const REQUEST_FUNCTION_NO_DATA = 'Request data available.';
+    const REQUEST_FUNCTION_ERROR = 'Request function error.';
     
     /**
      *  Default success messages
@@ -34,6 +35,8 @@ abstract class Jirafe_Analytics_Model_Api2_Resource extends Mage_Api2_Model_Reso
     const HISTORY_EXPORT_FUNCTION_SUCCESSFUL = 'Historical data successfully exported.';
     const HISTORY_CONVERT_FUNCTION_SUCCESSFUL = 'Historical data successfully converted to JSON.';
     const HISTORY_BATCH_FUNCTION_SUCCESSFUL = 'Historical JSON objects successfully batched for export.';
+    const RESET_DATA_FUNCTION_SUCCESSFUL  = 'Reseting of JSON data successful.';
+    const RESET_INSTALLER_STATUS_FUNCTION_SUCCESSFUL  = 'Reseting of installer data successful.';
     const LOG_PURGE_SUCCESSFUL = 'Log purge successful.';
     
     /**
@@ -47,7 +50,7 @@ abstract class Jirafe_Analytics_Model_Api2_Resource extends Mage_Api2_Model_Reso
             /* Function */
             case self::ACTION_TYPE_FUNCTION . self::OPERATION_UPDATE:
                 $this->_errorIfMethodNotExist('_function');
-                $requestData = $this->getRequest()->getBodyParams();
+                $requestData = $this->getRequest()->getBodyParams(); 
                 if (empty($requestData)) {
                     $this->_critical(self::REQUEST_FUNCTION_INVALID);
                 }

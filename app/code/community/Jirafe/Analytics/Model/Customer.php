@@ -98,19 +98,28 @@ class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract
     /**
      * Create array of customer historical data
      *
-     * @param string $startDate
-     * @param string $endDate
+     * @param string $filter
      * @return array
      */
     
-    public function getHistoricalData( $startDate = null, $endDate = null )
+    public function getHistoricalData( $filter = null )
     {
         try {
+         
+            $lastId = isset($filter['last_id']) ? (is_numeric($filter['last_id']) ?  $filter['last_id'] : null): null;
+            $startDate = isset($filter['start_date']) ? $filter['start_date'] : null;
+            $endDate = isset($filter['end_date']) ? $filter['end_date'] : null;
+            
             $data = array();
+            
             $customers = Mage::getModel('customer/customer')
                 ->getCollection()
                 ->addAttributeToSelect('firstname')
                 ->addAttributeToSelect('lastname');
+            
+            if ( $lastId ) {
+                $customers->addAttributeToFilter('entity_id', array('lteq' => $lastId));
+            } 
             
             if ( $startDate ) {
                 $customers->addAttributeToFilter('created_at', array('gteq' => $startDate));
@@ -119,6 +128,7 @@ class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract
             if ( $endDate ) {
                 $customers->addAttributeToFilter('created_at', array('lteq' => $endDate));
             }
+            
             
             foreach($customers as $customer) {
                 $data[] = array(

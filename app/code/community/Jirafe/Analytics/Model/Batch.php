@@ -95,13 +95,18 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
              * Record API attempt. 
              * Update batch with information from attempt
              */
-            if (  $response = Mage::getModel('jirafe_analytics/curl')->sendJson( $data->query(), $params ) ) {
+            
+            if ( $batches = $data->query()->fetchAll() ) {
+                
+                $response = Mage::getModel('jirafe_analytics/curl')->sendJson( $batches, $params );
+                
                 foreach ($response as $batch) {
                     foreach ($batch as $attempt) {
                         $this->updateBatch( $attempt );
                         Mage::getModel('jirafe_analytics/data_attempt')->add( $attempt );
                     }
                 }
+                
                 return true;
             } else {
                 /**
