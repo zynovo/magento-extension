@@ -32,7 +32,8 @@ class Jirafe_Analytics_Block_Beacon extends Mage_Core_Block_Template
         $this->_page = $this->_getPage();
         
         if ($this->_page == 'order_success') {
-            $this->_orderNumber = Mage::getSingleton('checkout/session')->getLastRealOrderId();
+            $this->_orderNumber = Mage::getSingleton('core/session')->getJirafeOrderNumber();
+            Mage::getSingleton('core/session')->setJirafeOrderNumber( null );
         }
     }
     
@@ -46,7 +47,7 @@ class Jirafe_Analytics_Block_Beacon extends Mage_Core_Block_Template
         $module = $request->getModuleName();
         $controller = $request->getControllerName();
         $action = $request->getActionName();
-        
+        Mage::log("$request $module $controller $action",null,'page.log');
         switch ($module) {
             case 'cms':
                 if ($controller === 'index') {

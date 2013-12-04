@@ -234,8 +234,23 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
     public function orderAccepted( Varien_Event_Observer $observer )
     {
         try {
-            if ( Mage::getStoreConfig('jirafe_analytics/general/enabled', $observer->getOrder()->getStoreId() ) ) {
-                $order = $observer->getOrder();
+            $order = $observer->getOrder();
+            
+            /**
+             * Core bug workaround for Magento CE 1.8.0.0 with PHP 5.3.3
+             * Orders are not properly committed for sales_order_* events
+            */
+            if ( !$order->getEntityId() ) {
+                $order->save();
+            }
+            
+            /**
+             * Save order number to session for beacon
+             */
+            Mage::getSingleton('core/session')->setJirafeOrderNumber( $order->getIncrementId() );
+            $orderNumber = Mage::getSingleton('core/session')->getJirafeOrderNumber();
+            
+            if ( Mage::getStoreConfig('jirafe_analytics/general/enabled', $order->getStoreId() ) ) {
                 $data = $order->getData();
                 $payment = $order->getPayment();
                 $data['amount_paid'] = $payment->getAmountPaid();
@@ -246,6 +261,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
              } else {
                  return false;
              }
+             
         } catch (Exception $e) {
              Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
             return false;
