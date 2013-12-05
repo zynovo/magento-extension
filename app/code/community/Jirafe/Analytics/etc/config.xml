@@ -85,7 +85,6 @@
                 <oauth/>
             </direct_front_name>
         </request>
-  </global>
     </global>
     <frontend>
         <layout>
