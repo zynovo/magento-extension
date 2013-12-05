@@ -80,6 +80,12 @@
                 </connection>
             </jirafe_analytics_read>
         </resources>
+        <request>
+            <direct_front_name>
+                <oauth/>
+            </direct_front_name>
+        </request>
+  </global>
     </global>
     <frontend>
         <layout>
