@@ -11,16 +11,16 @@
 
 class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
 {
-    
+
     /**
      * Capture cart save event
-     * 
+     *
      * @param Varien_Event_Observer $observer
      * @return boolean
      */
-    
+
     public function cartSave( Varien_Event_Observer $observer )
-    {   
+    {
         try {
             if ( Mage::getStoreConfig('jirafe_analytics/general/enabled', $observer->getCart()->getQuote()->getStoreId() ) ) {
                 if ( Mage::getSingleton('core/session')->getJirafeProcessCart() ) {
@@ -40,20 +40,20 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             } else {
                 return false;
             }
-            
+
         } catch (Exception $e) {
               Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
              return false;
         }
     }
-    
+
     /**
      * Capture update cart item event
      *
      * @param Varien_Event_Observer $observer
      * @return boolean
      */
-    
+
     public function cartUpdateItem( Varien_Event_Observer $observer )
     {
         try {
@@ -64,14 +64,14 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             return false;
         }
     }
-    
+
     /**
      * Capture remove item cart event
      *
      * @param Varien_Event_Observer $observer
      * @return boolean
      */
-    
+
     public function cartRemoveItem( Varien_Event_Observer $observer )
     {
         try {
@@ -81,17 +81,17 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
              Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
             return false;
         }
-        
+
     }
-    
+
     /**
      * Capture category save event
-     * 
+     *
      * @param Varien_Event_Observer $observer
      * @return mixed
      */
-    
-    public function categorySave( Varien_Event_Observer $observer ) 
+
+    public function categorySave( Varien_Event_Observer $observer )
     {
         try {
             $data = Mage::getModel('jirafe_analytics/data');
@@ -105,15 +105,15 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
            return false;
         }
     }
-    
-    /** 
+
+    /**
      * Capture category delete event
-     * 
+     *
      * @param Varien_Event_Observer $observer
      * @return boolean
      */
-    
-    public function categoryDelete( Varien_Event_Observer $observer ) 
+
+    public function categoryDelete( Varien_Event_Observer $observer )
     {
         try {
             $data = Mage::getModel('jirafe_analytics/data');
@@ -127,14 +127,14 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             return false;
         }
     }
-    
+
     /**
      * Capture customer save event
      *
      * @param Varien_Event_Observer $observer
      * @return boolean
      */
-    
+
     public function customerSave( Varien_Event_Observer $observer )
     {
         try {
@@ -161,14 +161,14 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             return false;
         }
     }
-    
+
     /**
      * Capture admin customer save event
      *
      * @param Varien_Event_Observer $observer
      * @return boolean
      */
-    
+
     public function adminCustomerSave( Varien_Event_Observer $observer )
     {
         try {
@@ -181,14 +181,14 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             return false;
         }
     }
-    
+
     /**
      * Capture customer load event
      *
      * @param Varien_Event_Observer $observer
      * @return boolean
      */
-    
+
     public function customerLoad( Varien_Event_Observer $observer )
     {
         try {
@@ -200,14 +200,14 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             return false;
         }
     }
-    
+
     /**
      * Capture customer register event
      *
      * @param Varien_Event_Observer $observer
      * @return boolean
      */
-    
+
     public function customerRegister( Varien_Event_Observer $observer )
     {
         try {
@@ -223,19 +223,19 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             return false;
         }
     }
-    
+
     /**
      * Capture order accepted event
      *
      * @param Varien_Event_Observer $observer
      * @return boolean
      */
-    
+
     public function orderAccepted( Varien_Event_Observer $observer )
     {
         try {
             $order = $observer->getOrder();
-            
+
             /**
              * Core bug workaround for Magento CE 1.8.0.0 with PHP 5.3.3
              * Orders are not properly committed for sales_order_* events
@@ -243,13 +243,13 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             if ( !$order->getEntityId() ) {
                 $order->save();
             }
-            
+
             /**
              * Save order number to session for beacon
              */
             Mage::getSingleton('core/session')->setJirafeOrderNumber( $order->getIncrementId() );
             $orderNumber = Mage::getSingleton('core/session')->getJirafeOrderNumber();
-            
+
             if ( Mage::getStoreConfig('jirafe_analytics/general/enabled', $order->getStoreId() ) ) {
                 $data = $order->getData();
                 $payment = $order->getPayment();
@@ -261,20 +261,20 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
              } else {
                  return false;
              }
-             
+
         } catch (Exception $e) {
              Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
             return false;
         }
     }
-    
+
     /**
      * Capture order accepted event from the admin scope
      *
      * @param Varien_Event_Observer $observer
      * @return boolean
      */
-    
+
     public function OrderAcceptedAdmin( Varien_Event_Observer $observer )
     {
         try {
@@ -297,7 +297,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
      * @param Varien_Event_Observer $observer
      * @return boolean
      */
-    
+
     public function orderCancelled( Varien_Event_Observer $observer )
     {
         try {
@@ -309,7 +309,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             return false;
         }
     }
-    
+
     /**
      * Convert order to JSON and save
      *
@@ -317,7 +317,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
      * @param string $status
      * @return boolean
      */
-    
+
     protected function _orderSave( $order = null )
     {
         if ( $order ) {
@@ -335,15 +335,15 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             }
         }
     }
-    
+
     /**
      * Capture order cancel events
-     * 
+     *
      * @param Varien_Event_Observer $observer
      * @return boolean
      */
-    
-    public function orderCancel( Varien_Event_Observer $observer ) 
+
+    public function orderCancel( Varien_Event_Observer $observer )
     {
         try {
             $order = $observer->getOrder()->getData();
@@ -359,7 +359,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             return false;
         }
     }
-    
+
     /**
      *
      * Capture product to check for variant changes
@@ -367,21 +367,21 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
      * @param Varien_Event_Observer $observer
      * @return boolean
      */
-     
+
     public function productSaveAfter( Varien_Event_Observer $observer )
     {
          try {
              $product = $observer->getProduct();
              $this->_productSave( $product );
-             
+
              if ($product->getTypeId() === 'configurable') {
-              
-                 /** 
+
+                 /**
                   * Attach or detach simple variants from configurable parents
                   */
                  $originalIds = Mage::getModel('catalog/product_type_configurable')->getUsedProductIds( $product );
                  $newIds = array_keys( $product->getConfigurableProductsData() );
-                 
+
                  /**
                   * Get product attributes from parent configurable
                   */
@@ -390,7 +390,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                  } else {
                      $attributes = null;
                  }
-                 
+
                  /**
                   * Check for removed variants
                   */
@@ -401,7 +401,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                          }
                      }
                  }
-                 
+
                  /**
                   * Check for added variants
                   */
@@ -414,14 +414,14 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                      }
                  }
              }
-             
+
              return true;
          } catch (Exception $e) {
               Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::productSaveAfter()', $e->getMessage(), $e);
              return false;
          }
     }
-    
+
     /**
      *
      * Capture product save event
@@ -429,7 +429,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
      * @param string $attributes
      * @return boolean
      */
-    
+
     protected function _productSave( Mage_Catalog_Model_Product $product, $attributes = null )
     {
         try {
@@ -445,14 +445,14 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             return false;
         }
     }
-    
+
     /**
      * Capture admin user add and modify events
      *
      * @param Varien_Event_Observer $observer
      * @return boolean
      */
-    
+
     public function employeeSave( Varien_Event_Observer $observer )
     {
         try {
@@ -465,6 +465,41 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             return true;
         } catch (Exception $e) {
              Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::employeeSave()', $e->getMessage(), $e);
+            return false;
+        }
+    }
+
+    /**
+     * Capture admin user add and modify events
+     *
+     * @param Varien_Event_Observer $observer
+     * @return boolean
+     */
+
+    public function retrieveHistoricalEvents( Varien_Event_Observer $observer ){
+
+        try {
+            // Historial
+            $data = array(
+                'max_execution_time' => '1800',
+                'memory_limit' => '2048M',
+                'proc_nice' => '16'
+            );
+
+            // Convert
+            if ( Mage::getModel('jirafe_analytics/data')->convertHistoricalData( $data ) ) {
+                // Batch
+                if (Mage::getModel('jirafe_analytics/data')->convertEventDataToBatchData( $data, true ) ) {
+                    // Export to Jirafe event-api
+                    if ( Mage::getModel('jirafe_analytics/batch')->process( $data, true ) ) {
+
+                    }
+                }
+            }
+
+            return true;
+        } catch (Exception $e) {
+             Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::retrieveHistoricalEvents()', $e->getMessage(), $e);
             return false;
         }
     }

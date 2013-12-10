@@ -54,6 +54,17 @@
                 </rewrite>
             </admin>
         </models>
+        <events>
+            <jirafe_historical_retrieval>
+                <observers>
+                    <jirafe_analytics_observer>
+                        <type>singleton</type>
+                        <class>Jirafe_Analytics_Model_Observer</class>
+                        <method>retrieveHistoricalEvents</method>
+                    </jirafe_analytics_observer>
+                </observers>
+            </jirafe_historical_retrieval>
+        </events>
         <helpers>
             <jirafe_analytics>
                 <class>Jirafe_Analytics_Helper</class>
@@ -302,7 +313,8 @@
                 <client_secret></client_secret>
                 <access_token></access_token>
                 <beacon_api>beacon.jirafe.com/jirafe_api.js</beacon_api>
-                <event_api_url>event.jirafe.com/v2/</event_api_url>
+                <event_api_url>https://event.jirafe.com/v2/</event_api_url>
+                <auth_url>https://accounts.jirafe.com/</auth_url>
                 <purge_time>10080</purge_time>
             </general>
             <debug>
