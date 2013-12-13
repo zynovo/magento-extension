@@ -174,7 +174,7 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
             // Paginator
             $currentPage = 1;
             $paginator = Zend_Paginator::factory($collection);
-            $paginator->setItemCountPerPage(10)
+            $paginator->setItemCountPerPage(100)
                 ->setCurrentPageNumber($currentPage);
             $pages = $paginator->count();
 

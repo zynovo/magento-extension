@@ -172,7 +172,7 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
             $currentPage = 1;
 
             $paginator = Zend_Paginator::factory($orders);
-            $paginator->setItemCountPerPage(10)
+            $paginator->setItemCountPerPage(100)
                 ->setCurrentPageNumber($currentPage);
             $pages = $paginator->count();
 
