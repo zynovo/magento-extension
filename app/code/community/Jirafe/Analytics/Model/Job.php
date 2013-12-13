@@ -39,7 +39,7 @@ class Jirafe_Analytics_Model_Job extends Jowens_JobQueue_Model_Job_Abstract
                     // Export to Jirafe event-api
                     if ( Mage::getModel('jirafe_analytics/batch')->process( $data, true ) ) {
                         Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Job::perform()', 'Finished sending the events.  Process Complete.', null );
-
+                        Mage::getModel('jirafe_analytics/curl')->updateHistoricalPushStatus('complete');
                     }
                 }
             }
