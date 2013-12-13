@@ -326,7 +326,7 @@
             <curl>
                 <threading>multi</threading>
                 <threads>5</threads>
-                <max_size>10485760</max_size>
+                <max_size>100000</max_size>
                 <max_attempts>5</max_attempts>
                 <max_records></max_records>
             </curl>
