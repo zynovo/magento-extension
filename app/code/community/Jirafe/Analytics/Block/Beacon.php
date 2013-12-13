@@ -20,6 +20,8 @@ class Jirafe_Analytics_Block_Beacon extends Mage_Core_Block_Template
     protected $_page = null;
     
     protected $_orderNumber = null;
+
+    protected $_customer = null;
     
     /**
      * Class construction & variable initialization
@@ -35,6 +37,8 @@ class Jirafe_Analytics_Block_Beacon extends Mage_Core_Block_Template
             $this->_orderNumber = Mage::getSingleton('core/session')->getJirafeOrderNumber();
             Mage::getSingleton('core/session')->setJirafeOrderNumber( null );
         }
+
+        $this->_customer = $this->_getCustomer();
     }
     
     /**
@@ -79,4 +83,17 @@ class Jirafe_Analytics_Block_Beacon extends Mage_Core_Block_Template
             break;
         }
     }
+
+    protected function _getCustomer()
+    {
+        $customer = Mage::getSingleton('customer/session')->getCustomer();
+        if (!$customer) return array();
+        return array(
+            "id" => $customer->getId(),
+            "firstname" => $customer->getFirstname(),
+            "lastname" => $customer->getLastname(),
+            "email" => $customer->getEmail()
+        );
+    }
+
 }
