@@ -37,8 +37,7 @@ class Jirafe_Analytics_Adminhtml_HistoricalController extends Mage_Adminhtml_Con
     {
 
         // Check if the batch
-
-        if ( $server = Mage::getModel('jirafe_analytics/curl')->checkHistoricalPush() ) {
+        if ( $server = Mage::getModel('jirafe_analytics/curl')->getHistoricalPushStatus() ) {
             // Dispatch an event for the historical process if the site is ready
             $response = $server['response'];
             $json = json_decode($response);
@@ -48,20 +47,36 @@ class Jirafe_Analytics_Adminhtml_HistoricalController extends Mage_Adminhtml_Con
             {
                 $status = $json->{'historical_status'};
 
-                if($status == 'ready'){
+                if($status == 'ready')
                 {
-                    $result = Mage::dispatchEvent('jirafe_historical_retrieval');
+                    Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Adminhtml_HistoricalController::checkAction()', 'Get Historical Job', null);
+                    // Add the historical push to the job queue
+                    $job = Mage::getModel('jirafe_analytics/job');
+                    $job->enqueue();
+
+                    Mage::getModel('jirafe_analytics/curl')->updateHistoricalPushStatus('in-process');
                     Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Adminhtml_HistoricalController::checkAction()', 'Historical Fetch Event dispatched', null);
+                    Mage::getSingleton('core/session')->addSuccess('Jirafe is syncing your historical data.');
+                }
+                else if ($status == 'in-process')
+                {
+                    Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Adminhtml_HistoricalController::checkAction()', 'Historical Fetch is in process or not enabled for this site', null);
+                    Mage::getSingleton('core/session')->addError('Historical Fetch is in process for this site.');
+                }
+                else if ($status == 'complete')
+                {
+                    Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Adminhtml_HistoricalController::checkAction()', 'Historical Fetch has already completed for this site', null);
+                    Mage::getSingleton('core/session')->addError('Historical Fetch has already completed for this site.');
                 }
                 else
                 {
-                    $format = 'The historical push cannot  %d monkeys in the %s';
-                    $message = sprintf($format, $status);
-                    Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Adminhtml_HistoricalController::checkAction()', $message, null);
+                    Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Adminhtml_HistoricalController::checkAction()', 'Historical Fetch is not enabled for this site', null);
+                    Mage::getSingleton('core/session')->addError('Historical Fetch is not enabled for this site. Please contact Jirafe support.');
                 }
             }
         }
 
+        $this->_redirect('adminhtml/system_config');
     }
 
 
