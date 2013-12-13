@@ -27,7 +27,7 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
                 $columns = $this->_getAttributesToSelect( 'order_item' );
                 $columns[] = 'product_id';
                 $columns[] = 'option.value as attributes';
-                $columns[] = 'IF(main_table.price > 0, main_table.price, parent.price) AS price';
+                $columns[] = 'IF(main_table.row_total > 0, main_table.row_total, parent.row_total) AS row_total';
                 $columns[] = 'IF(main_table.discount_amount > 0,main_table.discount_amount ,COALESCE(parent.discount_amount,0)) AS discount_amount';
                 
                 $collection = Mage::getModel('sales/order_item')
@@ -56,7 +56,7 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
                         'order_item_number' => "$count",
                         $fieldMap['quantity']['api'] => $fieldMap['quantity']['magento'],
                         'status' => 'accepted',
-                        'price' => floatval($item['price']),
+                        'price' => floatval($item['row_total']),
                         'discount_price' => floatval($item['discount_amount']),
                         'product' => Mage::getModel('jirafe_analytics/product')->getArray( $item['product_id'], $storeId, null, $item['attributes'])
                     );

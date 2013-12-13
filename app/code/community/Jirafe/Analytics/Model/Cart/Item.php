@@ -27,13 +27,13 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
                 $columns = $this->_getAttributesToSelect( 'cart_item' );
                 $columns[] = 'product_id';
                 $columns[] = 'option.value as attributes';
-                $columns[] = 'IF(main_table.price > 0, main_table.price, parent.price) AS price';
+                $columns[] = 'IF(main_table.row_total > 0, main_table.row_total, parent.row_total) AS row_total';
                 $columns[] = 'IF(main_table.discount_amount > 0,main_table.discount_amount ,parent.discount_amount) AS discount_amount';
                 
                 $collection = Mage::getModel('sales/quote_item')
                     ->getCollection()
                     ->getSelect()
-                    ->joinLeft( array('parent'=>'sales_flat_quote_item'), "main_table.parent_item_id = parent.item_id",array('parent.price'))
+                    ->joinLeft( array('parent'=>'sales_flat_quote_item'), "main_table.parent_item_id = parent.item_id",array('parent.row_total'))
                     ->joinLeft( array('option'=>'sales_flat_quote_item_option'), "parent.item_id = option.item_id AND option.code = 'attributes'",array('option.value'))
                     ->reset(Zend_Db_Select::COLUMNS)
                     ->columns( $columns)
@@ -56,7 +56,7 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
                         $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
                         'cart_item_number' => "$count",
                         'quantity' => intval( $item['qty'] ),
-                        'price' => floatval( $item['price'] ),
+                        'price' => floatval( $item['row_total'] ),
                         'discount_price' => floatval( $item['discount_amount'] ),
                         'product' => Mage::getModel('jirafe_analytics/product')->getArray( $item['product_id'], $storeId, null, $item['attributes'] )
                     );
