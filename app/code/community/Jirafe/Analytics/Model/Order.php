@@ -183,6 +183,8 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
                 //$message = sprintf('Iteration # %d', $currentPage);
                 //Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Order::getHistoricalData()', $message, null);
 
+                $paginator->setCurrentPageNumber($currentPage);
+
                 foreach($paginator as $order) {
 
                     $data[] = array(

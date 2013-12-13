@@ -468,6 +468,8 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                 //$message = sprintf('Iteration # %d', $currentPage);
                 //Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Product::getHistoricalData()', $message, null);
 
+                $paginator->setCurrentPageNumber($currentPage);
+
                 foreach($paginator as $item) {
                     $data[] = array(
                         'type_id' => Jirafe_Analytics_Model_Data_Type::PRODUCT,
