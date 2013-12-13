@@ -29,6 +29,7 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
 
             $fieldMap = $this->_getFieldMap( 'order', $order );
 
+            $data = null;
             if ($order['jirafe_status'] == 'cancelled') {
 
                 $data = array(
@@ -37,7 +38,9 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
                     $fieldMap['cancel_date']['api'] => $this->_formatDate( $order['updated_at'] )
                 );
 
-            } else {
+            } else if ($isEvent ||
+                       $order['jirafe_status'] == 'complete' ||
+                       $order['jirafe_status'] == 'processing') {
 
                 $items = Mage::getModel('jirafe_analytics/order_item')->getItems( $order['entity_id'], $order['store_id'] );
                 $totalPaymentCost = is_numeric($order['amount_paid']) ? $order['amount_paid'] : ( is_numeric($order['amount_authorized']) ? $order['amount_authorized'] : 0);
@@ -106,7 +109,11 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
     public function getJson( $order = null, $isEvent = true )
     {
         if ($order) {
-            return json_encode( $this->getArray( $order, $isEvent ) );
+            $array = $this->getArray( $order, $isEvent );
+            if (!$array) {
+                return false;
+            }
+            return json_encode( $array );
         } else {
             return false;
         }
@@ -187,10 +194,14 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
 
                 foreach($paginator as $order) {
 
+                    $json = $this->getJson( $order, false );
+                    if (!$json) {
+                        continue;
+                    }
                     $data[] = array(
                         'type_id' => Jirafe_Analytics_Model_Data_Type::ORDER,
                         'store_id' => $order['store_id'],
-                        'json' => $this->getJson( $order, false )
+                        'json' => $json
                     );
                 }
                 $currentPage++;
