@@ -84,7 +84,6 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
                 ->addFieldToFilter('`main_table`.`completed_dt`', array('is' => new Zend_Db_Expr('null')))
                 ->addFieldToFilter('`main_table`.`json`', array('neq' => ''))
                 ->addFieldToFilter('`main_table`.`historical`', array($historicalEQ => '1'))
-                ->addFieldToFilter('`main_table`.`attempts`', array('lt'=> $this->maxAttempts))
                 ->setOrder('created_dt ASC')
                 ->getSelect();
 
@@ -137,12 +136,9 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
             if ($attempt) {
                 $batch = Mage::getModel('jirafe_analytics/batch')->load( $attempt['batch_id'] );
                 if ($batch) {
-                    $curAttempts = $batch->getAttempts();
-
                     $batch->setHttpCode( $attempt['http_code'] );
                     $batch->setTotalTime( $attempt['total_time'] );
                     $batch->setCompletedDt( $attempt['created_dt'] );
-                    $batch->setAttempts( $curAttempts + 1 );
                     $batch->save();
                 } else {
                     return true;
