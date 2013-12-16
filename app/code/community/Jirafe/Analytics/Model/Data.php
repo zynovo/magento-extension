@@ -98,6 +98,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                     ->addFieldToSelect(array('json','store_id'))
                     ->addFieldToFilter('`main_table`.`json`', array('neq' => ''))
                     ->addFieldToFilter('`main_table`.`store_id`', array('eq' => $storeId))
+                    ->addFieldToFilter('`main_table`.`attempt_count`', array('eq' => '0'))
                     ->getSelect()
                     ->join( array('dt'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/data_type')), "`main_table`.`type_id` = `dt`.`id` AND `dt`.`id` = $typeId",array('dt.type'))
                     ->where('`main_table`.`completed_dt` is NULL')
@@ -222,6 +223,11 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                         $batchData->setBatchOrder( $batchIndex );
                         $batchData->save();
                         $batchIndex = $batchIndex + 1;
+
+                        // Increment the attempts count so cannot be rebatched
+                        $analytics_data_item = Mage::getModel('jirafe_analytics/data')->load( $item['id'] );
+                        $analytics_data_item->setAttemptCount(1);
+                        $analytics_data_item->save();
                     }
 
                     $batchContainer[ $type['type'] ] = $typeContainer;
