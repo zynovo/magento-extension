@@ -30,17 +30,17 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
             $fieldMap = $this->_getFieldMap( 'order', $order );
 
             $data = null;
-            if ($order['jirafe_status'] == 'cancelled') {
+            if ($order['status'] == 'canceled' || $order['status'] == 'cancelled' ) {
 
                 $data = array(
                     $fieldMap['order_number']['api'] => $order['increment_id'],
-                    'status' => $order['jirafe_status'],
+                    'status' => $order['status'],
                     $fieldMap['cancel_date']['api'] => $this->_formatDate( $order['updated_at'] )
                 );
 
             } else if ($isEvent ||
-                       $order['jirafe_status'] == 'complete' ||
-                       $order['jirafe_status'] == 'processing') {
+                       $order['status'] == 'complete' ||
+                       $order['status'] == 'processing') {
 
                 $items = Mage::getModel('jirafe_analytics/order_item')->getItems( $order['entity_id'], $order['store_id'] );
                 $totalPaymentCost = is_numeric($order['amount_paid']) ? $order['amount_paid'] : ( is_numeric($order['amount_authorized']) ? $order['amount_authorized'] : 0);
@@ -136,13 +136,14 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
             $endDate = isset($filter['end_date']) ? $filter['end_date'] : null;
 
             $columns = $this->_getAttributesToSelect( 'order' );
+            $columns[] = 'status';
             $columns[] = 'store_id';
             $columns[] = 'entity_id';
             $columns[] = 'customer_id';
             $columns[] = 'p.amount_paid';
             $columns[] = 'p.amount_authorized';
 
-            Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Order::getHistoricalData()', 'Building order query', null);
+            //Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Order::getHistoricalData()', 'Building order query', null);
 
             $orders = Mage::getModel('sales/order')
                 ->getCollection()
@@ -170,11 +171,6 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
 
             $data = array();
 
-            //Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Order::getHistoricalData()', 'Preparing pagination of order query', null);
-
-            // Order Query
-            //Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Order::getHistoricalData()', 'Order Query: '. $orders->__toString(), null);
-
             // Pagination
             $currentPage = 1;
 
@@ -187,9 +183,6 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
             Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Order::getHistoricalData()', $message, null);
 
             do{
-                //$message = sprintf('Iteration # %d', $currentPage);
-                //Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Order::getHistoricalData()', $message, null);
-
                 $paginator->setCurrentPageNumber($currentPage);
 
                 foreach($paginator as $order) {
