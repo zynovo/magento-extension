@@ -34,7 +34,7 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
 
                 $data = array(
                     $fieldMap['order_number']['api'] => $order['increment_id'],
-                    'status' => $order['status'],
+                    'status' => 'cancelled',
                     $fieldMap['cancel_date']['api'] => $this->_formatDate( $order['updated_at'] )
                 );
 
