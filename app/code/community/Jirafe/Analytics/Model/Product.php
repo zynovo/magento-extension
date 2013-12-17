@@ -12,23 +12,23 @@
 
 class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
 {
-    
+
     protected $_product = null;
-    
+
     protected $_storeId =null;
-    
+
     protected $_parent = null;
-    
+
     protected $_parentTypeId = null;
-    
+
     protected $_baseProducts = null;
-    
+
     protected $_attributes = null;
-    
+
     protected $_typeId = null;
-    
+
     protected $_fieldMap = null;
-    
+
     /**
      * Get JSON version of product object
      *
@@ -46,7 +46,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
              return null;
          }
      }
-    
+
     /**
      * Create product array of data required by Jirafe API
      *
@@ -56,11 +56,11 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
      * @param boolean $itemAttributes
      * @return array
      */
-    
+
     public function getArray( $productId = null, $storeId = null, $product = null, $itemAttributes = null  )
     {
         try {
-         
+
             /**
              * Initialize object
             */
@@ -72,39 +72,39 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             $this->_attributes = null;
             $this->_typeId = null;
             $this->_fieldMap = null;
-             
+
             if ( $productId ) {
                 $this->_product = Mage::getModel('catalog/product')->load( $productId );
             } else {
                 $this->_product = $product;
             }
-            
+
             if ( $this->_product ) {
-                
+
                 if ( $storeId ) {
                     $this->_storeId = $storeId;
                 } else {
                     $this->_storeId = $this->_product->getStoreId();
                 }
-                
+
                 $this->_typeId =  $this->_product->getTypeId();
-                
+
                 if ($this->_typeId == 'simple') {
                     if ($this->_parent = $this->_getParent()) {
                         $this->_parentTypeId = $this->_parent->getTypeId();
-                        
+
                         if ( $this->_parentTypeId == 'configurable' ) {
                             $this->_baseProducts = $this->_getBaseProducts();
                             $this->_attributes = $this->_getAttributes( $itemAttributes ) ;
                         }
                     }
                 }
-                
+
                 /**
                  * Get field map array
                  */
                 $this->_fieldMap = $this->_getFieldMap( 'product', $this->_product->getData() );
-                
+
                 $element = array(
                     $this->_fieldMap['id']['api'] => $this->_fieldMap['id']['magento'],
                     $this->_fieldMap['create_date']['api'] => $this->_fieldMap['create_date']['magento'],
@@ -116,49 +116,49 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                     $this->_fieldMap['name']['api'] => $this->_fieldMap['name']['magento'],
                     $this->_fieldMap['code']['api'] => $this->_fieldMap['code']['magento'],
                  );
-                
-                
+
+
                 if ( $brand = $this->_product->getAttributeText('manufacturer') ) {
                     $element['brand'] = $brand;
                 }
-                
+
                 if ( $this->_attributes ) {
                     $element['attributes'] = $this->_attributes;
                 }
-                
+
                 if ( $this->_baseProducts ) {
                     $element['base_product'] = $this->_baseProducts;
                 }
-                
+
                 if ( $categories = $this->_getCategories() ) {
                     $element['categories'] = $categories;
                 }
-                
+
                 if ( $images = $this->_getImages() ) {
                     $element['images'] = $images;
                 }
-                
+
                 if ( $urls = $this->_getUrls() ) {
                     $element['url'] = $urls;
                 }
-                
+
                 return $element;
             } else {
                 return array();
             }
-            
+
         } catch (Exception $e) {
             Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::getArray()', $e->getMessage(), $e);
             return false;
         }
     }
-    
+
     /**
      * Use Magento product type to determine whether this is an API product
-     * 
+     *
      * @return boolean
      */
-    
+
     protected function _isProduct ()
     {
         switch ( $this->_typeId ) {
@@ -192,14 +192,14 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                 break;
         }
     }
-    
+
     /**
      * Use Magento product type to determine whether this is an API SKU
      *
      * @param string $type_id
      * @return boolean
      */
-    
+
     protected function _isSku ()
     {
         switch ($this->_typeId) {
@@ -234,18 +234,18 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
      *
      * @return array
      */
-    
+
     protected function _getCategories()
     {
         try {
              $categories = array();
-             
+
              foreach ($this->_product->getCategoryIds() as $catId) {
                  if ( $category = Mage::getModel('catalog/category')->load( $catId ) ) {
                      $categories[] = Mage::getModel('jirafe_analytics/category')->getArray( $category );
                  }
              }
-             
+
              if ($categories) {
                  return json_decode(json_encode($categories), FALSE);
              } else {
@@ -256,13 +256,13 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             return (object) null;
         }
     }
-    
+
     /**
      * Create array product URLs associated with product
      *
      * @return array
      */
-    
+
     protected function _getUrls( )
     {
          try {
@@ -281,46 +281,46 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
      *
      * @return mixed
      */
-    
+
     protected function _getBaseProducts()
     {
         try {
             $obj = array();
-            
+
             if ( $this->_parent ) {
-                
+
                 $this->_fieldMap = $this->_getFieldMap( 'product', $this->_parent->getData() );
-                
+
                 $obj = array(
                     $this->_fieldMap['id']['api'] => $this->_fieldMap['id']['magento'],
                     $this->_fieldMap['name']['api'] => $this->_fieldMap['name']['magento'],
                     $this->_fieldMap['code']['api'] => $this->_fieldMap['code']['magento']
                 );
             }
-            
+
             return json_decode(json_encode($obj), FALSE);
         } catch (Exception $e) {
             Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::_getBaseProducts()', $e->getMessage(), $e);
             return false;
         }
     }
-    
+
     /**
      * Set product parent
      *
      * @return Mage_Catalog_Model_Product
      */
-    
+
     protected function _getParent()
     {
         try {
             if ( $this->_typeId == "simple" ) {
                 $parentIds = Mage::getModel('catalog/product_type_grouped')->getParentIdsByChild( $this->_product->getId() );
-                
+
                 if ( !$parentIds ) {
                     $parentIds = Mage::getModel('catalog/product_type_configurable')->getParentIdsByChild( $this->_product->getId() );
                 }
-                
+
                 if ( is_numeric(@$parentIds[0]) ) {
                     return Mage::getModel('catalog/product')->load( $parentIds[0] );
                 }
@@ -332,25 +332,25 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             return false;
         }
     }
-    
+
     /**
      * Create array of product attributes
-     * 
+     *
      * @param string $itemAttributes
      * @return mixed
      */
     protected function _getAttributes( $itemAttributes = null )
     {
         try {
-            
+
              $obj = array();
-             
+
              if ($itemAttributes) {
-              
+
                  $attributes = unserialize($itemAttributes);
-                 
+
                  foreach ($attributes as $key => $val) {
-                     
+
                      $options = Mage::getResourceModel('eav/entity_attribute_collection')
                          ->getSelect()
                          ->join(array('o'=>'eav_attribute_option'),'main_table.attribute_id = o.attribute_id')
@@ -360,9 +360,9 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                          ->where("main_table.attribute_id = $key AND v.option_id = $val")
                          ->limit(1)
                          ->query();
-                     
+
                      foreach($options as $option) {
-                         
+
                          $obj[] = array(
                              'id' => $option['attribute_id'],
                              'name' => $option['attribute_code'],
@@ -371,9 +371,9 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                      }
                 }
             } else if ( $this->_typeId === 'simple' && $this->_parentTypeId === 'configurable') {
-            
+
                $attributes = $this->_parent->getTypeInstance(true)->getConfigurableAttributesAsArray($this->_parent);
-               
+
                foreach($attributes as $attribute) {
                    if ($value = $this->_product->getAttributeText( $attribute['attribute_code'] ) ) {
                        $obj[] = array(
@@ -384,14 +384,14 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                    }
                }
             }
-            
+
             return $obj;
         } catch (Exception $e) {
             Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::_getAttributes()', $e->getMessage(), $e);
             return false;
         }
     }
-    
+
     /**
      * Create array of images associated with product
      *
@@ -408,24 +408,24 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             return array();
         }
     }
-    
+
     /**
      * Create array of product historical data
-     * 
+     *
      * @param string $filter
      * @return array
      */
-    
+
     public function getHistoricalData( $filter = null )
     {
         try {
-         
+
             $lastId = isset($filter['last_id']) ? $filter['last_id'] : null;
             $startDate = isset($filter['start_date']) ? $filter['start_date'] : null;
             $endDate = isset($filter['end_date']) ? $filter['end_date'] : null;
-            
+
             $data = array();
-            
+
             $collection = Mage::getModel('catalog/product')
                 ->getCollection()
                 ->getSelect()
@@ -434,7 +434,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                 ->join( array('pw'=>Mage::getSingleton('core/resource')->getTableName('catalog/product_website')), 'e.entity_id = pw.product_id', array('pw.website_id as store_id'))
                 ->distinct(true)
                 ->order('pw.website_id ASC');
-            
+
             if ( is_numeric( $lastId ) ) {
                 $where = "e.entity_id <= $lastId";
             } else if ( $startDate && $endDate ){
@@ -446,24 +446,48 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             } else {
                 $where = null;
             }
-            
+
             if ($where) {
                 $collection->where( $where );
             }
-            Mage::log($collection->__toString(),null,'products.log');
-            foreach($collection->query() as $item) {
-                $data[] = array(
-                    'type_id' => Jirafe_Analytics_Model_Data_Type::PRODUCT,
-                    'store_id' => $item['store_id'],
-                    'json' => $this->getJson( $item['entity_id'], $item['store_id'], null, null)
-                );
-            }
-            
+
+
+            // Paginator
+            //Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Order::getHistoricalData()', 'Products Query: '. $collection->__toString(), null);
+
+            $currentPage = 1;
+            $paginator = Zend_Paginator::factory($collection);
+            $paginator->setItemCountPerPage(100)
+                ->setCurrentPageNumber($currentPage);
+            $pages = $paginator->count();
+
+            $message = sprintf('Page Size: %d', $pages);
+            Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Product::getHistoricalData()', $message, null);
+
+            do{
+                //$message = sprintf('Iteration # %d', $currentPage);
+                //Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Product::getHistoricalData()', $message, null);
+
+                $paginator->setCurrentPageNumber($currentPage);
+
+                foreach($paginator as $item) {
+                    $data[] = array(
+                        'type_id' => Jirafe_Analytics_Model_Data_Type::PRODUCT,
+                        'store_id' => $item['store_id'],
+                        'json' => $this->getJson( $item['entity_id'], $item['store_id'], null, null)
+                    );
+                }
+
+                $currentPage++;
+                // 100 milliseconds
+                usleep(100 * 1000);
+            } while ($currentPage <= $pages);
+
             return $data;
         } catch (Exception $e) {
             Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::getHistoricalData()', $e->getMessage(), $e);
             return false;
         }
     }
-    
+
 }

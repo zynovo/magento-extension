@@ -54,17 +54,6 @@
                 </rewrite>
             </admin>
         </models>
-        <events>
-            <jirafe_historical_retrieval>
-                <observers>
-                    <jirafe_analytics_observer>
-                        <type>singleton</type>
-                        <class>Jirafe_Analytics_Model_Observer</class>
-                        <method>retrieveHistoricalEvents</method>
-                    </jirafe_analytics_observer>
-                </observers>
-            </jirafe_historical_retrieval>
-        </events>
         <helpers>
             <jirafe_analytics>
                 <class>Jirafe_Analytics_Helper</class>

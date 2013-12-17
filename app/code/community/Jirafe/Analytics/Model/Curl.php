@@ -82,7 +82,7 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
         }
     }
 
-    public function checkHistoricalPush()
+    public function getHistoricalPushStatus()
     {
 
         // Check the auth server to see if the site is able to push historical data
@@ -120,6 +120,50 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
 
         return $resource;
     }
+
+    public function updateHistoricalPushStatus($status)
+    {
+
+        // Check the auth server to see if the site is able to push historical data
+        $currentStoreId = Mage::app()->getStore()->getId();
+
+        $authenticationUrl = $this->authenticationUrl . 'accounts/historical/status/' . $this->_getSiteId( $currentStoreId ) . '/update/';
+
+        Mage::helper('jirafe_analytics')->logServerLoad('Jirafe_Analytics_Model_Curl::updateHistoricalPush');
+        $header = array('Authorization: Bearer ' . $this->_getAccessToken( $currentStoreId ) );
+
+        $req = array('historical_status' => $status);
+        $json = json_encode($req);
+
+        $thread = curl_init();
+        curl_setopt( $thread, CURLOPT_URL, $authenticationUrl );
+        curl_setopt( $thread, CURLOPT_HTTPHEADER, $header);
+        curl_setopt( $thread, CURLOPT_RETURNTRANSFER, true );
+        curl_setopt( $thread, CURLOPT_FOLLOWLOCATION, true );
+        curl_setopt( $thread, CURLINFO_HEADER_OUT, true );
+        curl_setopt( $thread, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt( $thread, CURLOPT_POSTFIELDS, $json );
+
+        if ($this->logging) {
+            curl_setopt($thread, CURLOPT_VERBOSE, true);
+        }
+
+        $resource['created_dt'] = Mage::helper('jirafe_analytics')->getCurrentDt();
+
+        $response = curl_exec($thread);
+        $resource['response'] = $response;
+
+        $info = curl_getinfo($thread) ;
+        $resource['http_code'] = $info['http_code'] ;
+        $resource['total_time'] = $info['total_time'];
+
+        curl_close($thread);
+
+        Mage::helper('jirafe_analytics')->logServerLoad('Jirafe_Analytics_Model_Curl::updateHistoricalPush');
+
+        return $resource;
+    }
+
     /**
      * Prepare data to pass to either single of mutli-threaded cURL
      *
