@@ -1,5 +1,5 @@
 <_>
-   <form_key>Enay7t5DD3MSfbln</form_key>
+   <form_key>CKAdLWocneLoB5DY</form_key>
    <name>Jirafe_Analytics</name>
    <channel>community</channel>
    <version_ids>
@@ -10,7 +10,7 @@
 </description>
    <license>commercial</license>
    <license_uri/>
-   <version>1.0.1</version>
+   <version>1.0.2</version>
    <stability>beta</stability>
    <notes>TBD</notes>
    <authors>
@@ -33,18 +33,23 @@
       <package>
          <name>
             <name/>
+            <name/>
          </name>
          <channel>
+            <channel/>
             <channel/>
          </channel>
          <min>
             <min/>
+            <min/>
          </min>
          <max>
             <max/>
+            <max/>
          </max>
          <files>
-            <files>    </files>
+            <files>                                </files>
+            <files>                                </files>
          </files>
       </package>
       <extension>
@@ -69,6 +74,11 @@
          <target>mageetc</target>
          <target>magedesign</target>
          <target>magedesign</target>
+         <target>magecommunity</target>
+         <target>mageetc</target>
+         <target>magedesign</target>
+         <target>magedesign</target>
+         <target>magelib</target>
       </target>
       <path>
          <path/>
@@ -76,6 +86,11 @@
          <path>modules/Jirafe_Analytics.xml</path>
          <path>frontend/base/default/template/jirafe_analytics/beacon.phtml</path>
          <path>frontend/base/default/layout/jirafe_analytics.xml</path>
+         <path>Jowens/JobQueue</path>
+         <path>modules/Jowens_JobQueue.xml</path>
+         <path>adminhtml/default/default/layout/jowens/jobqueue.xml</path>
+         <path>adminhtml/default/default/template/jowens/jobqueue/job.phtml</path>
+         <path>DJJob</path>
       </path>
       <type>
          <type>file</type>
@@ -83,6 +98,11 @@
          <type>file</type>
          <type>file</type>
          <type>file</type>
+         <type>dir</type>
+         <type>file</type>
+         <type>file</type>
+         <type>file</type>
+         <type>dir</type>
       </type>
       <include>
          <include/>
@@ -90,8 +110,18 @@
          <include/>
          <include/>
          <include/>
+         <include/>
+         <include/>
+         <include/>
+         <include/>
+         <include/>
       </include>
       <ignore>
+         <ignore/>
+         <ignore/>
+         <ignore/>
+         <ignore/>
+         <ignore/>
          <ignore/>
          <ignore/>
          <ignore/>
