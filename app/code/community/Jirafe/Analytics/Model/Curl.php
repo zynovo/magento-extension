@@ -61,7 +61,6 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
          * Set api URL property to Mage::getStoreConfig() values
          */
 
-        //$this->eventApiUrl = 'https://' . Mage::getStoreConfig('jirafe_analytics/general/event_api_url');
         $this->eventApiUrl = Mage::getStoreConfig('jirafe_analytics/general/event_api_url');
         $this->authenticationUrl = Mage::getStoreConfig('jirafe_analytics/general/auth_url');
 
