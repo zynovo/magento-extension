@@ -65,8 +65,17 @@ class Jirafe_Analytics_Model_Data_Attempt extends Jirafe_Analytics_Model_Abstrac
                      /**
                       * Append response and attempt to data object
                       */
-                     $data = array_merge( $data,$response[$pos] );
-                     $data['success'] = isset($data['success']) ? $data['success'] : false;
+                     if(is_array($response[$pos]))
+                     {
+                         $data = array_merge( $data,$response[$pos] );
+                     }
+
+                     $success = false;
+                     if ($attempt['http_code'] == 200)
+                     {
+                        $success = true;
+                     }
+
                      $data['created_dt'] = $attempt['created_dt'];
 
                      /**
@@ -82,14 +91,14 @@ class Jirafe_Analytics_Model_Data_Attempt extends Jirafe_Analytics_Model_Abstrac
                       */
                      $element = Mage::getModel('jirafe_analytics/data')->load( $data['data_id'] );
                      $element->setAttemptCount( intval( $element->getAttemptCount() ) + 1);
-                     $element->setSuccess( $data['success'] ? 1 : 0 );
-                     $element->setCompletedDt( $data['success'] ? $data['created_dt'] : null);
+                     $element->setSuccess( $success ? 1 : 0 );
+                     $element->setCompletedDt(  $success  ? $data['created_dt'] : null);
                      $element->save();
 
                      /**
                       * If API failure, create error record
                       */
-                     if ( !$data['success'] ) {
+                     if ( ! $success  ) {
                          $data['errors'] = isset($data['errors']) ? json_encode( $data['errors'] ) : null;
                          $data['error_type'] = isset($data['error_type']) ? $data['error_type'] : null;
                          Mage::getModel('jirafe_analytics/data_error')->add( $data, $obj->getId() );
