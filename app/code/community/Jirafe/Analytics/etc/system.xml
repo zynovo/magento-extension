@@ -99,7 +99,7 @@
                             <show_in_store>0</show_in_store>
                         </purge_time>
                         <run translate="label">
-                           <label>Historical Push</label>
+                           <label>Historical Data</label>
                            <frontend_type>button</frontend_type>
                            <frontend_model>jirafe_analytics/button</frontend_model>
                            <sort_order>100</sort_order>
