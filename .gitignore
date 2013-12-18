@@ -3,7 +3,6 @@ app/code/community/Find/
 app/code/community/Phoenix/
 app/code/community/Aoe/
 app/code/core/
-app/design/adminhtml/default/default/
 app/design/adminhtml/default/find/
 app/design/frontend/default/blank/
 app/design/frontend/default/default/
@@ -49,7 +48,6 @@ js/scriptaculous/
 js/spacer.gif
 js/tiny_mce/
 js/varien/
-lib/
 LICENSE_AFL.txt
 LICENSE.html
 LICENSE.txt
