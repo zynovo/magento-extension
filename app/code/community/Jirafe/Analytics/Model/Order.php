@@ -43,7 +43,6 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
                        $order['status'] == 'processing') {
 
                 $items = Mage::getModel('jirafe_analytics/order_item')->getItems( $order['entity_id'], $order['store_id'] );
-                $totalPaymentCost = is_numeric($order['amount_paid']) ? $order['amount_paid'] : ( is_numeric($order['amount_authorized']) ? $order['amount_authorized'] : 0);
 
                 $previousItems =  $isEvent ? $this->_getPreviousItems( $order['entity_id'] ) : null;
 
@@ -58,7 +57,7 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
                     $fieldMap['total']['api'] => $fieldMap['total']['magento'],
                     $fieldMap['total_tax']['api'] => $fieldMap['total_tax']['magento'],
                     $fieldMap['total_shipping']['api'] => $fieldMap['total_shipping']['magento'],
-                    'total_payment_cost' => floatval( $totalPaymentCost),
+                    'total_payment_cost' => null,
                     $fieldMap['total_discounts']['api'] => $fieldMap['total_discounts']['magento'],
                     $fieldMap['currency']['api'] => $fieldMap['currency']['magento'],
                     'items' => $items,
