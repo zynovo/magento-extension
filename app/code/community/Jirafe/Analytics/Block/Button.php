@@ -11,7 +11,7 @@ class Jirafe_Analytics_Block_Button extends Mage_Adminhtml_Block_System_Config_F
         $html = $this->getLayout()->createBlock('adminhtml/widget_button')
                     ->setType('button')
                     ->setClass('scalable')
-                    ->setLabel('Run')
+                    ->setLabel('Sync')
                     ->setOnClick("setLocation('$url')")
                     ->toHtml();
 
