@@ -65,7 +65,11 @@ class Jirafe_Analytics_Model_Data_Attempt extends Jirafe_Analytics_Model_Abstrac
                      /**
                       * Append response and attempt to data object
                       */
-                     $data = array_merge( $data,$response[$pos] );
+                     if(is_array($response[$pos]))
+                     {
+                        $data = array_merge( $data,$response[$pos] );
+                     }
+
                      $data['success'] = isset($data['success']) ? $data['success'] : false;
                      $data['created_dt'] = $attempt['created_dt'];
 
