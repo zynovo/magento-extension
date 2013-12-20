@@ -217,10 +217,10 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
     {
         try {
             return array(
-                'visit_id' => isset($_COOKIE['jirafe_vid']) ? $_COOKIE['jirafe_vid'] : '1',
-                'visitor_id' => isset($_COOKIE['jirafe_vis']) ? $_COOKIE['jirafe_vis'] : '1',
-                'pageview_id' => isset($_COOKIE['jirafe_pvid']) ? $_COOKIE['jirafe_pvid'] : '1',
-                'last_pageview_id' => isset($_COOKIE['jirafe_lpvid']) ? $_COOKIE['jirafe_lpvid'] : '1'
+                'visit_id' => isset($_COOKIE['jirafe_vid']) ? $_COOKIE['jirafe_vid'] : '',
+                'visitor_id' => isset($_COOKIE['jirafe_vis']) ? $_COOKIE['jirafe_vis'] : '',
+                'pageview_id' => isset($_COOKIE['jirafe_pvid']) ? $_COOKIE['jirafe_pvid'] : '',
+                'last_pageview_id' => isset($_COOKIE['jirafe_lpvid']) ? $_COOKIE['jirafe_lpvid'] : ''
             );
         } catch (Exception $e) {
             Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Abstract::_getVisit()', $e->getMessage(), $e);
