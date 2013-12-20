@@ -93,17 +93,24 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
 
     public function categorySave( Varien_Event_Observer $observer )
     {
-        try {
-            $data = Mage::getModel('jirafe_analytics/data');
-            $data->setTypeId( Jirafe_Analytics_Model_Data_Type::CATEGORY );
-            $data->setJson( Mage::getModel('jirafe_analytics/category')->getJson( $observer->getCategory() ) );
-            $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
-            $data->save();
-            return true;
-        } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
-           return false;
+        $stores = $observer->getCategory()->getStoreIds();
+        $result = true;
+
+        foreach($stores as $store)
+        {
+            try {
+                $data = Mage::getModel('jirafe_analytics/data');
+                $data->setTypeId( Jirafe_Analytics_Model_Data_Type::CATEGORY );
+                $data->setJson( Mage::getModel('jirafe_analytics/category')->getJson( $observer->getCategory() ) );
+                $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
+                $data->setStoreId( $store );
+                $data->save();
+            } catch (Exception $e) {
+                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
+                $result = false;
+            }
         }
+        return $result;
     }
 
     /**
@@ -115,17 +122,26 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
 
     public function categoryDelete( Varien_Event_Observer $observer )
     {
-        try {
-            $data = Mage::getModel('jirafe_analytics/data');
-            $data->setTypeId( Jirafe_Analytics_Model_Data_Type::CATEGORY );
-            $data->setJson( Mage::getModel('jirafe_analytics/category')->getDeleteJson( $observer->getCategory() ) );
-            $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
-            $data->save();
-            return true;
-        } catch (Exception $e) {
-             Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
-            return false;
+
+        $stores = $observer->getCategory()->getStoreIds();
+        $result = true;
+
+        foreach($stores as $store)
+        {
+            try {
+                $data = Mage::getModel('jirafe_analytics/data');
+                $data->setTypeId( Jirafe_Analytics_Model_Data_Type::CATEGORY );
+                $data->setJson( Mage::getModel('jirafe_analytics/category')->getJson( $observer->getCategory() ) );
+                $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
+                $data->setStoreId( $store );
+                $data->save();
+            } catch (Exception $e) {
+                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
+                $result = false;
+            }
         }
+        return $result;
+
     }
 
     /**
@@ -432,18 +448,26 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
 
     protected function _productSave( Mage_Catalog_Model_Product $product, $attributes = null )
     {
-        try {
-            $data = Mage::getModel('jirafe_analytics/data');
-            $data->setTypeId( Jirafe_Analytics_Model_Data_Type::PRODUCT );
-            $data->setJson( Mage::getModel('jirafe_analytics/product')->getJson( null, null, $product, $attributes ) );
-            $data->setStoreId( $product->getStoreId() );
-            $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
-            $data->save();
-            return true;
-        } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_productSave()', $e->getMessage(), $e);
-            return false;
+        $stores = $product->getStoreIds();
+        $result = true;
+
+        foreach($stores as $store)
+        {
+
+            try {
+                $data = Mage::getModel('jirafe_analytics/data');
+                $data->setTypeId( Jirafe_Analytics_Model_Data_Type::PRODUCT );
+                $data->setJson( Mage::getModel('jirafe_analytics/product')->getJson( null, null, $product, $attributes ) );
+                $data->setStoreId( $store );
+                $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
+                $data->save();
+            } catch (Exception $e) {
+                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_productSave()', $e->getMessage(), $e);
+                $result = false;
+            }
         }
+
+        return $result;
     }
 
     /**
