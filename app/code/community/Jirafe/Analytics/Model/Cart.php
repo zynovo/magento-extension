@@ -59,7 +59,7 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
                      $fieldMap['total']['api'] => $fieldMap['total']['magento'] ,
                      $fieldMap['total_tax']['api'] => $fieldMap['total_tax']['magento'],
                      $fieldMap['total_shipping']['api'] => $fieldMap['total_shipping']['magento'],
-                     $fieldMap['total_payment_cost']['api'] => null,
+                     $fieldMap['total_payment_cost']['api'] => 0,
                      $fieldMap['total_discounts']['api'] => $fieldMap['total_discounts']['magento'],
                      $fieldMap['currency']['api'] => $fieldMap['currency']['magento'],
                     'cookies' => $isEvent ?  : (object) null,
