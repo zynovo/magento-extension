@@ -20,13 +20,18 @@ class Jirafe_Analytics_Model_Job extends Jowens_JobQueue_Model_Job_Abstract
     {
         try
         {
-            // Historial
+            // Get the website and the remaining stores
+            $defaultStoreId = $this->getStoreId();
+            $websiteId = Mage::getModel('core/store')->load($defaultStoreId)->getWebsiteId();
+            $storeIds = Mage::getModel('core/website')->load($websiteId)->getStoreIds();
+
+            // Historical
             $data = array(
                 'max_execution_time' => '1800',
                 'memory_limit' => '2048M',
-                'proc_nice' => '16'
+                'proc_nice' => '16',
+                'store_ids' => $storeIds
             );
-                //'element' => 'order'
 
             // Convert
             if ( Mage::getModel('jirafe_analytics/data')->convertHistoricalData( $data ) ) {

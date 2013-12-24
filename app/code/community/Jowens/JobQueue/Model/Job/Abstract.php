@@ -7,15 +7,21 @@ abstract class Jowens_JobQueue_Model_Job_Abstract extends Mage_Core_Model_Abstra
 
 	public function __construct($name=null) {
 		$this->name = $name ? $name : $this->getType();
-		
+
 		$this->setStoreId(Mage::app()->getStore()->getStoreId());
 	}
 
 	public abstract function perform();
 
-    public function enqueue($queue="default", $run_at=null) {
+    public function enqueue($queue="default", $run_at=null, $storeId=null) {
     	$job = Mage::getModel('jobqueue/job');
-    	$job->setStoreId($this->getStoreId());
+        if(isset($storeId)){
+           $this->setStoreId($storeId);
+           $job->setStoreId($storeId);
+        }
+        else {
+    	   $job->setStoreId($this->getStoreId());
+        }
     	$job->setName($this->getName());
     	$job->setHandler(serialize($this));
     	$job->setQueue($queue);
@@ -24,29 +30,29 @@ abstract class Jowens_JobQueue_Model_Job_Abstract extends Mage_Core_Model_Abstra
     	$job->save();
     }
 
-	public function setName($name) 
+	public function setName($name)
 	{
 		$this->name = $name;
 		return $this;
 	}
 
-	public function getName() 
+	public function getName()
 	{
 		return $this->name;
 	}
 
-	public function setStoreId($storeId) 
+	public function setStoreId($storeId)
 	{
 		$this->storeId = $storeId;
 		return $this;
 	}
 
-	public function getStoreId() 
+	public function getStoreId()
 	{
 		return $this->storeId;
-	}	
+	}
 
-	public function getType() 
+	public function getType()
 	{
 		return get_class($this);
 	}

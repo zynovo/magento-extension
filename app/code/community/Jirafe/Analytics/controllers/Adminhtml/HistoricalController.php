@@ -37,7 +37,9 @@ class Jirafe_Analytics_Adminhtml_HistoricalController extends Mage_Adminhtml_Con
     {
 
         // Check if the batch
-        if ( $server = Mage::getModel('jirafe_analytics/curl')->getHistoricalPushStatus() ) {
+        $website_code = $this->getRequest()->getParam('website_code');
+
+        if ( $server = Mage::getModel('jirafe_analytics/curl')->getHistoricalPushStatus($website_code) ) {
             // Dispatch an event for the historical process if the site is ready
             $response = $server['response'];
             $json = json_decode($response);
@@ -49,12 +51,14 @@ class Jirafe_Analytics_Adminhtml_HistoricalController extends Mage_Adminhtml_Con
 
                 if($status == 'ready')
                 {
+                    $website_code = $this->getRequest()->getParam('website_code');
+                    $defaultStoreId = Mage::app()->getWebsite($website_code)->getDefaultStore()->getId();
                     Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Adminhtml_HistoricalController::checkAction()', 'Get Historical Job', null);
                     // Add the historical push to the job queue
                     $job = Mage::getModel('jirafe_analytics/job');
-                    $job->enqueue();
+                    $job->enqueue('default', null, $defaultStoreId);
 
-                    Mage::getModel('jirafe_analytics/curl')->updateHistoricalPushStatus('in-process');
+                    Mage::getModel('jirafe_analytics/curl')->updateHistoricalPushStatus($website_code, 'in-process');
                     Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Adminhtml_HistoricalController::checkAction()', 'Historical Fetch Event dispatched', null);
                     Mage::getSingleton('core/session')->addSuccess('Jirafe is syncing your historical data.');
                 }
@@ -75,8 +79,8 @@ class Jirafe_Analytics_Adminhtml_HistoricalController extends Mage_Adminhtml_Con
                 }
             }
         }
-
-        $this->_redirect('adminhtml/system_config');
+        // Redirect to the original website configuration screen
+        $this->_redirectUrl(($this->_getRefererUrl()));
     }
 
 
