@@ -125,6 +125,7 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
             $lastId = isset($filter['last_id']) ? (is_numeric($filter['last_id']) ?  $filter['last_id'] : null): null;
             $startDate = isset($filter['start_date']) ? $filter['start_date'] : null;
             $endDate = isset($filter['end_date']) ? $filter['end_date'] : null;
+            $storeIds = isset($filter['store_ids']) ? $filter['store_ids'] : null;
 
             $columns = $this->_getAttributesToSelect( 'cart' );
             $columns[] = 'store_id';
@@ -162,6 +163,12 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
             if ($where) {
                 $collection->where( $where );
             }
+
+            if($storeIds)
+            {
+                $collection->where("main_table.store_id in (?)", $storeIds);
+            }
+
 
             $data = array();
 

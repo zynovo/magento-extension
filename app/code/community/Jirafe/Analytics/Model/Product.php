@@ -423,6 +423,14 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             $lastId = isset($filter['last_id']) ? $filter['last_id'] : null;
             $startDate = isset($filter['start_date']) ? $filter['start_date'] : null;
             $endDate = isset($filter['end_date']) ? $filter['end_date'] : null;
+            $websiteId = isset($filter['website_id']) ? $filter['website_id'] : null;
+            $storeIds = isset($filter['store_ids']) ? $filter['store_ids'] : null;
+            $storeId = 0;
+
+            if($storeIds) {
+                $storeId = reset($storeIds);
+            }
+
 
             $data = array();
 
@@ -451,10 +459,14 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                 $collection->where( $where );
             }
 
+            // Pull products for a specific website
+            if($websiteId)
+            {
+                $collection->where('pw.website_id = ?', $websiteId);
+            }
+
 
             // Paginator
-            //Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Order::getHistoricalData()', 'Products Query: '. $collection->__toString(), null);
-
             $currentPage = 1;
             $paginator = Zend_Paginator::factory($collection);
             $paginator->setItemCountPerPage(100)
@@ -465,15 +477,12 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
             Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Product::getHistoricalData()', $message, null);
 
             do{
-                //$message = sprintf('Iteration # %d', $currentPage);
-                //Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Product::getHistoricalData()', $message, null);
-
                 $paginator->setCurrentPageNumber($currentPage);
 
                 foreach($paginator as $item) {
                     $data[] = array(
                         'type_id' => Jirafe_Analytics_Model_Data_Type::PRODUCT,
-                        'store_id' => $item['store_id'],
+                        'store_id' => $storeId,
                         'json' => $this->getJson( $item['entity_id'], $item['store_id'], null, null)
                     );
                 }

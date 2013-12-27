@@ -4,9 +4,9 @@ class Jirafe_Analytics_Block_Button extends Mage_Adminhtml_Block_System_Config_F
 
     protected function _getElementHtml(Varien_Data_Form_Element_Abstract $element)
     {
+        $website_code = $this->getRequest()->getParam('website');
         $this->setElement($element);
-        //$url = $this->getUrl('catalog/product'); //
-        $url  = $this->getUrl('jirafe_analytics/adminhtml_historical/check');
+        $url  = $this->getUrl('jirafe_analytics/adminhtml_historical/check', array('website_code' => $website_code));
 
         $html = $this->getLayout()->createBlock('adminhtml/widget_button')
                     ->setType('button')

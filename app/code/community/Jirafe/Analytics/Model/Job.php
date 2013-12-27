@@ -20,13 +20,19 @@ class Jirafe_Analytics_Model_Job extends Jowens_JobQueue_Model_Job_Abstract
     {
         try
         {
-            // Historial
+            // Get the website and the remaining stores
+            $defaultStoreId = $this->getStoreId();
+            $websiteId = Mage::getModel('core/store')->load($defaultStoreId)->getWebsiteId();
+            $storeIds = Mage::getModel('core/website')->load($websiteId)->getStoreIds();
+
+            // Historical
             $data = array(
                 'max_execution_time' => '1800',
                 'memory_limit' => '2048M',
-                'proc_nice' => '16'
+                'proc_nice' => '16',
+                'store_ids' => $storeIds,
+                'website_id' => $websiteId
             );
-                //'element' => 'order'
 
             // Convert
             if ( Mage::getModel('jirafe_analytics/data')->convertHistoricalData( $data ) ) {
@@ -39,7 +45,7 @@ class Jirafe_Analytics_Model_Job extends Jowens_JobQueue_Model_Job_Abstract
                     // Export to Jirafe event-api
                     if ( Mage::getModel('jirafe_analytics/batch')->process( $data, true ) ) {
                         Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Job::perform()', 'Finished sending the events.  Process Complete.', null );
-                        Mage::getModel('jirafe_analytics/curl')->updateHistoricalPushStatus('complete');
+                        Mage::getModel('jirafe_analytics/curl')->updateHistoricalPushStatus($websiteId, 'complete');
                     }
                 }
             }

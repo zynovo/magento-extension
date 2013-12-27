@@ -81,16 +81,14 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
         }
     }
 
-    public function getHistoricalPushStatus()
+    public function getHistoricalPushStatus($websiteId)
     {
 
         // Check the auth server to see if the site is able to push historical data
-        $currentStoreId = Mage::app()->getStore()->getId();
-
-        $authenticationUrl = $this->authenticationUrl . 'accounts/historical/status/' . $this->_getSiteId( $currentStoreId ) . '/';
+        $authenticationUrl = $this->authenticationUrl . 'accounts/historical/status/' . $this->_getSiteId( $websiteId ) . '/';
 
         Mage::helper('jirafe_analytics')->logServerLoad('Jirafe_Analytics_Model_Curl::checkHistoricalPush');
-        $header = array('Authorization: Bearer ' . $this->_getAccessToken( $currentStoreId ) );
+        $header = array('Authorization: Bearer ' . $this->_getAccessToken( $websiteId ) );
 
         $thread = curl_init();
         curl_setopt( $thread, CURLOPT_URL, $authenticationUrl );
@@ -120,16 +118,13 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
         return $resource;
     }
 
-    public function updateHistoricalPushStatus($status)
+    public function updateHistoricalPushStatus($websiteId, $status)
     {
 
-        // Check the auth server to see if the site is able to push historical data
-        $currentStoreId = Mage::app()->getStore()->getId();
-
-        $authenticationUrl = $this->authenticationUrl . 'accounts/historical/status/' . $this->_getSiteId( $currentStoreId ) . '/update/';
+        $authenticationUrl = $this->authenticationUrl . 'accounts/historical/status/' . $this->_getSiteId( $websiteId ) . '/update/';
 
         Mage::helper('jirafe_analytics')->logServerLoad('Jirafe_Analytics_Model_Curl::updateHistoricalPush');
-        $header = array('Authorization: Bearer ' . $this->_getAccessToken( $currentStoreId ) );
+        $header = array('Authorization: Bearer ' . $this->_getAccessToken( $websiteId ) );
 
         $req = array('historical_status' => $status);
         $json = json_encode($req);
@@ -233,17 +228,19 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
                             $count = 1;
                         }
 
+                        $websiteId = Mage::getModel('core/store')->load($row['store_id'])->getWebsiteId();
+
                         $item = array(
                             'batch_id' => $row['id'],
-                            'url' => $this->eventApiUrl . $this->_getSiteId( $row['store_id'] ) . '/batch',
-                            'token' => $this->_getAccessToken( $row['store_id'] ),
+                            'url' => $this->eventApiUrl . $this->_getSiteId( $websiteId ) . '/batch',
+                            'token' => $this->_getAccessToken( $websiteId ),
                             'json' =>  $row['json'] );
 
                         if ( $this->logging ) {
                             Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'BATCH ID = ' . $item['batch_id'], null  );
                             Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'ACCESS TOKEN = ' . $item['token'], null  );
                             Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'EVENT API URL = ' . $item['url'], null  );
-                            Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'JSON = ' . $item['json'], null  );
+                            //Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'JSON = ' . $item['json'], null  );
                         }
 
                         $threadBatch[] = $item;
@@ -271,18 +268,20 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
 
                     foreach($data as $row) {
 
-                        if ( Mage::getStoreConfig('jirafe_analytics/general/enabled', $row['store_id'] ) ) {
+                        $websiteId = Mage::getModel('core/store')->load($row['store_id'])->getWebsiteId();
+
+                        if ( $this->_isEnabled( $websiteId ) ) {
                             $item = array(
                                 'batch_id' => $row['id'],
-                                'url' => $this->eventApiUrl . $this->_getSiteId( $row['store_id'] ) . '/batch',
-                                'token' => $this->_getAccessToken( $row['store_id'] ),
+                                'url' => $this->eventApiUrl . $this->_getSiteId( $websiteId ) . '/batch',
+                                'token' => $this->_getAccessToken( $websiteId ),
                                 'json' =>  $row['json'] );
 
                             if ( $this->logging ) {
                                Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'BATCH ID = ' . $item['batch_id'], null  );
                                Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'ACCESS TOKEN = ' . $item['token'], null  );
                                Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'EVENT API URL = ' . $item['url'], null  );
-                               Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'JSON = ' . $item['json'], null  );
+                               //Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'JSON = ' . $item['json'], null  );
                             }
 
                             $resource[] = $this->_processSingle( $item );
@@ -523,14 +522,15 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
      * @return int
      * @throws Exception if unable to determine site id
      */
-    protected function _getSiteId( $storeId = null )
+    protected function _getSiteId( $websiteId = null )
     {
         /**
          * @var int $siteId    Jirafe SiteId
          */
 
         try {
-            $siteId = Mage::getStoreConfig( 'jirafe_analytics/general/site_id', $storeId );
+            //$siteId = Mage::getStoreConfig( 'jirafe_analytics/general/site_id', $storeId );
+            $siteId = Mage::app()->getWebsite($websiteId)->getConfig('jirafe_analytics/general/site_id');
             if (!is_numeric($siteId)) {
                 $siteId = 0;
             }
@@ -548,14 +548,25 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
      * @return string
      * @throws Exception if unable to return access token
      */
-    protected function _getAccessToken( $storeId = null )
+    protected function _getAccessToken( $websiteId = null )
     {
         try {
-            return Mage::getStoreConfig( 'jirafe_analytics/general/access_token', $storeId );
+            return Mage::app()->getWebsite($websiteId)->getConfig('jirafe_analytics/general/access_token');
         } catch (Exception $e) {
             Mage::logException($e);
             return false;
         }
     }
+
+    protected function _isEnabled( $websiteId = null )
+    {
+        try {
+            return Mage::app()->getWebsite($websiteId)->getConfig('jirafe_analytics/general/enabled');
+        } catch (Exception $e) {
+            Mage::logException($e);
+            return false;
+        }
+    }
+
 
 }
