@@ -296,7 +296,7 @@
     <default>
         <jirafe_analytics>
             <general>
-                <enabled>1</enabled>
+                <enabled>0</enabled>
                 <site_id></site_id>
                 <client_id></client_id>
                 <client_secret></client_secret>
