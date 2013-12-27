@@ -19,22 +19,22 @@ class Jirafe_Analytics_Model_Employee extends Jirafe_Analytics_Model_Abstract
      * @param string                 $userId
      * @return mixed
      */
-    
+
     public function getArray( $user = null, $userId = null )
     {
         try {
-            
+
             if ( $userId && !$user ) {
                 $user = Mage::getModel('admin/user')->load( $userId );
             }
-            
+
             if ( $user ) {
                 /**
                  * Get field map array
                  */
-                
+
                 $fieldMap = $this->_getFieldMap( 'employee', $user->getData() );
-                
+
                 return array(
                     $fieldMap['id']['api'] => $fieldMap['id']['magento'],
                     $fieldMap['active_flag']['api'] => $fieldMap['active_flag']['magento'] ,
@@ -52,15 +52,15 @@ class Jirafe_Analytics_Model_Employee extends Jirafe_Analytics_Model_Abstract
             return false;
         }
     }
-    
+
      /**
      * Convert employee array into JSON object
-     * 
+     *
      * @param string $user
      * @param string $userId
      * @return mixed
      */
-    
+
     public function getJson( $user = null, $userId = null )
     {
         if ($userId || $user) {
@@ -68,28 +68,36 @@ class Jirafe_Analytics_Model_Employee extends Jirafe_Analytics_Model_Abstract
         } else {
             return false;
         }
-        
+
     }
-    
+
     /**
      * Create array of employee historical data
      *
      * @param string $filter
      * @return array
      */
-    
+
     public function getHistoricalData( $filter = null )
     {
         try {
-         
+
             $lastId = isset($filter['last_id']) ? (is_numeric($filter['last_id']) ?  $filter['last_id'] : null): null;
             $startDate = isset($filter['start_date']) ? $filter['start_date'] : null;
             $endDate = isset($filter['end_date']) ? $filter['end_date'] : null;
-            
+            $storeIds = isset($filter['store_ids']) ? $filter['store_ids'] : null;
+
+            // Use the default store id
+            $storeId = Mage_Catalog_Model_Abstract::DEFAULT_STORE_ID;
+            if($storeIds)
+            {
+                $storeId = reset($storeIds);
+            }
+
             $data = array();
-            
+
             $employees = Mage::getModel('admin/user')->getCollection();
-            
+
             if ( $lastId ) {
                 $where = "user_id <= $lastId";
             } else if ( $startDate && $endDate) {
@@ -99,15 +107,15 @@ class Jirafe_Analytics_Model_Employee extends Jirafe_Analytics_Model_Abstract
             } else if ( $endDate ) {
                 $employees->getSelect()->where("created <= '$endDate'");
             }
-            
+
             foreach($employees as $employee) {
                  $data[] = array(
                     'type_id' => Jirafe_Analytics_Model_Data_Type::EMPLOYEE,
-                    'store_id' => Mage_Catalog_Model_Abstract::DEFAULT_STORE_ID,
+                    'store_id' => $storeId,
                     'json' => $this->getJson( $employee, null )
                 );
             }
-            
+
             return $data;
         } catch (Exception $e) {
             Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Employee::getHistoricalData()', $e->getMessage(), $e);

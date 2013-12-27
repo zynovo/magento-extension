@@ -360,6 +360,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
             $siteId = isset($params['site_id'] ) ? trim( $params['site_id'] ) : null;
             $useLastIds = isset($params['use_last_ids']) ? (boolean) $params['use_last_ids'] : false;
             $storeIds = isset($params['store_ids']) ? $params['store_ids'] : null;
+            $websiteId = isset($params['website_id']) ? $params['website_id'] : null;
 
             if ( $useLastIds ) {
                 if ( $success = Mage::getModel('jirafe_analytics/data_type')->captureLastIds() ) {
@@ -378,7 +379,8 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
             $filters = array('start_date'=> $startDate,
                              'end_date' => $endDate,
                              'last_id' => null,
-                             'store_ids' => $storeIds);
+                             'store_ids' => $storeIds,
+                             'website_id' => $websiteId);
 
             if ( $element === 'cart' || $all ) {
                 if ( $useLastIds ) {

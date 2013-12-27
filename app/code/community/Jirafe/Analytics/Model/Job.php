@@ -30,7 +30,8 @@ class Jirafe_Analytics_Model_Job extends Jowens_JobQueue_Model_Job_Abstract
                 'max_execution_time' => '1800',
                 'memory_limit' => '2048M',
                 'proc_nice' => '16',
-                'store_ids' => $storeIds
+                'store_ids' => $storeIds,
+                'website_id' => $websiteId
             );
 
             // Convert
@@ -44,7 +45,7 @@ class Jirafe_Analytics_Model_Job extends Jowens_JobQueue_Model_Job_Abstract
                     // Export to Jirafe event-api
                     if ( Mage::getModel('jirafe_analytics/batch')->process( $data, true ) ) {
                         Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Job::perform()', 'Finished sending the events.  Process Complete.', null );
-                        Mage::getModel('jirafe_analytics/curl')->updateHistoricalPushStatus('complete');
+                        Mage::getModel('jirafe_analytics/curl')->updateHistoricalPushStatus($websiteId, 'complete');
                     }
                 }
             }
