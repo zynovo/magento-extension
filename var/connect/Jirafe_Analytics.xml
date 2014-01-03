@@ -1,5 +1,5 @@
 <_>
-   <form_key>CKAdLWocneLoB5DY</form_key>
+   <form_key>kSuHiTNsL5qmaWtI</form_key>
    <name>Jirafe_Analytics</name>
    <channel>community</channel>
    <version_ids>
@@ -10,7 +10,7 @@
 </description>
    <license>commercial</license>
    <license_uri/>
-   <version>1.0.2</version>
+   <version>1.0.10</version>
    <stability>beta</stability>
    <notes>TBD</notes>
    <authors>
@@ -28,7 +28,7 @@
       </email>
    </authors>
    <depends_php_min>5.3.0</depends_php_min>
-   <depends_php_max>5.3.27</depends_php_max>
+   <depends_php_max>6.0.0</depends_php_max>
    <depends>
       <package>
          <name>
@@ -48,8 +48,8 @@
             <max/>
          </max>
          <files>
-            <files>                                </files>
-            <files>                                </files>
+            <files>                                                 </files>
+            <files>                                                 </files>
          </files>
       </package>
       <extension>
