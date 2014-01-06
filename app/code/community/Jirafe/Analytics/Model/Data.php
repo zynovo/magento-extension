@@ -382,20 +382,6 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                              'store_ids' => $storeIds,
                              'website_id' => $websiteId);
 
-            if ( $element === 'cart' || $all ) {
-                if ( $useLastIds ) {
-                    $filters['last_id'] = $this->_getLastId( 'cart');
-                }
-
-                Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Data::convertHistoricalData()', 'Retrieving carts', null );
-
-                if ( $carts =  Mage::getModel('jirafe_analytics/cart')->getHistoricalData( $filters ) ) {
-                    Mage::helper('jirafe_analytics')->log( 'DEBUG', 'Jirafe_Analytics_Model_Data::convertHistoricalData()', 'Converted ' . count($carts) . ' historical carts to events', null );
-                    $hasHistory = true;
-                    $this->saveHistoricalData($carts, 'cart');
-                }
-            }
-
             if ( $element === 'category' || $all ) {
                 if ( $useLastIds ) {
                     $filters['last_id'] = $this->_getLastId( 'category');
