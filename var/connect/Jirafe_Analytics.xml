@@ -1,5 +1,5 @@
 <_>
-   <form_key>kSuHiTNsL5qmaWtI</form_key>
+   <form_key>zQGETbgmIOBa6omB</form_key>
    <name>Jirafe_Analytics</name>
    <channel>community</channel>
    <version_ids>
@@ -10,7 +10,7 @@
 </description>
    <license>commercial</license>
    <license_uri/>
-   <version>1.0.10</version>
+   <version>1.0.11</version>
    <stability>beta</stability>
    <notes>TBD</notes>
    <authors>
@@ -48,8 +48,8 @@
             <max/>
          </max>
          <files>
-            <files>                                                 </files>
-            <files>                                                 </files>
+            <files>                                                   </files>
+            <files>                                                   </files>
          </files>
       </package>
       <extension>
@@ -129,4 +129,8 @@
          <ignore/>
       </ignore>
    </contents>
+   <page>1</page>
+   <limit>200</limit>
+   <folder/>
+   <package/>
 </_>
