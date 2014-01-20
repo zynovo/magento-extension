@@ -267,14 +267,6 @@
     </adminhtml>
      <crontab>
         <jobs>
-            <jirafe_analytics_process_batch>
-                <schedule>
-                    <cron_expr>*/5 * * * *</cron_expr>
-                </schedule>
-                <run>
-                    <model>jirafe_analytics/batch::process</model>
-                </run>
-            </jirafe_analytics_process_batch>
             <jirafe_analytics_heartbeat>
                 <schedule>
                     <cron_expr>*/30 * * * *</cron_expr>
@@ -283,6 +275,30 @@
                     <model>jirafe_analytics/heartbeat::send</model>
                 </run>
             </jirafe_analytics_heartbeat>
+            <jirafe_analytics_cleanup>
+                <schedule>
+                    <cron_expr>0 0 * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>jirafe_analytics/purge::purge</model>
+                </run>
+            </jirafe_analytics_cleanup>
+            <jirafe_analytics_batch_push>
+                <schedule>
+                    <cron_expr>2,12,22,32,42,52  * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>jirafe_analytics/batchPush::push</model>
+                </run>
+            </jirafe_analytics_batch_push>
+            <jirafe_analytics_batch_create>
+                <schedule>
+                    <cron_expr>7,17,27,37,47,57 * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>jirafe_analytics/historicalBatchCreate::create</model>
+                </run>
+            </jirafe_analytics_batch_create>
             <jirafe_analytics_installer>
                 <schedule>
                     <cron_expr>*/5 * * * *</cron_expr>
