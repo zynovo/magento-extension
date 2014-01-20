@@ -150,21 +150,20 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
      * @param Varien_Event_Observer $observer
      * @return boolean
      */
-
-    public function customerSave( Varien_Event_Observer $observer )
+    public function customerSave(Varien_Event_Observer $observer)
     {
         try {
-            if ( Mage::getStoreConfig('jirafe_analytics/general/enabled', $observer->getCustomer()->getStoreId() ) ) {
-                if ( Mage::getSingleton('core/session')->getJirafeProcessCustomer() ) {
+            if (Mage::getStoreConfig('jirafe_analytics/general/enabled', $observer->getCustomer()->getStoreId())) {
+                if (Mage::getSingleton('core/session')->getJirafeProcessCustomer()) {
                     $isVisit = Mage::getSingleton('core/session')->getJirafeIsVisit();
                     $data = Mage::getModel('jirafe_analytics/data');
-                    $data->setTypeId( Jirafe_Analytics_Model_Data_Type::CUSTOMER );
-                    $data->setJson( Mage::getModel('jirafe_analytics/customer')->getJson( $observer->getCustomer(), $isVisit ) );
-                    $data->setStoreId( $observer->getCustomer()->getStoreId() );
-                    $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
+                    $data->setTypeId(Jirafe_Analytics_Model_Data_Type::CUSTOMER);
+                    $data->setJson(Mage::getModel('jirafe_analytics/customer')->getJson($observer->getCustomer(), $isVisit));
+                    $data->setWebsiteId( $this->_getWebsiteId($observer->getCustomer()->getStoreId() ));
+                    $data->setCapturedDt(Mage::helper('jirafe_analytics')->getCurrentDt());
                     $data->save();
-                    Mage::getSingleton('core/session')->setJirafeProcessCustomer( false );
-                    Mage::getSingleton('core/session')->setJirafeIsVisit( false);
+                    Mage::getSingleton('core/session')->setJirafeProcessCustomer(false);
+                    Mage::getSingleton('core/session')->setJirafeIsVisit(false);
                     return true;
                 } else {
                     return false;
@@ -173,7 +172,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 return false;
             }
         } catch (Exception $e) {
-             Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
             return false;
         }
     }
@@ -184,16 +183,15 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
      * @param Varien_Event_Observer $observer
      * @return boolean
      */
-
-    public function adminCustomerSave( Varien_Event_Observer $observer )
+    public function adminCustomerSave(Varien_Event_Observer $observer)
     {
         try {
-            Mage::getSingleton('core/session')->setJirafeProcessCustomer( true );
-            Mage::getSingleton('core/session')->setJirafeIsVisit( false );
-            $this->customerSave( $observer );
+            Mage::getSingleton('core/session')->setJirafeProcessCustomer(true);
+            Mage::getSingleton('core/session')->setJirafeIsVisit(false);
+            $this->customerSave($observer);
             return true;
         } catch (Exception $e) {
-             Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
             return false;
         }
     }
@@ -204,15 +202,14 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
      * @param Varien_Event_Observer $observer
      * @return boolean
      */
-
-    public function customerLoad( Varien_Event_Observer $observer )
+    public function customerLoad(Varien_Event_Observer $observer)
     {
         try {
-            Mage::getSingleton('core/session')->setJirafeProcessCustomer( true );
-            Mage::getSingleton('core/session')->setJirafeIsVisit( true );
+            Mage::getSingleton('core/session')->setJirafeProcessCustomer(true);
+            Mage::getSingleton('core/session')->setJirafeIsVisit(true);
             return true;
         } catch (Exception $e) {
-             Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
             return false;
         }
     }
@@ -223,19 +220,18 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
      * @param Varien_Event_Observer $observer
      * @return boolean
      */
-
-    public function customerRegister( Varien_Event_Observer $observer )
+    public function customerRegister(Varien_Event_Observer $observer)
     {
         try {
-            if ( Mage::getStoreConfig('jirafe_analytics/general/enabled', $observer->getCustomer()->getStoreId() ) ) {
-                Mage::getSingleton('core/session')->setJirafeProcessCustomer( true );
-                Mage::getSingleton('core/session')->setJirafeIsVisit( true );
+            if (Mage::getStoreConfig('jirafe_analytics/general/enabled', $observer->getCustomer()->getStoreId())) {
+                Mage::getSingleton('core/session')->setJirafeProcessCustomer(true);
+                Mage::getSingleton('core/session')->setJirafeIsVisit(true);
                 return true;
             } else {
                 return false;
             }
         } catch (Exception $e) {
-             Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
             return false;
         }
     }
