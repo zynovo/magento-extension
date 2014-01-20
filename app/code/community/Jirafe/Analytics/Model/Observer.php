@@ -8,9 +8,13 @@
  * @copyright Copyright (c) 2013 Jirafe, Inc. (http://jirafe.com/)
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
-
 class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
 {
+
+    private function _getWebsiteId($storeId)
+    {
+        return Mage::getModel('core/store')->load($storeId)->getWebsiteId();
+    }
 
     /**
      * Capture cart save event
@@ -18,21 +22,20 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
      * @param Varien_Event_Observer $observer
      * @return boolean
      */
-
-    public function cartSave( Varien_Event_Observer $observer )
+    public function cartSave(Varien_Event_Observer $observer)
     {
         try {
-            if ( Mage::getStoreConfig('jirafe_analytics/general/enabled', $observer->getCart()->getQuote()->getStoreId() ) ) {
-                if ( Mage::getSingleton('core/session')->getJirafeProcessCart() ) {
+            if (Mage::getStoreConfig('jirafe_analytics/general/enabled', $observer->getCart()->getQuote()->getStoreId())) {
+                if (Mage::getSingleton('core/session')->getJirafeProcessCart()) {
                     $quote = $observer->getCart()->getQuote();
-                    $json = Mage::getModel('jirafe_analytics/cart')->getJson( $quote, true );
+                    $json = Mage::getModel('jirafe_analytics/cart')->getJson($quote, true);
                     $data = Mage::getModel('jirafe_analytics/data');
-                    $data->setTypeId( Jirafe_Analytics_Model_Data_Type::CART );
-                    $data->setJson( $json );
-                    $data->setStoreId( $quote->getStoreId() );
-                    $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
+                    $data->setTypeId(Jirafe_Analytics_Model_Data_Type::CART);
+                    $data->setJson($json);
+                    $data->setWebsiteId($this->_getWebsiteId($quote->getStoreId()));
+                    $data->setCapturedDt(Mage::helper('jirafe_analytics')->getCurrentDt());
                     $data->save();
-                    Mage::getSingleton('core/session')->setJirafeProcessCart( false );
+                    Mage::getSingleton('core/session')->setJirafeProcessCart(false);
                     return true;
                 } else {
                     return false;
@@ -40,10 +43,9 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             } else {
                 return false;
             }
-
         } catch (Exception $e) {
-              Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
-             return false;
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
+            return false;
         }
     }
 
@@ -53,14 +55,13 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
      * @param Varien_Event_Observer $observer
      * @return boolean
      */
-
-    public function cartUpdateItem( Varien_Event_Observer $observer )
+    public function cartUpdateItem(Varien_Event_Observer $observer)
     {
         try {
-            Mage::getSingleton('core/session')->setJirafeProcessCart( true );
+            Mage::getSingleton('core/session')->setJirafeProcessCart(true);
             return true;
         } catch (Exception $e) {
-             Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
             return false;
         }
     }
@@ -71,14 +72,13 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
      * @param Varien_Event_Observer $observer
      * @return boolean
      */
-
-    public function cartRemoveItem( Varien_Event_Observer $observer )
+    public function cartRemoveItem(Varien_Event_Observer $observer)
     {
         try {
-            Mage::getSingleton('core/session')->setJirafeProcessCart( true );
+            Mage::getSingleton('core/session')->setJirafeProcessCart(true);
             return true;
         } catch (Exception $e) {
-             Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
             return false;
         }
 
@@ -90,8 +90,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
      * @param Varien_Event_Observer $observer
      * @return mixed
      */
-
-    public function categorySave( Varien_Event_Observer $observer )
+    public function categorySave(Varien_Event_Observer $observer)
     {
         $stores = $observer->getCategory()->getStoreIds();
         $result = true;
