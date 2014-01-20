@@ -383,59 +383,58 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
      * @param Varien_Event_Observer $observer
      * @return boolean
      */
-
-    public function productSaveAfter( Varien_Event_Observer $observer )
+    public function productSaveAfter(Varien_Event_Observer $observer)
     {
-         try {
-             $product = $observer->getProduct();
-             $this->_productSave( $product );
+        try {
+            $product = $observer->getProduct();
+            $this->_productSave($product);
 
-             if ($product->getTypeId() === 'configurable') {
+            if ($product->getTypeId() === 'configurable') {
 
-                 /**
-                  * Attach or detach simple variants from configurable parents
-                  */
-                 $originalIds = Mage::getModel('catalog/product_type_configurable')->getUsedProductIds( $product );
-                 $newIds = array_keys( $product->getConfigurableProductsData() );
+                /**
+                 * Attach or detach simple variants from configurable parents
+                 */
+                $originalIds = Mage::getModel('catalog/product_type_configurable')->getUsedProductIds($product);
+                $newIds = array_keys($product->getConfigurableProductsData());
 
-                 /**
-                  * Get product attributes from parent configurable
-                  */
-                 if ( $options = $product->getTypeInstance(true)->getConfigurableAttributesAsArray($product) ) {
-                     $attributes = serialize($options);
-                 } else {
-                     $attributes = null;
-                 }
+                /**
+                 * Get product attributes from parent configurable
+                 */
+                if ($options = $product->getTypeInstance(true)->getConfigurableAttributesAsArray($product)) {
+                    $attributes = serialize($options);
+                } else {
+                    $attributes = null;
+                }
 
-                 /**
-                  * Check for removed variants
-                  */
-                 foreach($originalIds as $id) {
-                     if ( !in_array( intval($id),$newIds ) ) {
-                         if ( $variant = Mage::getModel('catalog/product')->load( intval($id) ) ) {
-                             $this->_productSave( $variant, $attributes );
-                         }
-                     }
-                 }
+                /**
+                 * Check for removed variants
+                 */
+                foreach($originalIds as $id) {
+                    if (!in_array(intval($id),$newIds)) {
+                        if ($variant = Mage::getModel('catalog/product')->load(intval($id))) {
+                            $this->_productSave($variant, $attributes);
+                        }
+                    }
+                }
 
-                 /**
-                  * Check for added variants
-                  */
-                 foreach($newIds as $id) {
-                     if ( !in_array( strval($id),$originalIds ) ) {
-                         if ( $variant = Mage::getModel('catalog/product')->load( $id ) ) {
-                          Mage::log('add new variant!',null,'variant.log');
-                             $this->_productSave( $variant );
-                         }
-                     }
-                 }
-             }
+                /**
+                 * Check for added variants
+                 */
+                foreach($newIds as $id) {
+                    if (!in_array(strval($id),$originalIds)) {
+                        if ($variant = Mage::getModel('catalog/product')->load($id)) {
+                            Mage::log('add new variant!',null,'variant.log');
+                            $this->_productSave($variant);
+                        }
+                    }
+                }
+            }
 
-             return true;
-         } catch (Exception $e) {
-              Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::productSaveAfter()', $e->getMessage(), $e);
-             return false;
-         }
+            return true;
+        } catch (Exception $e) {
+            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::productSaveAfter()', $e->getMessage(), $e);
+            return false;
+        }
     }
 
     /**
@@ -445,21 +444,18 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
      * @param string $attributes
      * @return boolean
      */
-
-    protected function _productSave( Mage_Catalog_Model_Product $product, $attributes = null )
+    protected function _productSave(Mage_Catalog_Model_Product $product, $attributes = null)
     {
-        $stores = $product->getStoreIds();
+        $websiteIds = $product->getWebsiteIds();
         $result = true;
 
-        foreach($stores as $store)
-        {
-
+        foreach ($websiteIds as $websiteId) {
             try {
                 $data = Mage::getModel('jirafe_analytics/data');
-                $data->setTypeId( Jirafe_Analytics_Model_Data_Type::PRODUCT );
-                $data->setJson( Mage::getModel('jirafe_analytics/product')->getJson( null, null, $product, $attributes ) );
-                $data->setStoreId( $store );
-                $data->setCapturedDt( Mage::helper('jirafe_analytics')->getCurrentDt() );
+                $data->setTypeId(Jirafe_Analytics_Model_Data_Type::PRODUCT);
+                $data->setJson(Mage::getModel('jirafe_analytics/product')->getJson($product, $attributes));
+                $data->setWebsiteId($websiteId);
+                $data->setCapturedDt(Mage::helper('jirafe_analytics')->getCurrentDt());
                 $data->save();
             } catch (Exception $e) {
                 Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_productSave()', $e->getMessage(), $e);

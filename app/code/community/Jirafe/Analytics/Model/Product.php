@@ -15,8 +15,6 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
 
     protected $_product = null;
 
-    protected $_storeId =null;
-
     protected $_parent = null;
 
     protected $_parentTypeId = null;
@@ -32,16 +30,18 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
     /**
      * Get JSON version of product object
      *
-     * @param string $productId
-     * @param string $storeId
      * @param Mage_Catalog_Model_Product $product
      * @param boolean $itemAttributes
      * @return string
      */
-     public function getJson( $productId = null, $storeId = null, $product = null, $itemAttributes = null )
+     public function getJson($product = null, $itemAttributes = null)
      {
-         if ( ( is_numeric($productId) && is_numeric($storeId) ) || $product) {
-             return str_replace('\/', '/', json_encode( $this->getArray( $productId, $storeId, $product, $itemAttributes ) ) );
+        if (is_array($product)) {
+            $product = Mage::getModel('catalog/product')->load($product['entity_id']);
+        }
+
+         if ($product) {
+             return str_replace('\/', '/', json_encode($this->getArray($product, $itemAttributes)));
          } else {
              return null;
          }
@@ -50,42 +50,22 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
     /**
      * Create product array of data required by Jirafe API
      *
-     * @param string $productId
-     * @param string $storeId
      * @param Mage_Catalog_Core_Product $product
      * @param boolean $itemAttributes
      * @return array
      */
-
-    public function getArray( $productId = null, $storeId = null, $product = null, $itemAttributes = null  )
+    public function getArray($product=null, $itemAttributes=null)
     {
         try {
-
-            /**
-             * Initialize object
-            */
-            $this->_product = null;
-            $this->_storeId =null;
             $this->_parent = null;
             $this->_parentTypeId = null;
             $this->_baseProducts = null;
             $this->_attributes = null;
             $this->_typeId = null;
             $this->_fieldMap = null;
+            $this->_product = $product;
 
-            if ( $productId ) {
-                $this->_product = Mage::getModel('catalog/product')->load( $productId );
-            } else {
-                $this->_product = $product;
-            }
-
-            if ( $this->_product ) {
-
-                if ( $storeId ) {
-                    $this->_storeId = $storeId;
-                } else {
-                    $this->_storeId = $this->_product->getStoreId();
-                }
+            if ($this->_product) {
 
                 $this->_typeId =  $this->_product->getTypeId();
 
@@ -112,7 +92,6 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
                     'is_product' => $this->_isProduct(),
                     'is_sku' => $this->_isSku(),
                     'is_bundle' => ($this->_typeId == 'bundle' ) ? true : false,
-                    'catalog' => $this->_getCatalog( $this->_storeId ),
                     $this->_fieldMap['name']['api'] => $this->_fieldMap['name']['magento'],
                     $this->_fieldMap['code']['api'] => $this->_fieldMap['code']['magento'],
                  );
@@ -242,7 +221,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
 
              foreach ($this->_product->getCategoryIds() as $catId) {
                  if ( $category = Mage::getModel('catalog/category')->load( $catId ) ) {
-                     $categories[] = Mage::getModel('jirafe_analytics/category')->getArray( $category );
+                     $categories[] = Mage::getModel('jirafe_analytics/category')->getArray($category);
                  }
              }
 
