@@ -12,7 +12,7 @@ class Jirafe_Analytics_Model_Base extends Mage_Core_Model_Abstract
     protected function getDuration()
     {
         $duration = Mage::getStoreConfig('jirafe_analytics/historicalpull/duration');
-        return duration;
+        return $duration;
     }
 
     protected function resetTimer($stop)

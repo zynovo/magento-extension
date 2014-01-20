@@ -98,7 +98,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
         foreach($stores as $store)
         {
             try {
-                $websiteId = $this->_getWebsiteId($store)
+                $websiteId = $this->_getWebsiteId($store);
                 $data = Mage::getModel('jirafe_analytics/data');
                 $data->setTypeId(Jirafe_Analytics_Model_Data_Type::CATEGORY);
                 $data->setJson(Mage::getModel('jirafe_analytics/category')->getJson($observer->getCategory()));
@@ -128,7 +128,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
         foreach($stores as $store)
         {
             try {
-                $websiteId = $this->_getWebsiteId($store)
+                $websiteId = $this->_getWebsiteId($store);
                 $data = Mage::getModel('jirafe_analytics/data');
                 $data->setTypeId(Jirafe_Analytics_Model_Data_Type::CATEGORY);
                 $data->setJson(Mage::getModel('jirafe_analytics/category')->getJson($observer->getCategory()));

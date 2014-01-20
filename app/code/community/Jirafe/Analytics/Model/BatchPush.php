@@ -9,7 +9,7 @@
  * @author    John "The Man" Connor (john.connor@jirafe.com)
  */
 
-class Jirafe_Analytics_Model_CurrentBatch extends Jirafe_Analytics_Model_Base
+class Jirafe_Analytics_Model_BatchPush extends Jirafe_Analytics_Model_Base
 {
     protected function makeCallback()
     {
@@ -30,20 +30,21 @@ class Jirafe_Analytics_Model_CurrentBatch extends Jirafe_Analytics_Model_Base
     {
         try
         {
-            Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, 'Starting Current Batch Job.', null);
+            Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, 'Starting Batch Job.', null);
             $callback = $this->makeCallback();
             $batchData = Mage::getModel('jirafe_analytics/data');
 
             // Get historical data for half of the alloted time.
-            $this.resetTimer($this->start + ($this->getDuration() / 2));
+            $this->resetTimer($this->start + ($this->getDuration() / 2));
             $batchData->convertEventDataToBatchData(null, true, $callback);
 
             // Assume the worst, and that some some operation caused the complete time to be up.
             if (!$this->isTimeUp()) {
                 // Run current for the remaining time.
-                $this.resetTimer(($this->start + $this->duration) - time());
+                $this->resetTimer(($this->start + $this->duration) - time());
                 $batchData->convertEventDataToBatchData(null, false, $callback);
             }
+            Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, 'Stoping Batch Job.', null);
         }
         catch (Exception $e)
         {

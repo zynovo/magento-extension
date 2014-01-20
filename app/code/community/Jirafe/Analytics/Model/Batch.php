@@ -125,5 +125,15 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
         }
         return $this;
     }
+
+    public function getWebsiteId()
+    {
+        return $this->getStoreId();
+    }
+
+    public function setWebsiteId($websiteId)
+    {
+        return $this->setStoreId($websiteId);
+    }
 }
 

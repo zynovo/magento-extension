@@ -33,7 +33,7 @@ class Jirafe_Analytics_Model_HistoricalBatchCreate extends Jirafe_Analytics_Mode
 
                 while (!$this->isTimeUp()) {
                     $keepWorking = $history->convertHistoricalData(Jirafe_Analytics_Model_HistoricalBatchCreate::$MODELS, $websiteId, $data);
-                    Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, 'Finished converting the historical data');
+                    Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, 'Finished converting the historical data.');
                     if(!$keepWorking) {
                         break;
                     }
@@ -44,6 +44,7 @@ class Jirafe_Analytics_Model_HistoricalBatchCreate extends Jirafe_Analytics_Mode
                     Mage::getModel('jirafe_analytics/curl')->updateHistoricalPushStatus($websiteId, 'complete');
                 }
             }
+            Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, 'Stoping Historical Create Batch Job.');
         }
         catch (Exception $e)
         {
