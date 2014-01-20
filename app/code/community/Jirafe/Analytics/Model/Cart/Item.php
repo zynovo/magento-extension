@@ -18,18 +18,18 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
      * @param  string $storeId
      * @return mixed
      */
-    
+
     public function getItems( $quoteId = null, $storeId = null )
     {
         try {
             if ($quoteId) {
-                
+
                 $columns = $this->_getAttributesToSelect( 'cart_item' );
                 $columns[] = 'product_id';
                 $columns[] = 'option.value as attributes';
                 $columns[] = 'IF(main_table.row_total > 0, main_table.row_total, parent.row_total) AS row_total';
                 $columns[] = 'IF(main_table.discount_amount > 0,main_table.discount_amount ,parent.discount_amount) AS discount_amount';
-                
+
                 $collection = Mage::getModel('sales/quote_item')
                     ->getCollection()
                     ->getSelect()
@@ -39,17 +39,17 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
                     ->columns( $columns)
                     ->where("main_table.quote_id = $quoteId AND main_table.product_type != 'configurable' AND (parent.product_type != 'bundle' OR parent.product_type is null)")
                     ->distinct(true);
-                    
+
                 $count = 1;
                 $data = array();
-                
+
                 foreach($collection->query() as $item) {
-                    
+
                     /**
                      * Get field map array
                      */
                     $fieldMap = $this->_getFieldMap( 'cart_item', $item );
-                    
+
                     $data[] = array(
                         $fieldMap['id']['api'] => $fieldMap['id']['magento'],
                         $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento'],
@@ -58,7 +58,7 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
                         'quantity' => intval( $item['qty'] ),
                         'price' => floatval( $item['row_total'] ),
                         'discount_price' => floatval( $item['discount_amount'] ),
-                        'product' => Mage::getModel('jirafe_analytics/product')->getArray( $item['product_id'], $storeId, null, $item['attributes'] )
+                        'product' => Mage::getModel('jirafe_analytics/product')->getArray(Mage::getModel('catalog/product')->load($item['product_id']), $item['attributes'])
                     );
                     $count++;
                 }
