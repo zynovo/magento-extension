@@ -19,20 +19,15 @@ class Jirafe_Analytics_Model_Employee extends Jirafe_Analytics_Model_Abstract im
      * @param string                 $userId
      * @return mixed
      */
-
-    public function getArray( $user = null, $userId = null )
+    public function getArray($user = null, $userId = null)
     {
         try {
 
-            if ( $userId && !$user ) {
+            if ($userId && !$user) {
                 $user = Mage::getModel('admin/user')->load( $userId );
             }
 
-            if ( $user ) {
-                /**
-                 * Get field map array
-                 */
-
+            if ($user) {
                 $fieldMap = $this->_getFieldMap( 'employee', $user->getData() );
 
                 return array(
@@ -61,10 +56,10 @@ class Jirafe_Analytics_Model_Employee extends Jirafe_Analytics_Model_Abstract im
      * @return mixed
      */
 
-    public function getJson( $user = null, $userId = null )
+    public function getJson($user = null, $userId = null)
     {
         if ($userId || $user) {
-            return json_encode( $this->getArray( $user, $userId ) );
+            return json_encode($this->getArray( $user, $userId));
         } else {
             return false;
         }
