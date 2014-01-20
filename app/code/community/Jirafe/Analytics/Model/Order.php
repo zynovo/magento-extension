@@ -18,54 +18,42 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract imple
      * @param  boolean $isEvent
      * @return mixed
      */
-
-    public function getArray( $order = null, $isEvent = true )
+    public function getArray($order = null, $isEvent = true)
     {
         try {
-            /**
-             * Get field map array
-             */
-
-            $fieldMap = $this->_getFieldMap( 'order', $order );
+            $fieldMap = $this->_getFieldMap('order', $order);
 
             $data = null;
-            if ($order['status'] == 'canceled' || $order['status'] == 'cancelled' ) {
-
+            if ($order['jirafe_status'] == 'cancelled') {
                 $data = array(
-                    $fieldMap['order_number']['api'] => $order['increment_id'],
                     'status' => 'cancelled',
+                    $fieldMap['order_number']['api'] => $order['increment_id'],
                     $fieldMap['cancel_date']['api'] => $this->_formatDate( $order['updated_at'] )
                 );
-
-            } else if ($isEvent ||
-                       $order['status'] == 'complete' ||
-                       $order['status'] == 'processing') {
-
-                $items = Mage::getModel('jirafe_analytics/order_item')->getItems( $order['entity_id'], $order['store_id'] );
-
-                $previousItems =  $isEvent ? $this->_getPreviousItems( $order['entity_id'] ) : null;
-
+            } else if ($isEvent || $order['status'] == 'complete' || $order['status'] == 'processing') {
+                $items = Mage::getModel('jirafe_analytics/order_item')->getItems($order['entity_id']);
+                $previousItems = $isEvent ? $this->_getPreviousItems($order['entity_id']) : null;
                 $data = array(
-                    $fieldMap['order_number']['api'] => $fieldMap['order_number']['magento'],
-                    $fieldMap['cart_id']['api'] => $fieldMap['cart_id']['magento'],
-                    'status' => $order['jirafe_status'],
-                    $fieldMap['order_date']['api'] => $fieldMap['order_date']['magento'],
-                    $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento'],
-                    $fieldMap['change_date']['api'] =>$fieldMap['change_date']['magento'],
-                    $fieldMap['subtotal']['api'] => $fieldMap['subtotal']['magento'],
-                    $fieldMap['total']['api'] => $fieldMap['total']['magento'],
-                    $fieldMap['total_tax']['api'] => $fieldMap['total_tax']['magento'],
-                    $fieldMap['total_shipping']['api'] => $fieldMap['total_shipping']['magento'],
-                    'total_payment_cost' => 0,
+                    $fieldMap['order_number']['api']    => $fieldMap['order_number']['magento'],
+                    $fieldMap['cart_id']['api']         => $fieldMap['cart_id']['magento'],
+                    $fieldMap['order_date']['api']      => $fieldMap['order_date']['magento'],
+                    $fieldMap['create_date']['api']     => $fieldMap['create_date']['magento'],
+                    $fieldMap['change_date']['api']     => $fieldMap['change_date']['magento'],
+                    $fieldMap['subtotal']['api']        => $fieldMap['subtotal']['magento'],
+                    $fieldMap['total']['api']           => $fieldMap['total']['magento'],
+                    $fieldMap['total_tax']['api']       => $fieldMap['total_tax']['magento'],
+                    $fieldMap['total_shipping']['api']  => $fieldMap['total_shipping']['magento'],
                     $fieldMap['total_discounts']['api'] => $fieldMap['total_discounts']['magento'],
-                    $fieldMap['currency']['api'] => $fieldMap['currency']['magento'],
-                    'items' => $items,
-                    'previous_items' => $previousItems ? $previousItems : array(),
-                    'customer' => $this->_getCustomer( $order )
+                    $fieldMap['currency']['api']        => $fieldMap['currency']['magento'],
+                    'items'              => $items,
+                    'status'             => $order['jirafe_status'],
+                    'customer'           => $this->_getCustomer($order),
+                    'previous_items'     => $previousItems ? $previousItems : array(),
+                    'total_payment_cost' => 0
                 );
 
-                Mage::getSingleton('core/session')->setJirafePrevOrderId( $order['entity_id'] );
-                Mage::getSingleton('core/session')->setJirafePrevOrderItems( $items );
+                Mage::getSingleton('core/session')->setJirafePrevOrderId($order['entity_id']);
+                Mage::getSingleton('core/session')->setJirafePrevOrderItems($items);
             }
             return $data;
 
@@ -81,7 +69,6 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract imple
      * @param int $quoteId
      * @return array
      */
-
     protected function _getPreviousItems ( $orderId = null )
     {
         try {
@@ -103,8 +90,7 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract imple
      * @param  boolean $isEvent
      * @return mixed
      */
-
-    public function getJson( $order = null, $isEvent = true )
+    public function getJson($order = null, $isEvent = true)
     {
         if ($order) {
             $array = $this->getArray( $order, $isEvent );
