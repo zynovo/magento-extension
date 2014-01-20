@@ -9,7 +9,7 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
+class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract implements Jirafe_Analytics_Model_Pagable
 {
 
 
@@ -112,106 +112,48 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract
         }
     }
 
+    public function getDataType() {
+        return Jirafe_Analytics_Model_Data_Type::CART;
+    }
+
     /**
      * Create array of cart historical data
      *
      * @param string $filter
-     * @return array
+     * @return Zend_Paginator
      */
-    public function getHistoricalData( $filter = null )
+    public function getPaginator($websiteId, $lastId = null)
     {
-        try {
+        $columns = $this->_getAttributesToSelect('cart');
+        $columns[] = 'store_id';
 
-            $lastId = isset($filter['last_id']) ? (is_numeric($filter['last_id']) ?  $filter['last_id'] : null): null;
-            $startDate = isset($filter['start_date']) ? $filter['start_date'] : null;
-            $endDate = isset($filter['end_date']) ? $filter['end_date'] : null;
-            $storeIds = isset($filter['store_ids']) ? $filter['store_ids'] : null;
+        /**
+         * After an quote is converted to an order, tax, shipping
+         * and discount values are added to quote. After these additions,
+         * the quote represents the cart object.
+         */
 
-            $columns = $this->_getAttributesToSelect( 'cart' );
-            $columns[] = 'store_id';
-
-            /**
-             * After an quote is converted to an order, tax, shipping
-             * and discount values are added to quote. After these additions,
-             * the quote represents the cart object.
-             */
-
-            if( ( $key = array_search('grand_total', $columns)) !== false ) {
-                unset($columns[$key]);
-            }
-
-            $columns[] = 'subtotal as grand_total';
-
-            $collection = Mage::getModel('sales/quote')
-                ->getCollection()
-                ->getSelect()
-                ->reset(Zend_Db_Select::COLUMNS)
-                ->columns( $columns );
-
-            if ( $lastId ) {
-                $where = "main_table.entity_id <= $lastId";
-            } else if ( $startDate && $endDate ) {
-                $where = "created_at BETWEEN '$startDate' AND '$endDate'";
-            } else if ( $startDate && !$endDate ){
-                $where = "created_at >= '$startDate'";
-            } else if ( !$startDate && $endDate ){
-                $where = "created_at <= 'endDate'";
-            } else {
-                $where = null;
-            }
-
-            if ($where) {
-                $collection->where( $where );
-            }
-
-            if($storeIds)
-            {
-                $collection->where("main_table.store_id in (?)", $storeIds);
-            }
-
-
-            $data = array();
-
-            //Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Order::getHistoricalData()', 'Preparing pagination of cart query', null);
-
-            // Cart Query
-            //Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Order::getHistoricalData()', 'Cart Query: '. $collection->__toString(), null);
-
-
-            // Paginator
-            $currentPage = 1;
-            $paginator = Zend_Paginator::factory($collection);
-            $paginator->setItemCountPerPage(100)
-                ->setCurrentPageNumber($currentPage);
-            $pages = $paginator->count();
-
-            $message = sprintf('Page Size: %d', $pages);
-            Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Cart::getHistoricalData()', $message, null);
-
-            do{
-                //$message = sprintf('Iteration # %d', $currentPage);
-                //Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Cart::getHistoricalData()', $message, null);
-
-                $paginator->setCurrentPageNumber($currentPage);
-
-                foreach($paginator as $item) {
-                    $data[] = array(
-                           'type_id' => Jirafe_Analytics_Model_Data_Type::CART,
-                           'store_id' => $item['store_id'],
-                           'json' => $this->getJson( $item, false )
-                       );
-                }
-
-                $currentPage++;
-                // 100 milliseconds
-                usleep(100 * 1000);
-            } while ($currentPage <= $pages);
-
-            return $data;
-        } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Cart::getHistoricalData()', $e);
-            return false;
+        if(($key = array_search('grand_total', $columns)) !== false) {
+            unset($columns[$key]);
         }
-    }
 
+        $columns[] = 'subtotal as grand_total';
+
+        $collection = Mage::getModel('sales/quote')
+            ->getCollection()
+            ->getSelect()
+            ->reset(Zend_Db_Select::COLUMNS)
+            ->columns($columns);
+        $collection->order('main_table.entity_id ASC');
+
+        if ($lastId) {
+            $collection->where("main_table.entity_id > $lastId");
+        }
+        if($storeIds)
+        {
+            $collection->where("main_table.store_id in (?)", $storeIds);
+        }
+        return Zend_Paginator::factory($collection);
+    }
 }
+

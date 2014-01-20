@@ -8,8 +8,7 @@
  * @copyright Copyright (c) 2013 Jirafe, Inc. (http://jirafe.com/)
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
-
-class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
+class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract implements Jirafe_Analytics_Model_Pagable
 {
 
     /**
@@ -116,103 +115,43 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract
         } else {
             return false;
         }
+    }
 
+    public function getDataType() {
+        return Jirafe_Analytics_Model_Data_Type::ORDER;
     }
 
     /**
-     * Create array of product historical data
+     * Create array of order historical data
      *
-     * @param string $filters
-     * @return array
+     * @param int $websiteId
+     * @param int $lastId
+     * @return Zend_Paginator
      */
-
-    public function getHistoricalData( $filter = array() )
+    public function getPaginator($websiteId, $lastId = null)
     {
-        try {
+        $columns = array_merge(
+            $this->_getAttributesToSelect('order'),
+            array('status', 'store_id', 'entity_id', 'customer_id', 'p.amount_paid', 'p.amount_authorized')
+        );
+        $storeIds = Mage::app()->getWebsite($websiteId)->getStoreIds();
 
-            $lastId = isset($filter['last_id']) ? (is_numeric($filter['last_id']) ?  $filter['last_id'] : null): null;
-            $startDate = isset($filter['start_date']) ? $filter['start_date'] : null;
-            $endDate = isset($filter['end_date']) ? $filter['end_date'] : null;
-            $storeIds = isset($filter['store_ids']) ? $filter['store_ids'] : null;
+        $orders = Mage::getModel('sales/order')
+            ->getCollection()
+            ->getSelect()
+            ->joinLeft(array('p'=>Mage::getSingleton('core/resource')->getTableName('sales/order_payment')), 'main_table.entity_id = p.parent_id')
+            ->reset(Zend_Db_Select::COLUMNS)
+            ->columns($columns)
+            ->columns("IF(main_table.status = 'canceled' OR main_table.status = 'cancelled', 'cancelled', 'accepted') as jirafe_status")
+            ->where("main_table.store_id in (?)", $storeIds)
+            ->where("main_table.status in (?)", array('processing', 'complete'))
+            ->order('main_table.entity_id ASC');
 
-
-            $columns = $this->_getAttributesToSelect( 'order' );
-            $columns[] = 'status';
-            $columns[] = 'store_id';
-            $columns[] = 'entity_id';
-            $columns[] = 'customer_id';
-            $columns[] = 'p.amount_paid';
-            $columns[] = 'p.amount_authorized';
-
-            //Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Order::getHistoricalData()', 'Building order query', null);
-
-            $orders = Mage::getModel('sales/order')
-                ->getCollection()
-                ->getSelect()
-                ->joinLeft( array('p'=>Mage::getSingleton('core/resource')->getTableName('sales/order_payment')), 'main_table.entity_id = p.parent_id')
-                ->reset(Zend_Db_Select::COLUMNS)
-                ->columns( $columns )
-                ->columns( "IF(main_table.status = 'canceled' OR main_table.status = 'cancelled', 'cancelled', 'accepted') as jirafe_status");
-
-            if ( $lastId ) {
-                $where = "main_table.entity_id <= $lastId";
-            } else if ( $startDate && $endDate ){
-                $where = "created_at BETWEEN '$startDate' AND '$endDate'";
-            } else if ( $startDate && !$endDate ){
-                $where = "created_at >= '$startDate'";
-            } else if ( !$startDate && $endDate ){
-                $where = "created_at <= 'endDate'";
-            } else {
-                $where = null;
-            }
-
-            if ($where) {
-                $orders->where( $where );
-            }
-
-            if($storeIds)
-            {
-                $orders->where("main_table.store_id in (?)", $storeIds);
-            }
-
-            $data = array();
-
-            // Pagination
-            $currentPage = 1;
-
-            $paginator = Zend_Paginator::factory($orders);
-            $paginator->setItemCountPerPage(100)
-                ->setCurrentPageNumber($currentPage);
-            $pages = $paginator->count();
-
-            $message = sprintf('Page Size: %d', $pages);
-            Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Order::getHistoricalData()', $message, null);
-
-            do{
-                $paginator->setCurrentPageNumber($currentPage);
-
-                foreach($paginator as $order) {
-
-                    $json = $this->getJson( $order, false );
-                    if (!$json) {
-                        continue;
-                    }
-                    $data[] = array(
-                        'type_id' => Jirafe_Analytics_Model_Data_Type::ORDER,
-                        'store_id' => $order['store_id'],
-                        'json' => $json
-                    );
-                }
-                $currentPage++;
-                // 100 milliseconds
-                usleep(100 * 1000);
-            } while ($currentPage <= $pages);
-
-
-            return $data;
-        } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Order::getHistoricalData()', $e->getMessage(), $e);
-            return false;
+        if ($lastId) {
+            $orders->where("main_table.entity_id > $lastId");
         }
+
+        return Zend_Paginator::factory($orders);
     }
 }
+

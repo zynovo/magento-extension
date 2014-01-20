@@ -9,7 +9,7 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Model_Employee extends Jirafe_Analytics_Model_Abstract
+class Jirafe_Analytics_Model_Employee extends Jirafe_Analytics_Model_Abstract implements Jirafe_Analytics_Model_Pagable
 {
 
     /**
@@ -71,55 +71,26 @@ class Jirafe_Analytics_Model_Employee extends Jirafe_Analytics_Model_Abstract
 
     }
 
+    public function getDataType() {
+        return Jirafe_Analytics_Model_Data_Type::EMPLOYEE;
+    }
+
     /**
      * Create array of employee historical data
      *
      * @param string $filter
-     * @return array
+     * @return Zend_Paginator
      */
-
-    public function getHistoricalData( $filter = null )
+    public function getPaginator($websiteId, $lastId = null)
     {
-        try {
+        $employees = Mage::getModel('admin/user')->getCollection();
+        $employees->getSelect()->order("user_id ASC");
 
-            $lastId = isset($filter['last_id']) ? (is_numeric($filter['last_id']) ?  $filter['last_id'] : null): null;
-            $startDate = isset($filter['start_date']) ? $filter['start_date'] : null;
-            $endDate = isset($filter['end_date']) ? $filter['end_date'] : null;
-            $storeIds = isset($filter['store_ids']) ? $filter['store_ids'] : null;
-
-            // Use the default store id
-            $storeId = Mage_Catalog_Model_Abstract::DEFAULT_STORE_ID;
-            if($storeIds)
-            {
-                $storeId = reset($storeIds);
-            }
-
-            $data = array();
-
-            $employees = Mage::getModel('admin/user')->getCollection();
-
-            if ( $lastId ) {
-                $where = "user_id <= $lastId";
-            } else if ( $startDate && $endDate) {
-                $employees->getSelect()->where("created BETWEEN '$startDate' AND '$endDate'");
-            } else if ( $startDate ) {
-                $employees->getSelect()->where("created >= '$startDate'");
-            } else if ( $endDate ) {
-                $employees->getSelect()->where("created <= '$endDate'");
-            }
-
-            foreach($employees as $employee) {
-                 $data[] = array(
-                    'type_id' => Jirafe_Analytics_Model_Data_Type::EMPLOYEE,
-                    'store_id' => $storeId,
-                    'json' => $this->getJson( $employee, null )
-                );
-            }
-
-            return $data;
-        } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Employee::getHistoricalData()', $e->getMessage(), $e);
-            return false;
+        if ($lastId) {
+            $employees->getSelect()->where("user_id > $lastId");
         }
+
+        return Zend_Paginator::factory($employees->getIterator());
     }
 }
+

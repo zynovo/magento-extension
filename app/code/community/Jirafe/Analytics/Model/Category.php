@@ -8,8 +8,7 @@
  * @copyright Copyright (c) 2013 Jirafe, Inc. (http://jirafe.com/)
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
-
-class Jirafe_Analytics_Model_Category extends Jirafe_Analytics_Model_Abstract
+class Jirafe_Analytics_Model_Category extends Jirafe_Analytics_Model_Abstract implements Jirafe_Analytics_Model_Pagable
 {
 
     /**
@@ -70,59 +69,38 @@ class Jirafe_Analytics_Model_Category extends Jirafe_Analytics_Model_Abstract
         } else {
             return false;
         }
-
     }
 
-    /**
+    public function getDataType() {
+        return Jirafe_Analytics_Model_Data_Type::CATEGORY;
+    }
+
+   /**
      * Create array of category historical data
      *
      * @param string $filter
-     * @return array
+     * @return Zend_Paginator
      */
-
-    public function getHistoricalData( $filter = null )
+    public function getPaginator($websiteId, $lastId = null)
     {
-        try {
-            $lastId = isset($filter['last_id']) ? (is_numeric($filter['last_id']) ?  $filter['last_id'] : null): null;
-            $startDate = isset($filter['start_date']) ? $filter['start_date'] : null;
-            $endDate = isset($filter['end_date']) ? $filter['end_date'] : null;
-            $storeIds = isset($filter['store_ids']) ? $filter['store_ids'] : null;
-            $storeId = 0;
+        $storeIds = Mage::app()->getWebsite($websiteId)->getStoreIds();
+        $categories = Mage::getModel('catalog/category')->getCollection()
+            ->addAttributeToSelect('name')
+            ->setOrder('entity_id');
 
-            // To do: Fix hard coding of store id for all categories
-            if($storeIds) {
-                $storeId = reset($storeIds);
-            }
-
-            $data = array();
-
-            $categories = Mage::getModel('catalog/category')
-                ->getCollection()
-                ->addAttributeToSelect('name');
-
-            if ( $lastId ) {
-                $categories->addAttributeToFilter('entity_id', array('lteq' => $lastId));
-            }
-
-            if ( $startDate ) {
-                $categories->addAttributeToFilter('created_at', array('gteq' => $startDate));
-            }
-
-            if ( $endDate ) {
-                $categories->addAttributeToFilter('created_at', array('lteq' => $endDate));
-            }
-
-            foreach($categories as $category) {
-                $data[] = array(
-                    'type_id' => Jirafe_Analytics_Model_Data_Type::CATEGORY,
-                    'store_id' => $storeId,
-                    'json' => $this->getJson( $category )
-                );
-            }
-            return $data;
-        } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Category::getHistoricalData()', $e->getMessage(), $e);
-            return false;
+        if ($lastId) {
+            $categories->addAttributeToFilter('entity_id', array('gt' => $lastId));
         }
+
+        $filteredCategories = array_filter(
+            iterator_to_array($categories),
+            function($category) use ($storeIds) {
+                $inter = array_intersect($category->getStoreIds(), $storeIds);
+                return !empty($inter);
+            }
+        );
+
+        return Zend_Paginator::factory($filteredCategories);
     }
 }
+

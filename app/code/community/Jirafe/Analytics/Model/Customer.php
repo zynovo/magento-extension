@@ -9,7 +9,7 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract
+class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract implements Jirafe_Analytics_Model_Pagable
 {
     /**
      * Create user admin array of data required by Jirafe API
@@ -92,65 +92,32 @@ class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract
         } else {
             return false;
         }
+    }
 
+    public function getDataType() {
+        return Jirafe_Analytics_Model_Data_Type::CUSTOMER;
     }
 
     /**
      * Create array of customer historical data
      *
      * @param string $filter
-     * @return array
+     * @return Zend_Paginator
      */
-
-    public function getHistoricalData( $filter = null )
+    public function getPaginator($websiteId, $lastId = null)
     {
-        try {
+        $customers = Mage::getModel('customer/customer')
+            ->getCollection()
+            ->addAttributeToSelect('firstname')
+            ->addAttributeToSelect('lastname')
+            ->addAttributeToFilter('website_id', array('eq' => $websiteId));
 
-            $lastId = isset($filter['last_id']) ? (is_numeric($filter['last_id']) ?  $filter['last_id'] : null): null;
-            $startDate = isset($filter['start_date']) ? $filter['start_date'] : null;
-            $endDate = isset($filter['end_date']) ? $filter['end_date'] : null;
-            $websiteId = isset($filter['website_id']) ? $filter['website_id'] : null;
-
-            $data = array();
-
-            $customers = Mage::getModel('customer/customer')
-                ->getCollection()
-                ->addAttributeToSelect('firstname')
-                ->addAttributeToSelect('lastname');
-
-            if ( $lastId ) {
-                $customers->addAttributeToFilter('entity_id', array('lteq' => $lastId));
-            }
-
-            if ( $startDate ) {
-                $customers->addAttributeToFilter('created_at', array('gteq' => $startDate));
-            }
-
-            if ( $endDate ) {
-                $customers->addAttributeToFilter('created_at', array('lteq' => $endDate));
-            }
-
-            // Restrict customers at the website level
-            if($websiteId)
-            {
-                $customers->addAttributeToFilter('website_id', array('eq' => $websiteId));
-            }
-
-
-            foreach($customers as $customer) {
-                $data[] = array(
-                    'type_id' => Jirafe_Analytics_Model_Data_Type::CUSTOMER,
-                    'store_id' => $customer->getStoreId(),
-                    'json' => $this->getJson( $customer )
-                );
-            }
-
-            return $data;
-        } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Customer::getHistoricalData()', $e->getMessage(), $e);
-            return false;
+        $customers->getSelect()->order('entity_id ASC');
+        if ($lastId) {
+            $customers->addAttributeToFilter('entity_id', array('gt' => $lastId));
         }
 
+        return Zend_Paginator::factory($customers->getIterator());
     }
 
     /**

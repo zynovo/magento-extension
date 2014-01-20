@@ -10,7 +10,7 @@
  */
 
 
-class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
+class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract implements Jirafe_Analytics_Model_Pagable
 {
 
     protected $_product = null;
@@ -409,94 +409,34 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
         }
     }
 
+    public function getDataType() {
+        return Jirafe_Analytics_Model_Data_Type::PRODUCT;
+    }
+
     /**
      * Create array of product historical data
      *
-     * @param string $filter
-     * @return array
+     * @param  int $websiteId
+     * @param  int $lastId
+     * @return Zend_Paginator
      */
-
-    public function getHistoricalData( $filter = null )
+    public function getPaginator($websiteId, $lastId = null)
     {
-        try {
+        $collection = Mage::getModel('catalog/product')
+            ->getCollection()
+            ->getSelect()
+            ->reset(Zend_Db_Select::COLUMNS)
+            ->columns(array('e.entity_id'))
+            ->where('pw.website_id = ?', $websiteId)
+            ->join(array('pw'=>Mage::getSingleton('core/resource')->getTableName('catalog/product_website')), 'e.entity_id = pw.product_id')
+            ->distinct(true)
+            ->order('e.entity_id ASC');
 
-            $lastId = isset($filter['last_id']) ? $filter['last_id'] : null;
-            $startDate = isset($filter['start_date']) ? $filter['start_date'] : null;
-            $endDate = isset($filter['end_date']) ? $filter['end_date'] : null;
-            $websiteId = isset($filter['website_id']) ? $filter['website_id'] : null;
-            $storeIds = isset($filter['store_ids']) ? $filter['store_ids'] : null;
-            $storeId = 0;
-
-            if($storeIds) {
-                $storeId = reset($storeIds);
-            }
-
-
-            $data = array();
-
-            $collection = Mage::getModel('catalog/product')
-                ->getCollection()
-                ->getSelect()
-                ->reset(Zend_Db_Select::COLUMNS)
-                ->columns( array('e.entity_id') )
-                ->join( array('pw'=>Mage::getSingleton('core/resource')->getTableName('catalog/product_website')), 'e.entity_id = pw.product_id', array('pw.website_id as store_id'))
-                ->distinct(true)
-                ->order('pw.website_id ASC');
-
-            if ( is_numeric( $lastId ) ) {
-                $where = "e.entity_id <= $lastId";
-            } else if ( $startDate && $endDate ){
-                $where = "created_at BETWEEN '$startDate' AND '$endDate'";
-            } else if ( $startDate && !$endDate ){
-                $where = "created_at >= '$startDate'";
-            } else if ( !$startDate && $endDate ){
-                $where = "created_at <= 'endDate'";
-            } else {
-                $where = null;
-            }
-
-            if ($where) {
-                $collection->where( $where );
-            }
-
-            // Pull products for a specific website
-            if($websiteId)
-            {
-                $collection->where('pw.website_id = ?', $websiteId);
-            }
-
-
-            // Paginator
-            $currentPage = 1;
-            $paginator = Zend_Paginator::factory($collection);
-            $paginator->setItemCountPerPage(100)
-                ->setCurrentPageNumber($currentPage);
-            $pages = $paginator->count();
-
-            $message = sprintf('Page Size: %d', $pages);
-            Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Product::getHistoricalData()', $message, null);
-
-            do{
-                $paginator->setCurrentPageNumber($currentPage);
-
-                foreach($paginator as $item) {
-                    $data[] = array(
-                        'type_id' => Jirafe_Analytics_Model_Data_Type::PRODUCT,
-                        'store_id' => $storeId,
-                        'json' => $this->getJson( $item['entity_id'], $item['store_id'], null, null)
-                    );
-                }
-
-                $currentPage++;
-                // 100 milliseconds
-                usleep(100 * 1000);
-            } while ($currentPage <= $pages);
-
-            return $data;
-        } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::getHistoricalData()', $e->getMessage(), $e);
-            return false;
+        if (is_numeric($lastId)) {
+            $collection->where("e.entity_id > $lastId");
         }
+
+        return Zend_Paginator::factory($collection);
     }
 
 }

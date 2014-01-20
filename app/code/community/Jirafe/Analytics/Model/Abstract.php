@@ -350,5 +350,42 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
             return false;
         }
     }
-    
+
+    /**
+     * Create array of historical data
+     *
+     * @param  Zend_Paginator $paginator
+     * @param  string $websiteId
+     * @return array
+     */
+    public function getHistoricalData($paginator, $websiteId)
+    {
+        try {
+            Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, sprintf('Type: %s, Pages: %d', $this->getDataType(), $paginator->count()), null);
+            $data = array();
+            $lastId = null;
+            foreach($paginator as $item) {
+                $elem = array(
+                    'type_id' => $this->getDataType(),
+                    'website_id' => $websiteId,
+                    'json' => $this->getJson($item, false)
+                );
+
+                if ($elem['json']) {
+                    $data[] = $elem;
+                }
+                // hack because some are arrays and some are objects
+                if (is_array($item)) {
+                    $lastId = $item['entity_id'];
+                } else {
+                    $lastId = $item->getId();
+                }
+            }
+
+            return array($lastId, $data);
+        } catch (Exception $e) {
+            Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e);
+            return false;
+        }
+    }
 }
