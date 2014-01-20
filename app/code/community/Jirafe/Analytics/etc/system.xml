@@ -205,6 +205,32 @@
                         </max_records>
                     </fields>
                 </curl>
+                <historicalpull>
+                    <label>Historical Data Sync</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>55</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <duration translate="label">
+                                <label>How Long A Batch Should Run For?</label>
+                                <frontend_type>text</frontend_type>
+                                <sort_order>20</sort_order>
+                                <show_in_store>1</show_in_store>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                        </duration>
+                        <page_size translate="label">
+                                <label>How Many Records To Retrieve In One Batch?</label>
+                                <frontend_type>text</frontend_type>
+                                <sort_order>30</sort_order>
+                                <show_in_store>1</show_in_store>
+                                <show_in_default>1</show_in_default>
+                                <show_in_website>1</show_in_website>
+                        </page_size>
+                    </fields>
+                </historicalpull>
                  <php>
                     <label>Performance Tuning: Override PHP Settings</label>
                     <frontend_type>text</frontend_type>
@@ -243,3 +269,4 @@
         </jirafe_analytics>
     </sections>
 </config>
+

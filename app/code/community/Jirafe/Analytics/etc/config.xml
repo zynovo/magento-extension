@@ -337,6 +337,11 @@
                 <max_execution_time>1800</max_execution_time>
                 <memory_limit>2048M</memory_limit>
             </installer>
+            <historicalpull>
+                <active>false</active>
+                <duration>300</duration>
+                <page_size>100</page_size>
+            </historicalpull>
         </jirafe_analytics>
     </default>
 </config>

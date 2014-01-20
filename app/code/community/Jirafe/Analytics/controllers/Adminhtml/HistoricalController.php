@@ -25,8 +25,6 @@ class Jirafe_Analytics_Adminhtml_HistoricalController extends Mage_Adminhtml_Con
         $this->renderLayout();
     }
 
-
-
     /**
      * Clear action
      * Truncate jirafe_analytics_log table
@@ -35,7 +33,6 @@ class Jirafe_Analytics_Adminhtml_HistoricalController extends Mage_Adminhtml_Con
      */
     public function checkAction()
     {
-
         // Check if the batch
         $website_code = $this->getRequest()->getParam('website_code');
 
@@ -51,30 +48,39 @@ class Jirafe_Analytics_Adminhtml_HistoricalController extends Mage_Adminhtml_Con
 
                 if($status == 'ready')
                 {
-                    $website_code = $this->getRequest()->getParam('website_code');
-                    $defaultStoreId = Mage::app()->getWebsite($website_code)->getDefaultStore()->getId();
-                    Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Adminhtml_HistoricalController::checkAction()', 'Get Historical Job', null);
-                    // Add the historical push to the job queue
-                    $job = Mage::getModel('jirafe_analytics/job');
-                    $job->enqueue('default', null, $defaultStoreId);
-
+                    $websiteId = Mage::app()->getWebsite($website_code)->getId();
+                    Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, 'Get Historical Job');
+                    // Enable historical pull config setting.
+                    Mage::helper('jirafe_analytics')->setHistoricalFlagOn($websiteId);
                     Mage::getModel('jirafe_analytics/curl')->updateHistoricalPushStatus($website_code, 'in-process');
-                    Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Adminhtml_HistoricalController::checkAction()', 'Historical Fetch Event dispatched', null);
+                    Mage::helper('jirafe_analytics')->log(
+                        'DEBUG',
+                        __METHOD__,
+                        'Historical Fetch Event dispatched');
                     Mage::getSingleton('core/session')->addSuccess('Jirafe is syncing your historical data.');
                 }
                 else if ($status == 'in-process')
                 {
-                    Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Adminhtml_HistoricalController::checkAction()', 'Historical Fetch is in process or not enabled for this site', null);
+                    Mage::helper('jirafe_analytics')->log(
+                        'ERROR',
+                        __METHOD__,
+                        'Historical Fetch is in process or not enabled for this site');
                     Mage::getSingleton('core/session')->addError('Historical Fetch is in process for this site.');
                 }
                 else if ($status == 'complete')
                 {
-                    Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Adminhtml_HistoricalController::checkAction()', 'Historical Fetch has already completed for this site', null);
+                    Mage::helper('jirafe_analytics')->log(
+                        'ERROR',
+                        __METHOD__,
+                        'Historical Fetch has already completed for this site');
                     Mage::getSingleton('core/session')->addError('Historical Fetch has already completed for this site.');
                 }
                 else
                 {
-                    Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Adminhtml_HistoricalController::checkAction()', 'Historical Fetch is not enabled for this site', null);
+                    Mage::helper('jirafe_analytics')->log(
+                        'ERROR',
+                        __METHOD__,
+                        'Historical Fetch is not enabled for this site');
                     Mage::getSingleton('core/session')->addError('Historical Fetch is not enabled for this site. Please contact Jirafe support.');
                 }
             }
@@ -82,6 +88,5 @@ class Jirafe_Analytics_Adminhtml_HistoricalController extends Mage_Adminhtml_Con
         // Redirect to the original website configuration screen
         $this->_redirectUrl(($this->_getRefererUrl()));
     }
-
-
 }
+
