@@ -10,6 +10,7 @@
  */
 class Jirafe_Analytics_Model_Category extends Jirafe_Analytics_Model_Abstract implements Jirafe_Analytics_Model_Pagable
 {
+    protected $_fields = array('id', 'name', 'change_date', 'create_date');
 
     /**
      * Create category array of data required by Jirafe API
@@ -17,34 +18,24 @@ class Jirafe_Analytics_Model_Category extends Jirafe_Analytics_Model_Abstract im
      * @param Mage_Catalog_Model_Category $category
      * @return mixed
      */
-
-    public function getArray( $category = null )
+    public function getArray($magentoCategory=null)
     {
         try {
-            if ($category) {
+            if ($magentoCategory) {
 
              /**
               * Get field map array
               */
-             $fieldMap = $this->_getFieldMap( 'category', $category );
+             $fieldMap = $this->_getFieldMap('category', $magentoCategory);
+             $data = $this->_mapFields($fieldMap, $this->_fields);
 
-             $data = array(
-                 $fieldMap['id']['api'] => $fieldMap['id']['magento'],
-                 $fieldMap['name']['api'] => $fieldMap['name']['magento'],
-                 $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
-                 $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento']
-             );
-
-             if ( $parent = Mage::getModel('catalog/category')->load($category->getParentId()) ) {
-                 $fieldMap = $this->_getFieldMap( 'category', $parent );
-                 $parent = array();
-                 $parent[] = array(
-                     $fieldMap['id']['api'] => $fieldMap['id']['magento']
+             if ($parent = Mage::getModel('catalog/category')->load($magentoCategory->getParentId())) {
+                 $fieldMap = $this->_getFieldMap('category', $parent);
+                 $parent = array(
+                    array($fieldMap['id']['api'] => $fieldMap['id']['magento'])
                  );
-
                  $data['parent_categories'] = $parent;
              }
-
               return $data;
             } else {
                 return array();
@@ -61,11 +52,10 @@ class Jirafe_Analytics_Model_Category extends Jirafe_Analytics_Model_Abstract im
      * @param array $category
      * @return mixed
      */
-
-    public function getJson( $category = null )
+    public function getJson($category = null)
     {
         if ($category) {
-            return json_encode( $this->getArray( $category ) );
+            return json_encode($this->getArray($category));
         } else {
             return false;
         }
