@@ -29,15 +29,11 @@ class Jirafe_Analytics_Model_Base extends Mage_Core_Model_Abstract
 
     public function sendToJirafe($data)
     {
-        Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, 'Sending page...', null);
-        $response = Mage::getModel('jirafe_analytics/curl')->sendJson($data);
-        Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, 'Sending Page Response: '.print_r($response, true), null);
-        return $response;
+        return Mage::getModel('jirafe_analytics/curl')->sendJson($data);
     }
 
     public function updateBatchAttemptStatuses($response)
     {
-        Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, 'Updating batch status.', null);
         foreach ($response as $batch) {
             foreach ($batch as $attempt) {
                 $model = Mage::getModel('jirafe_analytics/batch');

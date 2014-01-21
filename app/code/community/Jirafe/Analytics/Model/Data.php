@@ -23,7 +23,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
     protected function _construct()
     {
         $this->_init('jirafe_analytics/data');
-        $this->maxAttempts =  intval(Mage::getStoreConfig('jirafe_analytics/curl/max_attempts'));
+        $this->maxAttempts = intval(Mage::getStoreConfig('jirafe_analytics/curl/max_attempts'));
     }
 
     public function setWebsiteId($websiteId)
@@ -51,7 +51,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                 ->query();
 
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Data::_getWebsites()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
             return false;
         }
     }
@@ -120,7 +120,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                 return array();
             }
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Data::_getItems()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
             return false;
         }
     }
@@ -250,16 +250,14 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                 return false;
             }
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Data::purgeData()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
             return false;
         }
     }
 
     public function saveHistoricalData($paginator, $type)
     {
-        if ($paginator)
-        {
-            Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, 'Saving ' . $type .  ' historical records.');
+        if ($paginator) {
             foreach ($paginator as $item) {
                 $data = Mage::getModel('jirafe_analytics/data');
                 $data->setStoreId($item['website_id']);
@@ -363,7 +361,6 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                     Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
                 }
             }
-            Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, 'Finished loop moreData=' . ($moreData ? 'T' : 'F'));
             return $moreData;
         } catch (Exception $e) {
             Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);

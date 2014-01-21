@@ -44,7 +44,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 return false;
             }
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
             return false;
         }
     }
@@ -61,7 +61,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             Mage::getSingleton('core/session')->setJirafeProcessCart(true);
             return true;
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
             return false;
         }
     }
@@ -78,7 +78,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             Mage::getSingleton('core/session')->setJirafeProcessCart(true);
             return true;
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
             return false;
         }
 
@@ -106,7 +106,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 $data->setWebsiteId($websiteId);
                 $data->save();
             } catch (Exception $e) {
-                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
+                Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
                 $result = false;
             }
         }
@@ -136,7 +136,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 $data->setWebsiteId( $websiteId);
                 $data->save();
             } catch (Exception $e) {
-                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
+                Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
                 $result = false;
             }
         }
@@ -172,7 +172,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 return false;
             }
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
             return false;
         }
     }
@@ -191,7 +191,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             $this->customerSave($observer);
             return true;
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
             return false;
         }
     }
@@ -209,7 +209,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             Mage::getSingleton('core/session')->setJirafeIsVisit(true);
             return true;
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
             return false;
         }
     }
@@ -231,7 +231,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 return false;
             }
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
             return false;
         }
     }
@@ -274,7 +274,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             }
 
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
             return false;
         }
     }
@@ -297,7 +297,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             $this->_orderSave($data);
             return true;
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_getSites()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
             return false;
         }
     }
@@ -315,7 +315,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             $order['jirafe_status'] = 'cancelled';
             return $this->_orderSave($order);
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::orderCancelled()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
             return false;
         }
     }
@@ -339,7 +339,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 $data->save();
                 return true;
             } catch (Exception $e) {
-                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_orderSave()', $e->getMessage(), $e);
+                Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
                 return false;
             }
         }
@@ -363,7 +363,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             $data->save();
             return true;
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::orderCancel()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
             return false;
         }
     }
@@ -424,7 +424,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
 
             return true;
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::productSaveAfter()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
             return false;
         }
     }
@@ -450,7 +450,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 $data->setCapturedDt(Mage::helper('jirafe_analytics')->getCurrentDt());
                 $data->save();
             } catch (Exception $e) {
-                Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::_productSave()', $e->getMessage(), $e);
+                Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
                 $result = false;
             }
         }
@@ -475,7 +475,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
             $data->save();
             return true;
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Observer::employeeSave()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
             return false;
         }
     }

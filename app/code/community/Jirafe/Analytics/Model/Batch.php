@@ -32,8 +32,8 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
     protected function _construct()
     {
         $this->_init('jirafe_analytics/batch');
-        $this->maxRecords = intval(Mage::getStoreConfig('jirafe_analytics/curl/max_records'));
-        $this->maxAttempts =  intval(Mage::getStoreConfig('jirafe_analytics/curl/max_attempts'));
+        $this->maxRecords  = intval(Mage::getStoreConfig('jirafe_analytics/curl/max_records'));
+        $this->maxAttempts = intval(Mage::getStoreConfig('jirafe_analytics/curl/max_attempts'));
 
         $this->dataIds = array();
         $this->rawData = array();
@@ -57,7 +57,7 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
                 $this->setCompletedDt($attempt['created_dt']);
                 $this->save();
             } else {
-                Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__,'attempt object null');
+                Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, 'attempt object null');
                 return false;
             }
         } catch (Exception $e) {

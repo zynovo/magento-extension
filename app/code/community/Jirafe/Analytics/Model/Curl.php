@@ -10,22 +10,14 @@
  * @copyright Copyright (c) 2013 Jirafe, Inc. (http://jirafe.com/)
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  *
- *
  *  @property string $eventApiUrl     Jirafe URL for event API
- *
  *  @property string $accessToken     Jirafe oauth1 access token
- *
  *  @property boolean $logging        logging toggle
- *
  *  @property int $threads            number of threads for multithreaded cURL
- *
  *  @property string $threading       single or multi curl
- *
  *  @property int $maxAttempts        maximum number of records to process
- *
  *  @property int $pos                array iterator
  */
-
 class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
 {
     public $pos = 1;
@@ -43,12 +35,12 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
      */
     public function _construct()
     {
-        $this->logging = Mage::getStoreConfig('jirafe_analytics/debug/logging');
-        $this->eventApiUrl = Mage::getStoreConfig('jirafe_analytics/general/event_api_url');
+        $this->logging           = Mage::getStoreConfig('jirafe_analytics/debug/logging');
+        $this->eventApiUrl       = Mage::getStoreConfig('jirafe_analytics/general/event_api_url');
         $this->authenticationUrl = Mage::getStoreConfig('jirafe_analytics/general/auth_url');
 
-        $this->threads = Mage::getStoreConfig('jirafe_analytics/curl/threads');
-        $this->threading  = Mage::getStoreConfig('jirafe_analytics/curl/threading');
+        $this->threads     = Mage::getStoreConfig('jirafe_analytics/curl/threads');
+        $this->threading   = Mage::getStoreConfig('jirafe_analytics/curl/threading');
         $this->maxAttempts = Mage::getStoreConfig('jirafe_analytics/curl/max_attempts');
 
         if (!is_numeric($this->threads)) {
@@ -154,21 +146,13 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
             $resource = array();
 
             if (count($data)) {
-                if ($this->logging) {
-                    $startTime = time();
-                    Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'START TIME = ' . date("H:i:s", $startTime) . ' UTC', null);
-                    Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'EVENT API URL = ' . $this->eventApiUrl, null);
-                    Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'BATCH SIZE = ' . $this->threads, null);
-                }
-
+                $startTime = microtime(true);
                 Mage::helper('jirafe_analytics')->overridePhpSettings($params);
 
                 // Determine CURL method
                 if ($this->threading === 'multi') {
                     // Process using multithreaded cURL
-                    if ($this->logging) {
-                        Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'CURL: MULTITHREADED', null);
-                    }
+                    Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, 'CURL: MULTITHREADED');
 
                     $count = 1;
                     $threadBatch = array();
@@ -176,7 +160,6 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
 
                     // Create CURL threads
                     foreach($data as $row) {
-
                         if ($count > $this->threads) {
                             $resource[] = $this->_processMulti($threadBatch);
                             $threadBatch = array();
@@ -189,13 +172,9 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
                             'batch_id' => $row['id'],
                             'url' => $this->eventApiUrl . $this->_getSiteId($websiteId) . '/batch',
                             'token' => $this->_getAccessToken($websiteId),
-                            'json' =>  $row['json']);
+                            'json' =>  $row['json']
+                        );
 
-                        if ($this->logging) {
-                            Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'BATCH ID = ' . $item['batch_id'], null );
-                            Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'ACCESS TOKEN = ' . $item['token'], null );
-                            Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'EVENT API URL = ' . $item['url'], null );
-                        }
                         $threadBatch[] = $item;
                         $count++;
                     }
@@ -205,10 +184,7 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
                         $resource[] = $this->_processMulti($threadBatch);
                     }
                 } else {
-
-                    if ($this->logging) {
-                        Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'CURL: SINGLETHREADED', null );
-                    }
+                    Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, 'CURL: SINGLETHREADED');
 
                     // Process using standard single threaded cURL.
                     foreach($data as $row) {
@@ -219,29 +195,16 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
                                 'batch_id' => $row['id'],
                                 'url' => $this->eventApiUrl . $this->_getSiteId($websiteId) . '/batch',
                                 'token' => $this->_getAccessToken($websiteId),
-                                'json' =>  $row['json']);
-
-                            if ($this->logging) {
-                               Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'BATCH ID = ' . $item['batch_id'], null );
-                               Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'ACCESS TOKEN = ' . $item['token'], null );
-                               Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'EVENT API URL = ' . $item['url'], null );
-                            }
+                                'json' =>  $row['json']
+                            );
 
                             $resource[] = $this->_processSingle($item);
                         }
                     }
                 }
-
-                if ($this->logging) {
-                    // Log the total execution time
-                    $endTime = time();
-                    $totalTime = $endTime - $startTime;
-
-                    Mage::helper('jirafe_analytics')->logServerLoad('Jirafe_Analytics_Model_Curl::send');
-                    Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', "TOTAL PROCESSING TIME = $totalTime seconds", null);
-                    Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Curl::sendJson()', 'END TIME = ' . date("H:i:s", $endTime) . ' UTC', null);
-
-                }
+                $totalTime = microtime(true) - $startTime;
+                Mage::helper('jirafe_analytics')->logServerLoad('Jirafe_Analytics_Model_Curl::send');
+                Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, 'Sent %d batches in %.2f seconds', count($data), $totalTime);
             }
 
             return $resource;

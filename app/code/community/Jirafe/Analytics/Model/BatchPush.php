@@ -30,7 +30,7 @@ class Jirafe_Analytics_Model_BatchPush extends Jirafe_Analytics_Model_Base
     {
         try
         {
-            Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, 'Starting Batch Job.', null);
+            Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, 'Starting Batch Push Job');
             $callback = $this->makeCallback();
             $batchData = Mage::getModel('jirafe_analytics/data');
 
@@ -44,7 +44,7 @@ class Jirafe_Analytics_Model_BatchPush extends Jirafe_Analytics_Model_Base
                 $this->resetTimer(($this->start + $this->duration) - time());
                 $batchData->convertEventDataToBatchData(null, false, $callback);
             }
-            Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, 'Stoping Batch Job.', null);
+            Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, 'Stoping Batch Push Job');
         }
         catch (Exception $e)
         {
