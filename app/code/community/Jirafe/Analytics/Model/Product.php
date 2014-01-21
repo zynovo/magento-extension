@@ -12,19 +12,12 @@
 
 class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract implements Jirafe_Analytics_Model_Pagable
 {
-
     protected $_product = null;
-
     protected $_parent = null;
-
     protected $_parentTypeId = null;
-
     protected $_baseProducts = null;
-
     protected $_attributes = null;
-
     protected $_typeId = null;
-
     protected $_fieldMap = null;
 
     /**
@@ -379,11 +372,17 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
     protected function _getImages()
     {
         try {
+            $image = $this->_product->getData('image');
+
+            if ($image == "no_selection" && $this->_parent) {
+                $image = $this->_parent->getData('image');
+            }
+
             return array(
-                array( 'url' => $this->_product->getMediaConfig()->getMediaUrl( $this->_product->getData( 'image' ) ) )
+                array('url' => $this->_product->getMediaConfig()->getMediaUrl($image))
             );
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::_getImages()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
             return array();
         }
     }
