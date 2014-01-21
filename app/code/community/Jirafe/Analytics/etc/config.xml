@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Jirafe_Analytics>
-            <version>1.0.11</version>
+            <version>1.1.0</version>
         </Jirafe_Analytics>
     </modules>
     <global>
@@ -267,14 +267,6 @@
     </adminhtml>
      <crontab>
         <jobs>
-            <jirafe_analytics_process_batch>
-                <schedule>
-                    <cron_expr>*/5 * * * *</cron_expr>
-                </schedule>
-                <run>
-                    <model>jirafe_analytics/batch::process</model>
-                </run>
-            </jirafe_analytics_process_batch>
             <jirafe_analytics_heartbeat>
                 <schedule>
                     <cron_expr>*/30 * * * *</cron_expr>
@@ -283,6 +275,30 @@
                     <model>jirafe_analytics/heartbeat::send</model>
                 </run>
             </jirafe_analytics_heartbeat>
+            <jirafe_analytics_cleanup>
+                <schedule>
+                    <cron_expr>0 0 * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>jirafe_analytics/purge::purge</model>
+                </run>
+            </jirafe_analytics_cleanup>
+            <jirafe_analytics_batch_push>
+                <schedule>
+                    <cron_expr>2,12,22,32,42,52  * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>jirafe_analytics/batchPush::push</model>
+                </run>
+            </jirafe_analytics_batch_push>
+            <jirafe_analytics_batch_create>
+                <schedule>
+                    <cron_expr>7,17,27,37,47,57 * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>jirafe_analytics/historicalBatchCreate::create</model>
+                </run>
+            </jirafe_analytics_batch_create>
             <jirafe_analytics_installer>
                 <schedule>
                     <cron_expr>*/5 * * * *</cron_expr>
@@ -309,7 +325,7 @@
             <debug>
                 <logging>1</logging>
                 <server_load>0</server_load>
-                <type>database</type>
+                <type>db</type>
                 <purge_time>10080</purge_time>
             </debug>
             <curl>
@@ -337,6 +353,11 @@
                 <max_execution_time>1800</max_execution_time>
                 <memory_limit>2048M</memory_limit>
             </installer>
+            <historicalpull>
+                <active>false</active>
+                <duration>300</duration>
+                <page_size>100</page_size>
+            </historicalpull>
         </jirafe_analytics>
     </default>
 </config>

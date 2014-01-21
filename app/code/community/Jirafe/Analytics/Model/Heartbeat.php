@@ -80,7 +80,7 @@ class Jirafe_Analytics_Model_Heartbeat extends Jirafe_Analytics_Model_Curl
 
 
     /**
-     * Send heartbeat to Jirafe via REST + purge old data
+     * Send heartbeat to Jirafe via REST
      * Trigger by cron
      *
      * @return array
@@ -115,19 +115,6 @@ class Jirafe_Analytics_Model_Heartbeat extends Jirafe_Analytics_Model_Curl
                 }
 
                 $returnData[] = $results;
-            }
-
-            /**
-             * Purge processed data older than Mage::getStoreConfig('jirafe_analytics/general/purge_time') minutes
-             */
-
-            Mage::getModel('jirafe_analytics/data')->purgeData();
-
-            /**
-             * Purge log messages older than Mage::getStoreConfig('jirafe_analytics/debug/purge_time') minutes
-            */
-            if ($this->logging) {
-                Mage::getModel('jirafe_analytics/log')->purgeData();
             }
 
             return json_encode($returnData);

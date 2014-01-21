@@ -1,7 +1,3 @@
-app/code/community/Jirafe  app/code/community/Jirafe
+app/code/community/Jirafe            app/code/community/Jirafe
 app/etc/modules/Jirafe_Analytics.xml app/etc/modules/Jirafe_Analytics.xml
-app/code/community/Jowens/JobQueue                          app/code/community/Jowens/JobQueue
-app/design/adminhtml/default/default/layout/jowens          app/design/adminhtml/default/default/layout/jowens
-app/design/adminhtml/default/default/template/jowens        app/design/adminhtml/default/default/template/jowens
-app/etc/modules/*                                           app/etc/modules/
-lib/DJJob                                                   lib/DJJob
+app/etc/modules/*                    app/etc/modules/

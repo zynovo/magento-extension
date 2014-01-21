@@ -9,71 +9,74 @@
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
 
-class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract
+class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract implements Jirafe_Analytics_Model_Pagable
 {
+    protected $_fields = array('id', 'email', 'first_name', 'last_name', 'active_flag', 'change_date', 'create_date', 'marketing_opt_in');
+
+    private function _makeAddress($magentoCustomer)
+    {
+        $data = array();
+        if ($addressId = $magentoCustomer->getDefaultBilling()) {
+            $address = Mage::getModel('customer/address')->load($addressId);
+            foreach ($address->getData() as $key => $value) {
+                if (!array_key_exists ($key, $magentoCustomer)) {
+                    $data[$key] = $value;
+                }
+            }
+        }
+        return $data;
+    }
+
+    private function _makeExtraFields($magentoCustomer, $fieldMap)
+    {
+        $data = array();
+        if ($magentoCustomer->getDefaultBilling()) {
+            $data[$fieldMap['company']['api'] ] = $fieldMap['company']['magento'];
+            $data[$fieldMap['phone']['api'] ] = $fieldMap['phone']['magento'];
+        }
+        return $data;
+    }
+
     /**
      * Create user admin array of data required by Jirafe API
      *
-     * @param Mage_Customer_Model_Customer $customer
+     * @param Mage_Customer_Model_Customer $magentoCustomer
      * @return mixed
      */
-    public function getArray( $customer = null, $includeCookies = false )
+    public function getArray($magentoCustomer, $includeCookies=false)
     {
         try {
-            if ( $customer ) {
+            $data = array_merge(
+                $magentoCustomer->getData(),
+                $this->_makeAddress($magentoCustomer)
+            );
 
-                $data = $customer->getData();
+            $fieldMap = $this->_getFieldMap('customer', $data);
+            $extraFields = $this->_makeExtraFields($magentoCustomer, $fieldMap);
+            $marketingOptIn = Mage::getModel('newsletter/subscriber')
+                                  ->load($magentoCustomer->getEmail(), 'subscriber_email')
+                                  ->getSubscriberStatus();
 
-                /**
-                 * Get customer address
-                 */
-                if ($addressId = $customer->getDefaultBilling()) {
-                    $address = Mage::getModel('customer/address')->load( $addressId );
-                    foreach ($address->getData() as $key => $value) {
-                        if ( !array_key_exists ( $key,$customer ) ) {
-                            $data[$key] = $value;
-                        }
-                    }
-                }
+            $data = array_merge(
+                $extraFields,
+                $this->_mapFields($fieldMap, $this->_fields),
+                array(
+                    'marketing_opt_in' => $marketingOptIn ? true : false,
+                    'name' => $fieldMap['first_name']['magento'] . ' ' . $fieldMap['last_name']['magento']
+                )
+            );
 
-                /**
-                 * Get subscriber information
-                 */
-                $marketingOptIn = Mage::getModel('newsletter/subscriber')
-                                      ->load($customer->getEmail(), 'subscriber_email')
-                                      ->getSubscriberStatus();
-
-                /**
-                 * Get field map array
-                 */
-                $fieldMap = $this->_getFieldMap( 'customer', $data );
-
-                $data = array(
-                    $fieldMap['id']['api'] => $fieldMap['id']['magento'],
-                    $fieldMap['email']['api'] => $fieldMap['email']['magento'],
-                    'name' => $fieldMap['first_name']['magento'] . ' ' . $fieldMap['last_name']['magento'],
-                    $fieldMap['first_name']['api'] => $fieldMap['first_name']['magento'],
-                    $fieldMap['last_name']['api'] => $fieldMap['last_name']['magento'],
-                    $fieldMap['active_flag']['api'] => $fieldMap['active_flag']['magento'] ,
-                    $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
-                    $fieldMap['create_date']['api'] => $fieldMap['create_date']['magento'],
-                    'marketing_opt_in' => $marketingOptIn ? true : false
-                 );
-
-                if ( $addressId ) {
-                    $data[ $fieldMap['company']['api'] ] = $fieldMap['company']['magento'];
-                    $data[ $fieldMap['phone']['api'] ] = $fieldMap['phone']['magento'];
-                }
-                if ($includeCookies) {
-                  $data['cookies'] = $this->_getCookies();
-                }
-
-                return $data;
-            } else {
-               return array();
+            if ($this->getDefaultBilling()) {
+                $data[$fieldMap['phone']['api']] = $fieldMap['phone']['magento'];
+                $data[$fieldMap['company']['api']] = $fieldMap['company']['magento'];
             }
+            if ($includeCookies) {
+                $data['cookies'] = $this->_getCookies();
+            }
+
+            return $data;
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Customer::getArray()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
             return false;
         }
     }
@@ -84,81 +87,46 @@ class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract
      * @param array $customer
      * @return mixed
      */
-
-    public function getJson( $customer = null, $isVisit = false )
+    public function getJson($magentoCustomer=null, $isVisit=false)
     {
-        if ($customer) {
-            return json_encode( $this->getArray( $customer, $isVisit ) );
+        if ($magentoCustomer) {
+            return json_encode($this->getArray($magentoCustomer, $isVisit));
         } else {
             return false;
         }
+    }
 
+    public function getDataType() {
+        return Jirafe_Analytics_Model_Data_Type::CUSTOMER;
     }
 
     /**
      * Create array of customer historical data
      *
      * @param string $filter
-     * @return array
+     * @return Zend_Paginator
      */
-
-    public function getHistoricalData( $filter = null )
+    public function getPaginator($websiteId, $lastId = null)
     {
-        try {
+        $customers = Mage::getModel('customer/customer')
+            ->getCollection()
+            ->addAttributeToSelect('firstname')
+            ->addAttributeToSelect('lastname')
+            ->addAttributeToFilter('website_id', array('eq' => $websiteId));
 
-            $lastId = isset($filter['last_id']) ? (is_numeric($filter['last_id']) ?  $filter['last_id'] : null): null;
-            $startDate = isset($filter['start_date']) ? $filter['start_date'] : null;
-            $endDate = isset($filter['end_date']) ? $filter['end_date'] : null;
-            $websiteId = isset($filter['website_id']) ? $filter['website_id'] : null;
-
-            $data = array();
-
-            $customers = Mage::getModel('customer/customer')
-                ->getCollection()
-                ->addAttributeToSelect('firstname')
-                ->addAttributeToSelect('lastname');
-
-            if ( $lastId ) {
-                $customers->addAttributeToFilter('entity_id', array('lteq' => $lastId));
-            }
-
-            if ( $startDate ) {
-                $customers->addAttributeToFilter('created_at', array('gteq' => $startDate));
-            }
-
-            if ( $endDate ) {
-                $customers->addAttributeToFilter('created_at', array('lteq' => $endDate));
-            }
-
-            // Restrict customers at the website level
-            if($websiteId)
-            {
-                $customers->addAttributeToFilter('website_id', array('eq' => $websiteId));
-            }
-
-
-            foreach($customers as $customer) {
-                $data[] = array(
-                    'type_id' => Jirafe_Analytics_Model_Data_Type::CUSTOMER,
-                    'store_id' => $customer->getStoreId(),
-                    'json' => $this->getJson( $customer )
-                );
-            }
-
-            return $data;
-        } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Customer::getHistoricalData()', $e->getMessage(), $e);
-            return false;
+        $customers->getSelect()->order('entity_id ASC');
+        if ($lastId) {
+            $customers->addAttributeToFilter('entity_id', array('gt' => $lastId));
         }
 
+        return Zend_Paginator::factory($customers->getIterator());
     }
 
     /**
      * Get customer array for beacon api javascript
      *
      * @return array
-     */
-
+     **/
     public function getCustomer()
     {
         return $this->_getCustomer();

@@ -10,38 +10,31 @@
  */
 
 
-class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
+class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract implements Jirafe_Analytics_Model_Pagable
 {
-
     protected $_product = null;
-
-    protected $_storeId =null;
-
     protected $_parent = null;
-
     protected $_parentTypeId = null;
-
     protected $_baseProducts = null;
-
     protected $_attributes = null;
-
     protected $_typeId = null;
-
     protected $_fieldMap = null;
 
     /**
      * Get JSON version of product object
      *
-     * @param string $productId
-     * @param string $storeId
      * @param Mage_Catalog_Model_Product $product
      * @param boolean $itemAttributes
      * @return string
      */
-     public function getJson( $productId = null, $storeId = null, $product = null, $itemAttributes = null )
+     public function getJson($product = null, $itemAttributes = null)
      {
-         if ( ( is_numeric($productId) && is_numeric($storeId) ) || $product) {
-             return str_replace('\/', '/', json_encode( $this->getArray( $productId, $storeId, $product, $itemAttributes ) ) );
+        if (is_array($product)) {
+            $product = Mage::getModel('catalog/product')->load($product['entity_id']);
+        }
+
+         if ($product) {
+             return str_replace('\/', '/', json_encode($this->getArray($product, $itemAttributes)));
          } else {
              return null;
          }
@@ -50,42 +43,22 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
     /**
      * Create product array of data required by Jirafe API
      *
-     * @param string $productId
-     * @param string $storeId
      * @param Mage_Catalog_Core_Product $product
      * @param boolean $itemAttributes
      * @return array
      */
-
-    public function getArray( $productId = null, $storeId = null, $product = null, $itemAttributes = null  )
+    public function getArray($product=null, $itemAttributes=null)
     {
         try {
-
-            /**
-             * Initialize object
-            */
-            $this->_product = null;
-            $this->_storeId =null;
             $this->_parent = null;
             $this->_parentTypeId = null;
             $this->_baseProducts = null;
             $this->_attributes = null;
             $this->_typeId = null;
             $this->_fieldMap = null;
+            $this->_product = $product;
 
-            if ( $productId ) {
-                $this->_product = Mage::getModel('catalog/product')->load( $productId );
-            } else {
-                $this->_product = $product;
-            }
-
-            if ( $this->_product ) {
-
-                if ( $storeId ) {
-                    $this->_storeId = $storeId;
-                } else {
-                    $this->_storeId = $this->_product->getStoreId();
-                }
+            if ($this->_product) {
 
                 $this->_typeId =  $this->_product->getTypeId();
 
@@ -112,7 +85,6 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
                     'is_product' => $this->_isProduct(),
                     'is_sku' => $this->_isSku(),
                     'is_bundle' => ($this->_typeId == 'bundle' ) ? true : false,
-                    'catalog' => $this->_getCatalog( $this->_storeId ),
                     $this->_fieldMap['name']['api'] => $this->_fieldMap['name']['magento'],
                     $this->_fieldMap['code']['api'] => $this->_fieldMap['code']['magento'],
                  );
@@ -242,7 +214,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
 
              foreach ($this->_product->getCategoryIds() as $catId) {
                  if ( $category = Mage::getModel('catalog/category')->load( $catId ) ) {
-                     $categories[] = Mage::getModel('jirafe_analytics/category')->getArray( $category );
+                     $categories[] = Mage::getModel('jirafe_analytics/category')->getArray($category);
                  }
              }
 
@@ -400,103 +372,49 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract
     protected function _getImages()
     {
         try {
+            $image = $this->_product->getData('image');
+
+            if ($image == "no_selection" && $this->_parent) {
+                $image = $this->_parent->getData('image');
+            }
+
             return array(
-                array( 'url' => $this->_product->getMediaConfig()->getMediaUrl( $this->_product->getData( 'image' ) ) )
+                array('url' => $this->_product->getMediaConfig()->getMediaUrl($image))
             );
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::_getImages()', $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
             return array();
         }
+    }
+
+    public function getDataType() {
+        return Jirafe_Analytics_Model_Data_Type::PRODUCT;
     }
 
     /**
      * Create array of product historical data
      *
-     * @param string $filter
-     * @return array
+     * @param  int $websiteId
+     * @param  int $lastId
+     * @return Zend_Paginator
      */
-
-    public function getHistoricalData( $filter = null )
+    public function getPaginator($websiteId, $lastId = null)
     {
-        try {
+        $collection = Mage::getModel('catalog/product')
+            ->getCollection()
+            ->getSelect()
+            ->reset(Zend_Db_Select::COLUMNS)
+            ->columns(array('e.entity_id'))
+            ->where('pw.website_id = ?', $websiteId)
+            ->join(array('pw'=>Mage::getSingleton('core/resource')->getTableName('catalog/product_website')), 'e.entity_id = pw.product_id')
+            ->distinct(true)
+            ->order('e.entity_id ASC');
 
-            $lastId = isset($filter['last_id']) ? $filter['last_id'] : null;
-            $startDate = isset($filter['start_date']) ? $filter['start_date'] : null;
-            $endDate = isset($filter['end_date']) ? $filter['end_date'] : null;
-            $websiteId = isset($filter['website_id']) ? $filter['website_id'] : null;
-            $storeIds = isset($filter['store_ids']) ? $filter['store_ids'] : null;
-            $storeId = 0;
-
-            if($storeIds) {
-                $storeId = reset($storeIds);
-            }
-
-
-            $data = array();
-
-            $collection = Mage::getModel('catalog/product')
-                ->getCollection()
-                ->getSelect()
-                ->reset(Zend_Db_Select::COLUMNS)
-                ->columns( array('e.entity_id') )
-                ->join( array('pw'=>Mage::getSingleton('core/resource')->getTableName('catalog/product_website')), 'e.entity_id = pw.product_id', array('pw.website_id as store_id'))
-                ->distinct(true)
-                ->order('pw.website_id ASC');
-
-            if ( is_numeric( $lastId ) ) {
-                $where = "e.entity_id <= $lastId";
-            } else if ( $startDate && $endDate ){
-                $where = "created_at BETWEEN '$startDate' AND '$endDate'";
-            } else if ( $startDate && !$endDate ){
-                $where = "created_at >= '$startDate'";
-            } else if ( !$startDate && $endDate ){
-                $where = "created_at <= 'endDate'";
-            } else {
-                $where = null;
-            }
-
-            if ($where) {
-                $collection->where( $where );
-            }
-
-            // Pull products for a specific website
-            if($websiteId)
-            {
-                $collection->where('pw.website_id = ?', $websiteId);
-            }
-
-
-            // Paginator
-            $currentPage = 1;
-            $paginator = Zend_Paginator::factory($collection);
-            $paginator->setItemCountPerPage(100)
-                ->setCurrentPageNumber($currentPage);
-            $pages = $paginator->count();
-
-            $message = sprintf('Page Size: %d', $pages);
-            Mage::helper('jirafe_analytics')->log('DEBUG', 'Jirafe_Analytics_Model_Product::getHistoricalData()', $message, null);
-
-            do{
-                $paginator->setCurrentPageNumber($currentPage);
-
-                foreach($paginator as $item) {
-                    $data[] = array(
-                        'type_id' => Jirafe_Analytics_Model_Data_Type::PRODUCT,
-                        'store_id' => $storeId,
-                        'json' => $this->getJson( $item['entity_id'], $item['store_id'], null, null)
-                    );
-                }
-
-                $currentPage++;
-                // 100 milliseconds
-                usleep(100 * 1000);
-            } while ($currentPage <= $pages);
-
-            return $data;
-        } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::getHistoricalData()', $e->getMessage(), $e);
-            return false;
+        if (is_numeric($lastId)) {
+            $collection->where("e.entity_id > $lastId");
         }
+
+        return Zend_Paginator::factory($collection);
     }
 
 }

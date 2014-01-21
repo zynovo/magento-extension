@@ -98,15 +98,6 @@
                             <show_in_website>0</show_in_website>
                             <show_in_store>0</show_in_store>
                         </purge_time>
-                        <run translate="label">
-                           <label>Historical Data</label>
-                           <frontend_type>button</frontend_type>
-                           <frontend_model>jirafe_analytics/button</frontend_model>
-                           <sort_order>100</sort_order>
-                           <show_in_default>0</show_in_default>
-                           <show_in_website>1</show_in_website>
-                           <show_in_store>0</show_in_store>
-                        </run>
                     </fields>
                 </general>
                 <debug translate="label">
@@ -205,6 +196,41 @@
                         </max_records>
                     </fields>
                 </curl>
+                <historicalpull>
+                    <label>Historical Data Sync</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>55</sort_order>
+                    <show_in_default>0</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <duration translate="label">
+                           <label>Run Time per Batch (seconds)</label>
+                           <frontend_type>text</frontend_type>
+                           <sort_order>20</sort_order>
+                           <show_in_store>0</show_in_store>
+                           <show_in_website>1</show_in_website>
+                           <show_in_default>0</show_in_default>
+                        </duration>
+                        <page_size translate="label">
+                           <label>Records per Batch</label>
+                           <frontend_type>text</frontend_type>
+                           <sort_order>30</sort_order>
+                           <show_in_store>0</show_in_store>
+                           <show_in_website>1</show_in_website>
+                           <show_in_default>0</show_in_default>
+                        </page_size>
+                        <run translate="label">
+                           <label>Historical Data</label>
+                           <frontend_type>button</frontend_type>
+                           <frontend_model>jirafe_analytics/button</frontend_model>
+                           <sort_order>100</sort_order>
+                           <show_in_default>0</show_in_default>
+                           <show_in_website>1</show_in_website>
+                           <show_in_store>0</show_in_store>
+                        </run>
+                    </fields>
+                </historicalpull>
                  <php>
                     <label>Performance Tuning: Override PHP Settings</label>
                     <frontend_type>text</frontend_type>
@@ -243,3 +269,4 @@
         </jirafe_analytics>
     </sections>
 </config>
+
