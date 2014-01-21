@@ -204,7 +204,7 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
                 }
                 $totalTime = microtime(true) - $startTime;
                 Mage::helper('jirafe_analytics')->logServerLoad('Jirafe_Analytics_Model_Curl::send');
-                Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, 'Sent %d batches in %.2f seconds', count($data), $totalTime);
+                Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, sprintf('Sent %d batches in %.2f seconds', count($data), $totalTime));
             }
 
             return $resource;
