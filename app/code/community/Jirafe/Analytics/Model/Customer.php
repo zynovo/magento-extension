@@ -58,7 +58,6 @@ class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract im
                                   ->getSubscriberStatus();
 
             $data = array_merge(
-                $data,
                 $extraFields,
                 $this->_mapFields($fieldMap, $this->_fields),
                 array(
