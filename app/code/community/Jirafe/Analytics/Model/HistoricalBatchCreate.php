@@ -21,7 +21,7 @@ class Jirafe_Analytics_Model_HistoricalBatchCreate extends Jirafe_Analytics_Mode
             if (count($websiteIds) == 0) {
                 return;
             }
-            $data = array
+            $data = array(
                 'max_execution_time' => '1800',
                 'memory_limit' => '2048M',
                 'proc_nice' => '16'
