@@ -325,7 +325,7 @@
             <debug>
                 <logging>1</logging>
                 <server_load>0</server_load>
-                <type>database</type>
+                <type>db</type>
                 <purge_time>10080</purge_time>
             </debug>
             <curl>
