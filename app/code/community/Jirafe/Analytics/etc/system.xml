@@ -205,7 +205,7 @@
                     <show_in_store>0</show_in_store>
                     <fields>
                         <duration translate="label">
-                           <label>How many seconds should a batch run for?</label>
+                           <label>Run Time per Batch (seconds)</label>
                            <frontend_type>text</frontend_type>
                            <sort_order>20</sort_order>
                            <show_in_store>0</show_in_store>
@@ -213,7 +213,7 @@
                            <show_in_default>0</show_in_default>
                         </duration>
                         <page_size translate="label">
-                           <label>How many records to retrieve in one Batch?</label>
+                           <label>Records per Batch</label>
                            <frontend_type>text</frontend_type>
                            <sort_order>30</sort_order>
                            <show_in_store>0</show_in_store>
