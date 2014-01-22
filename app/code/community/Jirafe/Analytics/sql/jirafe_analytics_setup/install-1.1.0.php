@@ -2,8 +2,22 @@
 $installer = $this;
 $installer->startSetup();
 
+// We drop all tables and wait, so that zombie cron jobs will die.
+
 $installer->run("
     DROP TABLE IF EXISTS {$this->getTable('jirafe_analytics/batch')};
+    DROP TABLE IF EXISTS {$this->getTable('jirafe_analytics/data_type')};
+    DROP TABLE IF EXISTS {$this->getTable('jirafe_analytics/data')};
+    DROP TABLE IF EXISTS {$this->getTable('jirafe_analytics/batch_data')};
+    DROP TABLE IF EXISTS {$this->getTable('jirafe_analytics/data_attempt')};
+    DROP TABLE IF EXISTS {$this->getTable('jirafe_analytics/data_error')};
+    DROP TABLE IF EXISTS {$this->getTable('jirafe_analytics/log')};
+    DROP TABLE IF EXISTS {$this->getTable('jirafe_analytics/map')};
+");
+
+sleep(30);
+
+$installer->run("
     CREATE TABLE {$this->getTable('jirafe_analytics/batch')} (
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
         `json` mediumtext NOT NULL,
@@ -18,7 +32,6 @@ $installer->run("
         KEY `historical` (`historical`)
     ) ENGINE=InnoDB  AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
     
-    DROP TABLE IF EXISTS {$this->getTable('jirafe_analytics/data_type')};
     CREATE TABLE {$this->getTable('jirafe_analytics/data_type')} (
         `id` int(10) unsigned NOT NULL,
         `type` varchar(32),
@@ -33,7 +46,6 @@ $installer->run("
         (5, 'product'),
         (6, 'employee');
     
-    DROP TABLE IF EXISTS {$this->getTable('jirafe_analytics/data')};
     CREATE TABLE {$this->getTable('jirafe_analytics/data')} (
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
         `json` text NOT NULL,
@@ -52,7 +64,6 @@ $installer->run("
         CONSTRAINT `jirafe_analytics_data_ibfk_2` FOREIGN KEY (`store_id`) REFERENCES {$this->getTable('core/store')} (`store_id`) ON DELETE CASCADE ON UPDATE CASCADE
     ) ENGINE=InnoDB  AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
     
-    DROP TABLE IF EXISTS {$this->getTable('jirafe_analytics/batch_data')};
     CREATE TABLE {$this->getTable('jirafe_analytics/batch_data')} (
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
         `batch_id` int(10) unsigned NOT NULL,
@@ -65,7 +76,6 @@ $installer->run("
         CONSTRAINT `jirafe_analytics_batch_data_ibfk_2` FOREIGN KEY (`data_id`) REFERENCES {$this->getTable('jirafe_analytics/data')} (`id`) ON DELETE CASCADE ON UPDATE CASCADE
     ) ENGINE=InnoDB  AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
     
-    DROP TABLE IF EXISTS {$this->getTable('jirafe_analytics/data_attempt')};
     CREATE TABLE {$this->getTable('jirafe_analytics/data_attempt')} (
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
         `data_id` int(10) unsigned NOT NULL,
@@ -75,7 +85,6 @@ $installer->run("
         CONSTRAINT `jirafe_analytics_data_attempt_ibfk_1` FOREIGN KEY (`data_id`) REFERENCES {$this->getTable('jirafe_analytics/data')} (`id`) ON DELETE CASCADE ON UPDATE CASCADE
     ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
     
-    DROP TABLE IF EXISTS {$this->getTable('jirafe_analytics/data_error')};
     CREATE TABLE {$this->getTable('jirafe_analytics/data_error')} (
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
         `data_attempt_id` int(10) unsigned NOT NULL,
@@ -87,7 +96,6 @@ $installer->run("
         CONSTRAINT `jirafe_analytics_data_error_ibfk_1` FOREIGN KEY (`data_attempt_id`) REFERENCES {$this->getTable('jirafe_analytics/data_attempt')} (`id`) ON DELETE CASCADE ON UPDATE CASCADE
     ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
     
-    DROP TABLE IF EXISTS {$this->getTable('jirafe_analytics/log')};
     CREATE TABLE {$this->getTable('jirafe_analytics/log')} (
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
         `type` varchar(32) DEFAULT NULL,
@@ -97,7 +105,6 @@ $installer->run("
         PRIMARY KEY (`id`)
     ) ENGINE=InnoDB  AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
     
-    DROP TABLE IF EXISTS {$this->getTable('jirafe_analytics/map')};
     CREATE TABLE {$this->getTable('jirafe_analytics/map')} (
         `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
         `element` varchar(16) NOT NULL, 
