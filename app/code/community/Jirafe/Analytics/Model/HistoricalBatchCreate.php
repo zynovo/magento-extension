@@ -14,8 +14,7 @@ class Jirafe_Analytics_Model_HistoricalBatchCreate extends Jirafe_Analytics_Mode
 
     public function create()
     {
-        try
-        {
+        try {
             Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, 'Starting Historical Data Conversion Job.');
             $websiteIds = $this->activeWebsites();
             if (count($websiteIds) == 0) {
@@ -30,18 +29,14 @@ class Jirafe_Analytics_Model_HistoricalBatchCreate extends Jirafe_Analytics_Mode
 
             foreach ($websiteIds as $websiteId) {
                 Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, 'Converting historical data for site ' . $websiteId);
-                $keepWorking = false;
-
                 while (!$this->isTimeUp()) {
                     $keepWorking = $history->convertHistoricalData(Jirafe_Analytics_Model_HistoricalBatchCreate::$MODELS, $websiteId, $data);
                     if(!$keepWorking) {
+                        Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, 'Historcial Data Conversion complete for site ' . $websiteId);
+                        Mage::helper('jirafe_analytics')->setHistoricalFlagOff($websiteId);
+                        Mage::getModel('jirafe_analytics/curl')->updateHistoricalPushStatus($websiteId, 'complete');
                         break;
                     }
-                }
-                if (!$keepWorking) {
-                    Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, 'Historcial Data Conversion complete for site ' . $websiteId);
-                    Mage::helper('jirafe_analytics')->setHistoricalFlagOff($websiteId);
-                    Mage::getModel('jirafe_analytics/curl')->updateHistoricalPushStatus($websiteId, 'complete');
                 }
             }
             Mage::helper('jirafe_analytics')->log('DEBUG', __METHOD__, 'Stoping Historical Data Conversion Job.');
