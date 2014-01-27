@@ -2,7 +2,7 @@
 <layout>
     <default>
         <reference name="after_body_start">
-            <block type="jirafe_analytics/beacon" name="jirafe_beacon" template="jirafe_analytics/beacon.phtml" />
+            <block type="jirafe_analytics/beacon" name="jirafe_beacon" template="jirafe_analytics/beacon.phtml" before="-" />
         </reference>
     </default>
 </layout>
