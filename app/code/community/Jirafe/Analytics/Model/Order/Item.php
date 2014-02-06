@@ -8,22 +8,18 @@
  * @copyright Copyright (c) 2013 Jirafe, Inc. (http://jirafe.com/)
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
-
 class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
 {
-
     /**
      * Create array of items in order
      *
      * @param array $items
      * @return array
      */
-
     public function getItems( $orderId = null, $storeId = null )
     {
         try {
             if ($orderId) {
-
                 $columns = $this->_getAttributesToSelect( 'order_item' );
                 $columns[] = 'product_id';
                 $columns[] = 'option.value as attributes';
@@ -33,8 +29,8 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
                 $collection = Mage::getModel('sales/order_item')
                     ->getCollection()
                     ->getSelect()
-                    ->joinLeft( array('parent'=>'sales_flat_order_item'), "main_table.parent_item_id = parent.item_id")
-                    ->joinLeft( array('option'=>'sales_flat_quote_item_option'), "parent.item_id = option.item_id AND option.code = 'attributes'",array('option.value'))
+                    ->joinLeft(array('parent'=>Mage::getSingleton('core/resource')->getTableName('sales/flat/order/item')), "main_table.parent_item_id = parent.item_id")
+                    ->joinLeft(array('option'=>Mage::getSingleton('core/resource')->getTableName('sales/flat/order/item/option')), "parent.item_id = option.item_id AND option.code = 'attributes'",array('option.value'))
                     ->reset(Zend_Db_Select::COLUMNS)
                     ->columns( $columns )
                     ->where("main_table.order_id = $orderId AND main_table.product_type != 'configurable' AND (parent.product_type != 'bundle' OR parent.product_type is null)");
@@ -56,7 +52,6 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
                         'discount_price' => floatval($item['discount_amount']),
                         'product' => Mage::getModel('jirafe_analytics/product')->getArray(Mage::getModel('catalog/product')->load($item['product_id']), $item['attributes'])
                     );
-
                     $count++;
                 }
                 return $data;
