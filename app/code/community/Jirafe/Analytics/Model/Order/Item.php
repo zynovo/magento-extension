@@ -29,8 +29,8 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
                 $collection = Mage::getModel('sales/order_item')
                     ->getCollection()
                     ->getSelect()
-                    ->joinLeft(array('parent'=>Mage::getSingleton('core/resource')->getTableName('sales/flat/order/item')), "main_table.parent_item_id = parent.item_id")
-                    ->joinLeft(array('option'=>Mage::getSingleton('core/resource')->getTableName('sales/flat/order/item/option')), "parent.item_id = option.item_id AND option.code = 'attributes'",array('option.value'))
+                    ->joinLeft(array('parent'=>Mage::getSingleton('core/resource')->getTableName('sales/order_item')), "main_table.parent_item_id = parent.item_id")
+                    ->joinLeft(array('option'=>Mage::getSingleton('core/resource')->getTableName('sales/order_item_option')), "parent.item_id = option.item_id AND option.code = 'attributes'",array('option.value'))
                     ->reset(Zend_Db_Select::COLUMNS)
                     ->columns( $columns )
                     ->where("main_table.order_id = $orderId AND main_table.product_type != 'configurable' AND (parent.product_type != 'bundle' OR parent.product_type is null)");
