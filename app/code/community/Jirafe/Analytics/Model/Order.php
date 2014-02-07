@@ -58,7 +58,7 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract imple
             return $data;
 
         } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR Jirafe_Analytics_Model_Order::getOrder(): ' . $e->getMessage());
+            Mage::helper('jirafe_analytics')->log("ERROR", __METHOD__, $e->getMessage());
             return false;
         }
     }

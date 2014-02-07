@@ -8,7 +8,6 @@
  * @copyright Copyright (c) 2013 Jirafe, Inc. (http://jirafe.com/)
  * @author    Richard Loerzel (rloerzel@lyonscg.com)
  */
-
 class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
 {
     /**
@@ -18,12 +17,10 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
      * @param  string $storeId
      * @return mixed
      */
-
     public function getItems( $quoteId = null, $storeId = null )
     {
         try {
             if ($quoteId) {
-
                 $columns = $this->_getAttributesToSelect( 'cart_item' );
                 $columns[] = 'product_id';
                 $columns[] = 'option.value as attributes';
@@ -33,16 +30,15 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
                 $collection = Mage::getModel('sales/quote_item')
                     ->getCollection()
                     ->getSelect()
-                    ->joinLeft( array('parent'=>'sales_flat_quote_item'), "main_table.parent_item_id = parent.item_id",array('parent.row_total'))
-                    ->joinLeft( array('option'=>'sales_flat_quote_item_option'), "parent.item_id = option.item_id AND option.code = 'attributes'",array('option.value'))
+                    ->joinLeft(array('parent'=>Mage::getSingleton('core/resource')->getTableName('sales/quote_item')), "main_table.parent_item_id = parent.item_id", array('parent.row_total'))
+                    ->joinLeft(array('option'=>Mage::getSingleton('core/resource')->getTableName('sales/quote_item_option')), "parent.item_id = option.item_id AND option.code = 'attributes'", array('option.value'))
                     ->reset(Zend_Db_Select::COLUMNS)
-                    ->columns( $columns)
+                    ->columns($columns)
                     ->where("main_table.quote_id = $quoteId AND main_table.product_type != 'configurable' AND (parent.product_type != 'bundle' OR parent.product_type is null)")
                     ->distinct(true);
 
                 $count = 1;
                 $data = array();
-
                 foreach($collection->query() as $item) {
 
                     /**
