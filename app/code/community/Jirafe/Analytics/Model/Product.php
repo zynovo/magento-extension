@@ -90,8 +90,10 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
                  );
 
 
-                if ( $brand = $this->_product->getAttributeText('manufacturer') ) {
-                    $element['brand'] = $brand;
+                if ($this->_product->hasData('manufacturer')) {
+                    if ($brand = $this->_product->getAttributeText('manufacturer')) {
+                        $element['brand'] = $brand;
+                    }
                 }
 
                 if ( $this->_attributes ) {
