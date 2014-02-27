@@ -144,6 +144,12 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
 
             // Separate data by website id since each website has a separate site_id and oauth token
             foreach ($this->_getWebsites() as $website) {
+                $enabled = Mage::app()->getWebsite($website['website_id'])->getConfig('jirafe_analytics/general/enabled');
+                if ($enabled != 1) {
+                    // not a valid site id
+                    continue;
+                }
+
                 // Initialize batch database object and array container
                 Mage::helper('jirafe_analytics')->log(
                     'DEBUG', __METHOD__,
