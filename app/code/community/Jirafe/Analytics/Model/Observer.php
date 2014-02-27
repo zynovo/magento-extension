@@ -97,17 +97,19 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
 
         foreach($stores as $store)
         {
-            try {
-                $websiteId = $this->_getWebsiteId($store);
-                $data = Mage::getModel('jirafe_analytics/data');
-                $data->setTypeId(Jirafe_Analytics_Model_Data_Type::CATEGORY);
-                $data->setJson(Mage::getModel('jirafe_analytics/category')->getJson($observer->getCategory()));
-                $data->setCapturedDt(Mage::helper('jirafe_analytics')->getCurrentDt());
-                $data->setWebsiteId($websiteId);
-                $data->save();
-            } catch (Exception $e) {
-                Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
-                $result = false;
+            if (Mage::getStoreConfig('jirafe_analytics/general/enabled', $store)) {
+                try {
+                    $websiteId = $this->_getWebsiteId($store);
+                    $data = Mage::getModel('jirafe_analytics/data');
+                    $data->setTypeId(Jirafe_Analytics_Model_Data_Type::CATEGORY);
+                    $data->setJson(Mage::getModel('jirafe_analytics/category')->getJson($observer->getCategory()));
+                    $data->setCapturedDt(Mage::helper('jirafe_analytics')->getCurrentDt());
+                    $data->setWebsiteId($websiteId);
+                    $data->save();
+                } catch (Exception $e) {
+                    Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
+                    $result = false;
+                }
             }
         }
         return $result;
@@ -127,17 +129,19 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
 
         foreach($stores as $store)
         {
-            try {
-                $websiteId = $this->_getWebsiteId($store);
-                $data = Mage::getModel('jirafe_analytics/data');
-                $data->setTypeId(Jirafe_Analytics_Model_Data_Type::CATEGORY);
-                $data->setJson(Mage::getModel('jirafe_analytics/category')->getJson($observer->getCategory()));
-                $data->setCapturedDt(Mage::helper('jirafe_analytics')->getCurrentDt());
-                $data->setWebsiteId( $websiteId);
-                $data->save();
-            } catch (Exception $e) {
-                Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
-                $result = false;
+            if (Mage::getStoreConfig('jirafe_analytics/general/enabled', $store)) {
+                try {
+                    $websiteId = $this->_getWebsiteId($store);
+                    $data = Mage::getModel('jirafe_analytics/data');
+                    $data->setTypeId(Jirafe_Analytics_Model_Data_Type::CATEGORY);
+                    $data->setJson(Mage::getModel('jirafe_analytics/category')->getJson($observer->getCategory()));
+                    $data->setCapturedDt(Mage::helper('jirafe_analytics')->getCurrentDt());
+                    $data->setWebsiteId( $websiteId);
+                    $data->save();
+                } catch (Exception $e) {
+                    Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
+                    $result = false;
+                }
             }
         }
         return $result;

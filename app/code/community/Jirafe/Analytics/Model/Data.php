@@ -71,6 +71,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                 return Mage::getModel('jirafe_analytics/data_type')
                     ->getCollection()
                     ->addFieldToSelect(array('type'))
+                    ->addFieldToFilter('`main_table`.`attempt_count`', array('lt' => $this->maxAttempts))
                     ->getSelect()
                     ->join( array('d'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/data')), "`main_table`.`id` = `d`.`type_id` AND `d`.`json` is not null AND `d`.`store_id` = $websiteId",array())
                     ->where('d.completed_dt is NULL')
@@ -144,6 +145,12 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
 
             // Separate data by website id since each website has a separate site_id and oauth token
             foreach ($this->_getWebsites() as $website) {
+                $enabled = Mage::app()->getWebsite($website['website_id'])->getConfig('jirafe_analytics/general/enabled');
+                if ($enabled != 1) {
+                    // not a valid site id
+                    continue;
+                }
+
                 // Initialize batch database object and array container
                 Mage::helper('jirafe_analytics')->log(
                     'DEBUG', __METHOD__,
@@ -201,7 +208,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
     protected function _saveBatch($batch = null, $websiteId = null, $historical = false)
     {
         try {
-            if ($batch && is_numeric($websiteId)) {
+            if ($batch && $batch->hasRawData() && is_numeric($websiteId)) {
                 $batch->setStoreId($websiteId);
                 $batch->setCreatedDt(Mage::helper('jirafe_analytics')->getCurrentDt());
 

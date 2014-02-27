@@ -102,12 +102,17 @@ class Jirafe_Analytics_Model_Batch extends Jirafe_Analytics_Model_Abstract
         $this->json_size = strlen(json_encode($this->rawData));
     }
 
+    public function hasRawData()
+    {
+        return !empty($this->rawData);
+    }
+
     /**
      * Overrise save to do the associations w/ data and to convert to json
      */
     public function save()
     {
-        if ($this->rawData) {
+        if ($this->hasRawData()) {
             $this->setJson(json_encode($this->rawData));
         }
         // generate an id
