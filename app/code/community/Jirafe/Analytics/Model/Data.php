@@ -71,6 +71,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
                 return Mage::getModel('jirafe_analytics/data_type')
                     ->getCollection()
                     ->addFieldToSelect(array('type'))
+                    ->addFieldToFilter('`main_table`.`attempt_count`', array('lt' => $this->maxAttempts))
                     ->getSelect()
                     ->join( array('d'=>Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/data')), "`main_table`.`id` = `d`.`type_id` AND `d`.`json` is not null AND `d`.`store_id` = $websiteId",array())
                     ->where('d.completed_dt is NULL')
