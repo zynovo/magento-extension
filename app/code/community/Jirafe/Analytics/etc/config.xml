@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Jirafe_Analytics>
-            <version>1.1.1</version>
+            <version>1.1.2</version>
         </Jirafe_Analytics>
     </modules>
     <global>
@@ -191,15 +191,6 @@
                     </jirafe_analytics_action_catalog_category_save_after>
                 </observers>
             </catalog_category_save_after>
-            <catalog_category_change_products>
-                <observers>
-                    <jirafe_analytics_action_category_change_products>
-                        <type>singleton</type>
-                        <class>Jirafe_Analytics_Model_Observer</class>
-                        <method>categoryChangeProducts</method>
-                    </jirafe_analytics_action_category_change_products>
-                </observers>
-            </catalog_category_change_products>
             <catalog_controller_category_delete>
                 <observers>
                     <jirafe_analytics_action_category_delete>
