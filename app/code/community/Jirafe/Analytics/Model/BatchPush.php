@@ -17,10 +17,12 @@ class Jirafe_Analytics_Model_BatchPush extends Jirafe_Analytics_Model_Base
         $callback = function($batch) use ($me) {
             $id = $batch->getId();
             $json = $batch->getJson();
-            $websiteId = $batch->getWebsiteId();
-            $data = array(array('id' => $id, 'website_id' => $websiteId, 'json' => $json));
-            $response = $me->sendToJirafe($data);
-            $me->updateBatchAttemptStatuses($response);
+            if ($batch->hasRawData()) {
+                $websiteId = $batch->getWebsiteId();
+                $data = array(array('id' => $id, 'website_id' => $websiteId, 'json' => $json));
+                $response = $me->sendToJirafe($data);
+                $me->updateBatchAttemptStatuses($response);
+            }
             return $me->isTimeUp();
         };
         return $callback;

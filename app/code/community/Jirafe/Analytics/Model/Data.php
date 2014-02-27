@@ -207,7 +207,7 @@ class Jirafe_Analytics_Model_Data extends Jirafe_Analytics_Model_Abstract
     protected function _saveBatch($batch = null, $websiteId = null, $historical = false)
     {
         try {
-            if ($batch && is_numeric($websiteId)) {
+            if ($batch && $batch->hasRawData() && is_numeric($websiteId)) {
                 $batch->setStoreId($websiteId);
                 $batch->setCreatedDt(Mage::helper('jirafe_analytics')->getCurrentDt());
 
