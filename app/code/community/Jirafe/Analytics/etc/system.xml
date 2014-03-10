@@ -265,6 +265,33 @@
                         </proc_nice>
                     </fields>
                 </php>
+                <advanced>
+                    <comment><![CDATA[<div class="custom-options"><p>If you use custom order status you can alter them here. If you have more than one status that should be observed enter a comma separated list.</p></div>]]></comment>
+                    <label>Advanced Configuration</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>70</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+                    <fields>
+                        <status_processing translate="label">
+                            <label>Processing Status</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </status_processing>
+                        <status_complete translate="label">
+                            <label>Complete Status</label>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>10</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>0</show_in_website>
+                            <show_in_store>0</show_in_store>
+                        </status_complete>
+                    </fields>
+                </advanced>
             </groups>
         </jirafe_analytics>
     </sections>

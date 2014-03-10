@@ -349,6 +349,10 @@
                 <duration>300</duration>
                 <page_size>100</page_size>
             </historicalpull>
+            <advanced>
+                <status_complete>complete</status_complete>
+                <status_processing>processing</status_processing>
+            </advanced>
         </jirafe_analytics>
     </default>
 </config>
