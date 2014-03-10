@@ -30,7 +30,7 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract imple
                     $fieldMap['order_number']['api'] => $order['increment_id'],
                     $fieldMap['cancel_date']['api'] => $this->_formatDate( $order['updated_at'] )
                 );
-            } else if ($isEvent || in_array($order['status'], getAllStatuses())) {
+            } else if ($isEvent || in_array($order['status'], $this->getAllStatuses())) {
                 $items = Mage::getModel('jirafe_analytics/order_item')->getItems($order['entity_id']);
                 $previousItems = $isEvent ? $this->_getPreviousItems($order['entity_id']) : null;
                 $data = array(
@@ -130,7 +130,7 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract imple
             ->columns($columns)
             ->columns("IF(main_table.status = 'canceled' OR main_table.status = 'cancelled', 'cancelled', 'accepted') as jirafe_status")
             ->where("main_table.store_id in (?)", $storeIds)
-            ->where("main_table.status in (?)", getAllStatuses())
+            ->where("main_table.status in (?)", $this->getAllStatuses())
             ->order('main_table.entity_id ASC');
 
         if ($lastId) {
