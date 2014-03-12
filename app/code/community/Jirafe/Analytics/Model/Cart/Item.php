@@ -17,7 +17,7 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
      * @param  string $storeId
      * @return mixed
      */
-    public function getItems( $quoteId = null, $storeId = null )
+    public function getItems( $quoteId = null, $storeId = null, $currency = null )
     {
         try {
             if ($quoteId) {
@@ -39,11 +39,11 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
 
                 $count = 1;
                 $data = array();
-                foreach($collection->query() as $item) {
+                $converter = Mage::helper('jirafe_analytics');
 
-                    /**
-                     * Get field map array
-                     */
+                foreach($collection->query() as $item) {
+                    $price = floatval($item['row_total']);
+                    $discount_price = floatval($item['discount_amount']);
                     $fieldMap = $this->_getFieldMap( 'cart_item', $item );
 
                     $data[] = array(
@@ -52,8 +52,8 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
                         $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
                         'cart_item_number' => "$count",
                         'quantity' => intval( $item['qty'] ),
-                        'price' => floatval( $item['row_total'] ),
-                        'discount_price' => floatval( $item['discount_amount'] ),
+                        'price' => $currency != null ? $converter->convertCurrency($price, $currency) : $price,
+                        'discount_price' => $currency != null ? $converter->convertCurrency($price, $currency) : $discount_price,
                         'product' => Mage::getModel('jirafe_analytics/product')->getArray(Mage::getModel('catalog/product')->load($item['product_id']), $item['attributes'])
                     );
                     $count++;

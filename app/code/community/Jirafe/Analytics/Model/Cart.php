@@ -42,11 +42,14 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract implem
             if (!$quote) {
                 return false;
             }
-
             $data = array();
-            $items = Mage::getModel('jirafe_analytics/cart_item')->getItems($quote['entity_id'], $quote['store_id']);
             $fieldMap = $this->_getFieldMap('cart', $quote);
+            $baseCurrency = Mage::app()->getStore()->getBaseCurrencyCode();
+            $currency = $baseCurrency != $fieldMap['currency']['magento'] ? $fieldMap['currency']['magento']: null;
 
+            $items = Mage::getModel('jirafe_analytics/cart_item')->getItems($quote['entity_id'], $quote['store_id'], $currency);
+
+            $converter = Mage::helper('jirafe_analytics');
             $previousItems = $this->_getPreviousItems($quote['entity_id']);
 
             $data = array_merge(
@@ -57,7 +60,16 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract implem
                     'customer' => $this->_getCustomer($quote, false),
                     'previous_items' => $previousItems
                 )
-           );
+            );
+
+            if ($currency) {
+                $data[$fieldMap["currency"]["api"]] = $baseCurrency;
+                $data[$fieldMap["total"]["api"]] = $converter->convertCurrency($data[$fieldMap["total"]["api"]], $currency);
+                $data[$fieldMap["total_tax"]["api"]] = $converter->convertCurrency($data[$fieldMap["total_tax"]["api"]], $currency);
+                $data[$fieldMap["total_shipping"]["api"]] = $converter->convertCurrency($data[$fieldMap["total_shipping"]["api"]], $currency);
+                $data[$fieldMap["total_payment_cost"]["api"]] = $converter->convertCurrency($data[$fieldMap["total_payment_cost"]["api"]], $currency);
+                $data[$fieldMap["total_discounts"]["api"]] = $converter->convertCurrency($data[$fieldMap["total_discounts"]["api"]], $currency);
+            }
 
             if ($isEvent && $visit = $this->_getVisit()) {
                 $data['visit'] = $visit;

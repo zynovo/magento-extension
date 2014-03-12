@@ -31,6 +31,21 @@ class Jirafe_Analytics_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     /**
+     * Converts currency.
+     *
+     * There appears to be bugs in Magento Core which prevent converting from
+     * an arbitrary supported currency to the base currency.  This method
+     * attempts to work around this limitation by multiplying the amount by
+     * the inverse of the base to foreign conversion rate.
+     */
+    public function convertCurrency($amount, $currency)
+    {
+        $base = Mage::app()->getStore()->getBaseCurrency();
+        $rate = $base->getRate($currency);
+        return (1/$rate)*$amount;
+    }
+
+    /**
      * Write log messages to db
      *
      * @param  string $type
