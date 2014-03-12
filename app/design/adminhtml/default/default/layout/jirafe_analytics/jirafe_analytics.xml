@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<layout>
+    <jirafe_analytics_adminhtml_dashboard_index>
+        <update handle="jirafe_analytics_dashboard_index"/>
+        <reference name="content">
+            <block type="adminhtml/template" name="dashboard" template="jirafe_analytics/dashboard.phtml"/>
+        </reference>
+    </jirafe_analytics_adminhtml_dashboard_index>
+</layout>
