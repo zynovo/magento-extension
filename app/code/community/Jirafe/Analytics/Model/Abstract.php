@@ -390,4 +390,15 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
             return false;
         }
     }
+
+    /*
+     * Truncate the table for this model.
+     *
+     * Call with care, as not all models have tables to truncate.
+     */
+    public function truncate() {
+        $w = Mage::getSingleton('core/resource')->getConnection('core_write');
+        $w->query('SET FOREIGN_KEY_CHECKS = 0;\nTRUNCATE TABLE '.$this->getMainTable().';\nSET FOREIGN_KEY_CHECKS = 1;');
+        return $this;
+    }
 }

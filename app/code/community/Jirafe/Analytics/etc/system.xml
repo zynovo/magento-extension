@@ -292,6 +292,30 @@
                         </status_complete>
                     </fields>
                 </advanced>
+                <emergencyreset>
+                    <label>Emergency Reset Button</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>1000</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+			<comment><![CDATA[
+			<p>
+				<strong>Do not press this button without explicit instructions from Jirafe.</strong>
+			</p>
+			]]></comment>
+                    <fields>
+                        <run translate="label">
+                           <label>Emergency Reset Button</label>
+                           <frontend_type>button</frontend_type>
+                           <frontend_model>jirafe_analytics/reset</frontend_model>
+                           <sort_order>1000</sort_order>
+                           <show_in_default>1</show_in_default>
+                           <show_in_website>0</show_in_website>
+                           <show_in_store>0</show_in_store>
+                        </run>
+                    </fields>
+                </emergencyreset>
             </groups>
         </jirafe_analytics>
     </sections>
