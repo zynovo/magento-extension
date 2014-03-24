@@ -12,7 +12,7 @@
                             <action>jirafe_analytics/adminhtml_data</action>
                         </adminhtml_data>
                         <adminhtml_attempt translate="title" module="jirafe_analytics">
-                            <title>Data Transfered</title>
+                            <title>Data Transferred</title>
                             <action>jirafe_analytics/adminhtml_attempt</action>
                         </adminhtml_attempt>
                         <adminhtml_log translate="title" module="jirafe_analytics">
