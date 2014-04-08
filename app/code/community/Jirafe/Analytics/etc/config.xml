@@ -85,6 +85,26 @@
                 <oauth/>
             </direct_front_name>
         </request>
+        <events>
+            <sales_order_place_after>
+                <observers>
+                    <jirafe_analytics_sales_order_place_after>
+                        <type>singleton</type>
+                        <class>Jirafe_Analytics_Model_Observer</class>
+                        <method>orderPlaceAfter</method>
+                    </jirafe_analytics_sales_order_place_after>
+                </observers>
+            </sales_order_place_after>
+            <sales_order_save_after>
+                <observers>
+                    <jirafe_analytics_sales_order_save_after>
+                        <type>singleton</type>
+                        <class>Jirafe_Analytics_Model_Observer</class>
+                        <method>orderAccepted</method>
+                    </jirafe_analytics_sales_order_save_after>
+                </observers>
+            </sales_order_save_after>
+        </events>
     </global>
     <frontend>
         <layout>
@@ -149,15 +169,6 @@
                     </jirafe_analytics_customer_load_after>
                 </observers>
             </customer_load_after>
-            <sales_order_place_after>
-                <observers>
-                    <jirafe_analytics_sales_order_place_after>
-                        <type>singleton</type>
-                        <class>Jirafe_Analytics_Model_Observer</class>
-                        <method>orderAccepted</method>
-                    </jirafe_analytics_sales_order_place_after>
-                </observers>
-            </sales_order_place_after>
         </events>
         <routers>
             <jirafe_analytics>
