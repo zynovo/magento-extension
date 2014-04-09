@@ -214,7 +214,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
         try {
              $categories = array();
 
-           $_categoryIds = $this->_product->getCategoryIds();
+            $_categoryIds = $this->_product->getCategoryIds();
             if ($_categoryIds) {
                 $_categoryCollection = Mage::getModel('catalog/category')->getCollection()
                     ->addAttributeToSelect('name')
