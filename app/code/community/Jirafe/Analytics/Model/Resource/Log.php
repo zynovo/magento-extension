@@ -15,4 +15,9 @@ class Jirafe_Analytics_Model_Resource_Log extends Mage_Core_Model_Resource_Db_Ab
     {
         $this->_init('jirafe_analytics/log','id');
     }
+
+    public function truncate()
+    {
+        $this->_getWriteAdapter()->truncate($this->getMainTable());
+    }
 }

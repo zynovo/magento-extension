@@ -36,8 +36,8 @@ class Jirafe_Analytics_Adminhtml_LogController extends Mage_Adminhtml_Controller
     {
         
         try {
-            $db = Mage::getSingleton('core/resource')->getConnection('core_read');
-            $db->query('TRUNCATE TABLE ' . Mage::getSingleton('core/resource')->getTableName('jirafe_analytics/log'));
+            $_resourceModel = Mage::getResourceModel('jirafe_analytics/log');
+            $_resourceModel->truncate();
             $this->_getSession()->addSuccess('Debug logs successfully deleted.');
         } catch (Exception $e) {
             $this->_getSession()->addError('Unable to delete debug logs.');
