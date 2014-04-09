@@ -66,7 +66,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
                     if ($this->_parent = $this->_getParent()) {
                         $this->_parentTypeId = $this->_parent->getTypeId();
 
-                        if ( $this->_parentTypeId == 'configurable' ) {
+                        if ( $this->_parentTypeId == Mage_Catalog_Model_Product_Type_Configurable::TYPE_CODE ) {
                             $this->_baseProducts = $this->_getBaseProducts();
                             $this->_attributes = $this->_getAttributes( $itemAttributes ) ;
                         }
@@ -143,10 +143,10 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
                     return true;
                 }
                 break;
-            case 'configurable':
+            case Mage_Catalog_Model_Product_Type_Configurable::TYPE_CODE:
                 return true;
                 break;
-            case 'grouped':
+            case Mage_Catalog_Model_Product_Type_Grouped::TYPE_CODE:
                  return false;
                  break;
             case 'virtual':
@@ -180,10 +180,10 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
             case 'simple':
                 return true;
                 break;
-            case 'grouped':
+            case Mage_Catalog_Model_Product_Type_Grouped::TYPE_CODE:
                 return false;
                 break;
-            case 'configurable':
+            case Mage_Catalog_Model_Product_Type_Configurable::TYPE_CODE:
                 return false;
                 break;
             case 'virtual':
@@ -214,11 +214,15 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
         try {
              $categories = array();
 
-             foreach ($this->_product->getCategoryIds() as $catId) {
-                 if ( $category = Mage::getModel('catalog/category')->load( $catId ) ) {
-                     $categories[] = Mage::getModel('jirafe_analytics/category')->getArray($category);
-                 }
-             }
+            $_categoryIds = $this->_product->getCategoryIds();
+            if ($_categoryIds) {
+                $_categoryCollection = Mage::getModel('catalog/category')->getCollection()
+                    ->addAttributeToSelect('name')
+                    ->addFieldToFilter('entity_id', array('in' => $_categoryIds));
+                foreach ($_categoryCollection as $_category) {
+                    $categories[] = Mage::getModel('jirafe_analytics/category')->getArray($_category);
+                }
+            }
 
              if ($categories) {
                  return json_decode(json_encode($categories), FALSE);
@@ -324,11 +328,11 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
                  $attributes = unserialize($itemAttributes);
 
                  foreach ($attributes as $key => $val) {
-
-                     $options = Mage::getResourceModel('eav/entity_attribute_collection')
+                     $_resourceModel = Mage::getResourceModel('eav/entity_attribute_collection');
+                     $options = $_resourceModel
                          ->getSelect()
-                         ->join(array('o'=>'eav_attribute_option'),'main_table.attribute_id = o.attribute_id')
-                         ->join(array('v'=>'eav_attribute_option_value'),'o.option_id = v.option_id')
+                         ->join(array('o'=> $_resourceModel->getTable('eav/attribute_option')),'main_table.attribute_id = o.attribute_id')
+                         ->join(array('v'=> $_resourceModel->getTable('eav/attribute_option_value')),'o.option_id = v.option_id')
                          ->reset(Zend_Db_Select::COLUMNS)
                          ->columns( array('main_table.attribute_id','main_table.attribute_code','v.value'))
                          ->where("main_table.attribute_id = $key AND v.option_id = $val")
@@ -336,7 +340,6 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
                          ->query();
 
                      foreach($options as $option) {
-
                          $obj[] = array(
                              'id' => $option['attribute_id'],
                              'name' => $option['attribute_code'],
@@ -344,7 +347,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
                          );
                      }
                 }
-            } else if ( $this->_typeId === 'simple' && $this->_parentTypeId === 'configurable') {
+            } else if ( $this->_typeId === 'simple' && $this->_parentTypeId === Mage_Catalog_Model_Product_Type_Configurable::TYPE_CODE) {
 
                $attributes = $this->_parent->getTypeInstance(true)->getConfigurableAttributesAsArray($this->_parent);
 
