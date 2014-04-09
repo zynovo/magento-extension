@@ -331,7 +331,8 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
                          ->join(array('v'=>'eav_attribute_option_value'),'o.option_id = v.option_id')
                          ->reset(Zend_Db_Select::COLUMNS)
                          ->columns( array('main_table.attribute_id','main_table.attribute_code','v.value'))
-                         ->where("main_table.attribute_id = $key AND v.option_id = $val")
+                         ->where("main_table.attribute_id = ? ",$key)
+                         ->where("v.option_id = ?",$val)
                          ->limit(1)
                          ->query();
 
@@ -413,7 +414,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
             ->order('e.entity_id ASC');
 
         if (is_numeric($lastId)) {
-            $collection->where("e.entity_id > $lastId");
+            $collection->where("e.entity_id > ?",$lastId);
         }
 
         return Zend_Paginator::factory($collection);

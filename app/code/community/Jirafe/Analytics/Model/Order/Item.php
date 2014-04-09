@@ -33,7 +33,7 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
                     ->joinLeft(array('option'=>Mage::getSingleton('core/resource')->getTableName('sales/quote_item_option')), "parent.item_id = option.item_id AND option.code = 'attributes'",array('option.value'))
                     ->reset(Zend_Db_Select::COLUMNS)
                     ->columns( $columns )
-                    ->where("main_table.order_id = $orderId AND main_table.product_type != 'configurable' AND (parent.product_type != 'bundle' OR parent.product_type is null)");
+                    ->where("main_table.order_id = ? AND main_table.product_type != 'configurable' AND (parent.product_type != 'bundle' OR parent.product_type is null)", $orderId);
 
                 $count = 1;
                 $data = array();
