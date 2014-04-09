@@ -241,6 +241,24 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
     }
 
     /**
+     * Call when order place
+     *
+     * @param Varien_Event_Observer $observer
+     * @return boolean
+     */
+    public function orderPlaceAfter(Varien_Event_Observer $observer)
+    {
+        try {
+            Mage::getSingleton('core/session')->setProcessOrder(true);
+            return true;
+        } catch (Exception $e) {
+            Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
+            return false;
+        }
+
+    }
+
+    /**
      * Capture order accepted event
      *
      * @param Varien_Event_Observer $observer
@@ -249,14 +267,16 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
     public function orderAccepted(Varien_Event_Observer $observer)
     {
         try {
+            //To fire the event only when order is placed and not every time order save
+            if (!Mage::getSingleton('core/session')->getProcessOrder()) {
+                return false;
+            }
+            Mage::getSingleton('core/session')->setProcessOrder(false);
             $order = $observer->getOrder();
 
-            /**
-             * Core bug workaround for Magento CE 1.8.0.0 with PHP 5.3.3
-             * Orders are not properly committed for sales_order_* events
-             */
             if (!$order->getEntityId()) {
-                $order->save();
+                Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, ' There is an error in accepting order');
+                return false;
             }
 
             /**
@@ -264,7 +284,6 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
              */
             Mage::getSingleton('core/session')->setJirafeOrderNumber($order->getIncrementId());
             $orderNumber = Mage::getSingleton('core/session')->getJirafeOrderNumber();
-
             if (Mage::getStoreConfig('jirafe_analytics/general/enabled', $order->getStoreId())) {
                 $data = $order->getData();
                 $payment = $order->getPayment();
@@ -392,6 +411,9 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                  */
                 $originalIds = Mage::getModel('catalog/product_type_configurable')->getUsedProductIds($product);
                 $newIds = array_keys($product->getConfigurableProductsData());
+                if (is_null($newIds)) {
+                    $newIds = array();
+                }
 
                 /**
                  * Get product attributes from parent configurable
@@ -405,10 +427,14 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 /**
                  * Check for removed variants
                  */
-                foreach($originalIds as $id) {
-                    if (!in_array(intval($id),$newIds)) {
-                        if ($variant = Mage::getModel('catalog/product')->load(intval($id))) {
-                            $this->_productSave($variant, $attributes);
+                if ($originalIds) {
+                    $_idsNotInNewIds = array_diff($originalIds,$newIds);
+                    if ($_idsNotInNewIds) {
+                        $_productCollection = Mage::getModel('catalog/product')->getcollection()
+                            ->addAttributeToSelect('name')
+                            ->addFieldToFilter('entity_id', array('in' => $_idsNotInNewIds));
+                        foreach ($_productCollection as $_product) {
+                            $this->_productSave($_product, $attributes);
                         }
                     }
                 }
@@ -416,11 +442,14 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 /**
                  * Check for added variants
                  */
-                foreach($newIds as $id) {
-                    if (!in_array(strval($id),$originalIds)) {
-                        if ($variant = Mage::getModel('catalog/product')->load($id)) {
-                            Mage::log('add new variant!',null,'variant.log');
-                            $this->_productSave($variant);
+                if ($newIds) {
+                    $_idsNotInOrigIds = array_diff($newIds,$originalIds);
+                    if ($_idsNotInOrigIds) {
+                        $_productCollection = Mage::getModel('catalog/product')->getcollection()
+                            ->addAttributeToSelect('name')
+                            ->addFieldToFilter('entity_id', array('in' => $_idsNotInOrigIds));
+                        foreach ($_productCollection as $_product) {
+                            $this->_productSave($_product, $attributes);
                         }
                     }
                 }
