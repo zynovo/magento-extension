@@ -10,14 +10,14 @@ var jirafe_site_id = <?php echo json_encode($this->_siteId); ?>;
 var jirafe_org_id = "";
 function jirafe_deferred(jirafe_api){
     var data = {
+        <?php if($this->_customer && isset($this->_customer['id'])):?>
         "customer": {
-            <?php if($this->_customer && isset($this->_customer['id'])):?>
             "id": <?php echo json_encode($this->_customer['id']); ?>,
             "firstname": <?php echo json_encode($this->_customer['firstname']); ?>,
             "lastname": <?php echo json_encode($this->_customer['lastname']); ?>,
             "email": <?php echo json_encode($this->_customer['email']); ?>
-            <?php endif;?>
         }
+        <?php endif;?>
     };
     data.attribution = jirafe_parseAttribution(
         ["jirafe_atr1", "jirafe_atr2", "jirafe_atr3", "jirafe_atr4", "jirafe_atr5"]);
