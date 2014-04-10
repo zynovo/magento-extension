@@ -134,7 +134,7 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract imple
             ->order('main_table.entity_id ASC');
 
         if ($lastId) {
-            $orders->where("main_table.entity_id > $lastId");
+            $orders->where("main_table.entity_id > ?",$lastId);
         }
 
         return Zend_Paginator::factory($orders);
