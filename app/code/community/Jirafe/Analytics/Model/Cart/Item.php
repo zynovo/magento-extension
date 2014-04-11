@@ -34,7 +34,8 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
                     ->joinLeft(array('option'=>Mage::getSingleton('core/resource')->getTableName('sales/quote_item_option')), "parent.item_id = option.item_id AND option.code = 'attributes'", array('option.value'))
                     ->reset(Zend_Db_Select::COLUMNS)
                     ->columns($columns)
-                    ->where("main_table.quote_id = $quoteId AND main_table.product_type != 'configurable' AND (parent.product_type != 'bundle' OR parent.product_type is null)")
+                    ->where("main_table.quote_id = ?", $quoteId)
+                    ->where("main_table.product_type != ? AND (parent.product_type != 'bundle' OR parent.product_type is null)", Mage_Catalog_Model_Product_Type_Configurable::TYPE_CODE)
                     ->distinct(true);
 
                 $count = 1;

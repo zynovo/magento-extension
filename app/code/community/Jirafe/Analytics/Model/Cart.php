@@ -132,12 +132,9 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract implem
         $collection->order('main_table.entity_id ASC');
 
         if ($lastId) {
-            $collection->where("main_table.entity_id > $lastId");
+            $collection->where("main_table.entity_id > ?", $lastId);
         }
-        if($storeIds)
-        {
-            $collection->where("main_table.store_id in (?)", $storeIds);
-        }
+
         return Zend_Paginator::factory($collection);
     }
 }
