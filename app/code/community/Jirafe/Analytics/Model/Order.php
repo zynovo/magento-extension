@@ -64,6 +64,28 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract imple
     }
 
     /**
+     * Format customer data as array
+     *
+     * @param Array $data
+     * @return array
+     * @throws Exception if unable to generate customer object
+     */
+    protected function _getCustomer($data = null, $includeCookies = false)
+    {
+        try {
+            return array(
+                'id' =>  $data['customer_id'],
+                'email' => $data['customer_email'],
+                'first_name' => $data['customer_firstname'],
+                'last_name' => $data['customer_lastname']
+            );
+        } catch (Exception $e) {
+            Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
+            return false;
+        }
+    }
+
+    /**
      * Get items from previous instance of order from session
      *
      * @param int $quoteId
