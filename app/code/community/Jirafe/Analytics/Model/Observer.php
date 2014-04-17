@@ -403,7 +403,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
         try {
             $product = $observer->getProduct();
             $this->_productSave($product);
-
+Mage::log($product->getTypeId());
             if ($product->getTypeId() === 'configurable') {
 
                 /**
@@ -414,7 +414,8 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 if (is_null($newIds)) {
                     $newIds = array();
                 }
-
+Mage::log('configurable product data'.print_r($product->getConfigurableProductsData(),1));
+Mage::log('configurable product data'.print_r($product->getTypeInstance(true)->getConfigurableAttributesAsArray($product),1));
                 /**
                  * Get product attributes from parent configurable
                  */
@@ -434,6 +435,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                             ->addAttributeToSelect('name')
                             ->addFieldToFilter('entity_id', array('in' => $_idsNotInNewIds));
                         foreach ($_productCollection as $_product) {
+                            $_product->setRemoveVariant(true);
                             $this->_productSave($_product, $attributes);
                         }
                     }

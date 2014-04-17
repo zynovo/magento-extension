@@ -63,7 +63,8 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
                 $this->_typeId =  $this->_product->getTypeId();
 
                 if ($this->_typeId == 'simple') {
-                    if ($this->_parent = $this->_getParent()) {
+                    if (!$this->_product->getRemoveVariant() && $this->_parent = $this->_getParent()) {
+ Mage::log('configuration option');
                         $this->_parentTypeId = $this->_parent->getTypeId();
 
                         if ( $this->_parentTypeId == Mage_Catalog_Model_Product_Type_Configurable::TYPE_CODE ) {
@@ -115,7 +116,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
                 if ( $urls = $this->_getUrls() ) {
                     $element['url'] = $urls;
                 }
-
+Mage::log('element:'.print_r($element,1));
                 return $element;
             } else {
                 return array();
@@ -326,26 +327,41 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
              if ($itemAttributes) {
 
                  $attributes = unserialize($itemAttributes);
-
+Mage::log('getAttributes:'.print_r($attributes,1));
                  foreach ($attributes as $key => $val) {
-                     $_resourceModel = Mage::getResourceModel('eav/entity_attribute_collection');
-                     $options = $_resourceModel
-                         ->getSelect()
-                         ->join(array('o'=> $_resourceModel->getTable('eav/attribute_option')),'main_table.attribute_id = o.attribute_id')
-                         ->join(array('v'=> $_resourceModel->getTable('eav/attribute_option_value')),'o.option_id = v.option_id')
-                         ->reset(Zend_Db_Select::COLUMNS)
-                         ->columns( array('main_table.attribute_id','main_table.attribute_code','v.value'))
-                         ->where("main_table.attribute_id = ? ",$key)
-                         ->where("v.option_id = ?",$val)
-                         ->limit(1)
-                         ->query();
-
-                     foreach($options as $option) {
-                         $obj[] = array(
-                             'id' => $option['attribute_id'],
-                             'name' => $option['attribute_code'],
-                             'value' => $option['value']
-                         );
+                     /**
+                      * If attributes data is from product object
+                      * No need to have sql query since item attributes include all necessary information
+                      */
+                     if (isset($val['attribute_id']) && isset($val['values'])) {
+Mage::log('options value:'.print_r($val,1));
+                        foreach ($val['values'] as $val2) {
+                            $obj[] = array(
+                                'id' => $val['attribute_id'],
+                                'name' => $val['attribute_code'],
+                                'value' => $val2['label']
+                            );
+                        }
+                     } else {
+                         $_resourceModel = Mage::getResourceModel('eav/entity_attribute_collection');
+                         $options = $_resourceModel
+                             ->getSelect()
+                             ->join(array('o'=> $_resourceModel->getTable('eav/attribute_option')),'main_table.attribute_id = o.attribute_id')
+                             ->join(array('v'=> $_resourceModel->getTable('eav/attribute_option_value')),'o.option_id = v.option_id')
+                             ->reset(Zend_Db_Select::COLUMNS)
+                             ->columns( array('main_table.attribute_id','main_table.attribute_code','v.value'))
+                             ->where("main_table.attribute_id = ? ",$key)
+                             ->where("v.option_id = ?",$val)
+                             ->limit(1)
+                             ->query();
+Mage::log('options value2:'.print_r($options,1));
+                         foreach($options as $option) {
+                             $obj[] = array(
+                                 'id' => $option['attribute_id'],
+                                 'name' => $option['attribute_code'],
+                                 'value' => $option['value']
+                             );
+                         }
                      }
                 }
             } else if ( $this->_typeId === 'simple' && $this->_parentTypeId === Mage_Catalog_Model_Product_Type_Configurable::TYPE_CODE) {
@@ -362,7 +378,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
                    }
                }
             }
-
+Mage::log("attributes: ".print_r($obj,1));
             return $obj;
         } catch (Exception $e) {
             Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::_getAttributes()', $e->getMessage(), $e);
