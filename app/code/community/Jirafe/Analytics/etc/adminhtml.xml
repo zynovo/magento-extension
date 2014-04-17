@@ -23,6 +23,15 @@
                 </jirafe_analytics>
             </children>
         </report>
+        <dashboard>
+            <children>
+                <jirafe_analytics translate="title" module="jirafe_analytics">
+                    <title>Jirafe Dashboard</title>
+                    <sort_order>99999</sort_order>
+                    <action>jirafe_analytics/adminhtml_dashboard</action>
+                </jirafe_analytics>
+            </children>
+        </dashboard>
     </menu>
     <acl>
         <resources>
