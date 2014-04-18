@@ -6,7 +6,7 @@ class Jirafe_Analytics_Block_Reset extends Mage_Adminhtml_Block_System_Config_Fo
     {
         $website_code = $this->getRequest()->getParam('website');
         $this->setElement($element);
-        $url  = $this->getUrl('jirafe_analytics/adminhtml_reset/reset');
+        $url = $this->getUrl('jirafe_analytics/adminhtml_reset/reset');
 
         $html = $this->getLayout()->createBlock('adminhtml/widget_button')
                     ->setType('button')

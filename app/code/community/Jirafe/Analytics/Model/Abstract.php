@@ -17,7 +17,9 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
     {
         $data = array();
         foreach ($fields as $field) {
-            if (array_key_exists($field, $fieldMap) && array_key_exists($left, $fieldMap[$field]) && array_key_exists($right, $fieldMap[$field])) {
+            if (array_key_exists($field, $fieldMap) && 
+                array_key_exists($left, $fieldMap[$field]) &&
+                array_key_exists($right, $fieldMap[$field])) {
                 $data[$fieldMap[$field][$left]] = $fieldMap[$field][$right];
             }
         }
@@ -389,16 +391,5 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
             Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e);
             return false;
         }
-    }
-
-    /*
-     * Truncate the table for this model.
-     *
-     * Call with care, as not all models have tables to truncate.
-     */
-    public function truncate() {
-        $w = Mage::getSingleton('core/resource')->getConnection('core_write');
-        $w->query('SET FOREIGN_KEY_CHECKS = 0;\nTRUNCATE TABLE '.$this->getMainTable().';\nSET FOREIGN_KEY_CHECKS = 1;');
-        return $this;
     }
 }
