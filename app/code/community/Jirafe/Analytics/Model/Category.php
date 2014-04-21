@@ -73,7 +73,14 @@ class Jirafe_Analytics_Model_Category extends Jirafe_Analytics_Model_Abstract im
      */
     public function getPaginator($websiteId, $lastId = null)
     {
-        $storeIds = Mage::app()->getWebsite($websiteId)->getStoreIds();
+        if ($websiteId) {
+            $_rootCatIds = array();
+            $_storeGroups = Mage::getModel('core/store_group')->getCollection()
+                    ->addWebsiteFilter($websiteId);
+            foreach ($_storeGroups as $_storeGroup) {
+                $_rootCatIds[] = $_storeGroup->getRootCategoryId();
+            }
+        }
         $categories = Mage::getModel('catalog/category')->getCollection()
             ->addAttributeToSelect('name')
             ->setOrder('entity_id');
@@ -81,16 +88,15 @@ class Jirafe_Analytics_Model_Category extends Jirafe_Analytics_Model_Abstract im
         if ($lastId) {
             $categories->addAttributeToFilter('entity_id', array('gt' => $lastId));
         }
-
-        $filteredCategories = array_filter(
-            iterator_to_array($categories),
-            function($category) use ($storeIds) {
-                $inter = array_intersect($category->getStoreIds(), $storeIds);
-                return !empty($inter);
+        if ($_rootCatIds) {
+            $pathFilter = array();
+            foreach($_rootCatIds as $_rootCatId) {
+                $pathFilter[] = Mage_Catalog_Model_Category::TREE_ROOT_ID.'/'.$_rootCatId.'/';
             }
-        );
 
-        return Zend_Paginator::factory($filteredCategories);
+            $categories->addPathsFilter($pathFilter);
+        }
+        return Zend_Paginator::factory($categories->getIterator());
     }
 }
 
