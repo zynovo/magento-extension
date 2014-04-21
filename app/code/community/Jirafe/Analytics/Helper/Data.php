@@ -172,5 +172,21 @@ class Jirafe_Analytics_Helper_Data extends Mage_Core_Helper_Abstract
             }
         }
     }
+
+    /**
+     * Retrieve Website ID for given store
+     * @param int
+     * @return int
+     */
+    public function getWebsiteId($storeId=0)
+    {
+        if ($storeId) {
+            $_store = Mage::getModel('core/store')->load($storeId);
+            if ($_store) {
+                return $_store->getWebsiteId();
+            }
+        }
+        return 0;
+    }
 }
 
