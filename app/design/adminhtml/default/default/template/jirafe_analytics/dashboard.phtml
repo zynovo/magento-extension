@@ -1,0 +1,48 @@
+<iframe id="jirafe_analytics_dashboard_iframe" src="https://magento.partners.jirafe.com"></iframe>
+<style>
+#anchor-content {
+	padding: 0;
+	background: #ff0;
+	min-height: inherit;
+}
+
+#html-body .footer {
+	display: none;
+}
+
+body {
+	overflow: hidden;
+}
+
+#jirafe_analytics_dashboard_iframe {
+	border: 0;
+	width: 100%;
+	height: 100%;
+}
+</style>
+<script>
+(function(){
+	var addEvent = function(elem, type, eventHandle) {
+	    if (elem == null || typeof(elem) == 'undefined') return;
+	    if ( elem.addEventListener ) {
+	        elem.addEventListener( type, eventHandle, false );
+	    } else if ( elem.attachEvent ) {
+	        elem.attachEvent( "on" + type, eventHandle );
+	    } else {
+	        elem["on"+type]=eventHandle;
+	    }
+	};
+
+	var fixHeight = function() {
+		var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+		console.log("height " + h);
+		var el = document.getElementById('jirafe_analytics_dashboard_iframe');
+		var middleTop = el.getBoundingClientRect().top;
+		console.log("middleTop " + middleTop);
+		el.style.height = (h - middleTop) + "px";
+	};
+
+	addEvent(window, 'resize', fixHeight);
+	fixHeight();
+})();
+</script>

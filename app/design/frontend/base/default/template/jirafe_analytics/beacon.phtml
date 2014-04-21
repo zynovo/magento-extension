@@ -1,55 +1,59 @@
-<script type="text/javascript">
-//<![CDATA[
-/* Jirafe Analytics */
-(function(){
-    var d=document,g=d.createElement('script'),s=d.getElementsByTagName('script')[0];
-        g.type='text/javascript';g.defer=g.async=true;g.src=d.location.protocol+'//<?php echo $this->_beaconApiUrl; ?>';
-        s.parentNode.insertBefore(g,s);
-})();
-var jirafe_site_id = <?php echo json_encode($this->_siteId); ?>;
-var jirafe_org_id = "";
-function jirafe_deferred(jirafe_api){
-    var data = {
-        "customer": {
-            "id": <?php echo json_encode($this->_customer['id']); ?>,
-            "firstname": <?php echo json_encode($this->_customer['firstname']); ?>,
-            "lastname": <?php echo json_encode($this->_customer['lastname']); ?>,
-            "email": <?php echo json_encode($this->_customer['email']); ?>
-        }
-    };
-    data.attribution = jirafe_parseAttribution(
-        ["jirafe_atr1", "jirafe_atr2", "jirafe_atr3", "jirafe_atr4", "jirafe_atr5"]);
-    <?php     if ($this->_page == "search"): ?>
-        var type = <?php echo json_encode($this->_page); ?>;
-        data.search = {
-            "term": <?php echo json_encode($this->helper('catalogsearch')->getEscapedQueryText()); ?>,
-            "total_results": <?php echo json_encode($this->helper('catalogsearch')->getQuery()->num_results); ?>
-        };
-    <?php elseif ($this->_page == "product"): ?>
-        var type = <?php echo json_encode($this->_page); ?>;
-        data.product = {
-            "product_code":  <?php echo json_encode($this->helper('catalog')->getProduct()->sku);  ?>,
-            "name": <?php echo json_encode($this->helper('catalog')->getProduct()->name);  ?>
-        };
-    <?php elseif ($this->_page == "category"): ?>
-        var type = <?php echo json_encode($this->_page); ?>;
-        data.category = {
-            "name": <?php echo json_encode($this->helper('catalog')->getCategory()->name);  ?>
-        };
-    <?php elseif ($this->_page == "cart"): ?>
-        var type = <?php echo json_encode($this->_page); ?>;
-    <?php elseif ($this->_page == "order_success"): ?>
-        jirafe_api.order.success(jirafe_org_id, jirafe_site_id, {
-            "order": {
-                "num": <?php echo json_encode($this->_orderNumber); ?>
+<?php if ($this->_enabled): ?>
+    <script type="text/javascript">
+    //<![CDATA[
+    /* Jirafe Analytics */
+    (function(){
+        var d=document,g=d.createElement('script'),s=d.getElementsByTagName('script')[0];
+            g.type='text/javascript';g.defer=g.async=true;g.src=d.location.protocol+'//<?php echo $this->_beaconApiUrl; ?>';
+            s.parentNode.insertBefore(g,s);
+    })();
+    var jirafe_site_id = <?php echo json_encode($this->_siteId); ?>;
+    var jirafe_org_id = "";
+    function jirafe_deferred(jirafe_api){
+        var data = {
+            <?php if($this->_customer && isset($this->_customer['id'])):?>
+            "customer": {
+                "id": <?php echo json_encode($this->_customer['id']); ?>,
+                "firstname": <?php echo json_encode($this->_customer['firstname']); ?>,
+                "lastname": <?php echo json_encode($this->_customer['lastname']); ?>,
+                "email": <?php echo json_encode($this->_customer['email']); ?>
             }
-        });
-        var type = <?php echo json_encode($this->_page); ?>;
-    <?php else: ?>
-        var type = "other";
-    <?php endif; ?>
+            <?php endif;?>
+        };
+        data.attribution = jirafe_parseAttribution(
+            ["jirafe_atr1", "jirafe_atr2", "jirafe_atr3", "jirafe_atr4", "jirafe_atr5"]);
+        <?php     if ($this->_page == "search"): ?>
+            var type = <?php echo json_encode($this->_page); ?>;
+            data.search = {
+                "term": <?php echo json_encode($this->helper('catalogsearch')->getEscapedQueryText()); ?>,
+                "total_results": <?php echo json_encode($this->helper('catalogsearch')->getQuery()->num_results); ?>
+            };
+        <?php elseif ($this->_page == "product"): ?>
+            var type = <?php echo json_encode($this->_page); ?>;
+            data.product = {
+                "product_code":  <?php echo json_encode($this->helper('catalog')->getProduct()->getSku());  ?>,
+                "name": <?php echo json_encode($this->helper('catalog')->getProduct()->getName());  ?>
+            };
+        <?php elseif ($this->_page == "category"): ?>
+            var type = <?php echo json_encode($this->_page); ?>;
+            data.category = {
+                "name": <?php echo json_encode($this->helper('catalog')->getCategory()->getName());  ?>
+            };
+        <?php elseif ($this->_page == "cart"): ?>
+            var type = <?php echo json_encode($this->_page); ?>;
+        <?php elseif ($this->_page == "order_success"): ?>
+            jirafe_api.order.success(jirafe_org_id, jirafe_site_id, {
+                "order": {
+                    "num": <?php echo json_encode($this->_orderNumber); ?>
+                }
+            });
+            var type = <?php echo json_encode($this->_page); ?>;
+        <?php else: ?>
+            var type = "other";
+        <?php endif; ?>
 
-    jirafe_api.pageview(jirafe_org_id, jirafe_site_id, type, data);
-}
-//]]>
-</script>
+        jirafe_api.pageview(jirafe_org_id, jirafe_site_id, type, data);
+    }
+    //]]>
+    </script>
+<?php endif; ?>
