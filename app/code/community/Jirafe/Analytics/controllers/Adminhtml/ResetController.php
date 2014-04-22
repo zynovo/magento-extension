@@ -25,6 +25,10 @@ class Jirafe_Analytics_Adminhtml_ResetController extends Mage_Adminhtml_Controll
     private function truncateModels()
     {
         Mage::helper('jirafe_analytics')->log('INFO', __METHOD__, 'Truncating Models...');
+        Mage::getConfig()->saveConfig('jirafe_analytics/general/enabled', 0);
+        Mage::getConfig()->reinit();
+        Mage::app()->reinitStores();
+
         $truncatable = array('batch', 'batch_data', 'data', 'data_attempt', 'data_error');
         foreach ($truncatable as $name) {
             Mage::helper('jirafe_analytics')->log('INFO', __METHOD__, "'Truncating '$name'...'");
@@ -33,6 +37,10 @@ class Jirafe_Analytics_Adminhtml_ResetController extends Mage_Adminhtml_Controll
             $w->query('SET FOREIGN_KEY_CHECKS = 0;\nTRUNCATE TABLE '.$model->getMainTable().';\nSET FOREIGN_KEY_CHECKS = 1;');
             Mage::helper('jirafe_analytics')->log('INFO', __METHOD__, "Done Truncating '$name'.");
         }
+
+        Mage::getConfig()->saveConfig('jirafe_analytics/general/enabled', 1);
+        Mage::getConfig()->reinit();
+        Mage::app()->reinitStores();
         Mage::helper('jirafe_analytics')->log('INFO', __METHOD__, 'Done Truncating Models.');
     }
 
