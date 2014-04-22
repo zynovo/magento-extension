@@ -30,6 +30,22 @@ class Jirafe_Analytics_Helper_Data extends Mage_Core_Helper_Abstract
         $config->reinit();
     }
 
+    public function fetchBaseCurrencyCode()
+    {
+        $store = Mage::app()->getStore();
+        $baseCurrencyCode = $store->getBaseCurrency();
+        return $baseCurrencyCode;
+    }
+
+    public function shouldConvertCurrency($currency)
+    {
+        $store = Mage::app()->getStore();
+        $baseCurrency = $store->getBaseCurrency();
+        $baseCurrencyCode = $store->getBaseCurrencyCode();
+        $rate = $baseCurrency->getRate($currency);
+        return (($baseCurrencyCode != $currency) && ($rate));
+    }
+
     /**
      * Converts currency.
      *

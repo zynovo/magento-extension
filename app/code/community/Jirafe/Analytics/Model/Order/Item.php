@@ -37,7 +37,7 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
 
                 $count = 1;
                 $data = array();
-                $converter = Mage::helper('jirafe_analytics');
+                $helper = Mage::helper('jirafe_analytics');
 
                 foreach( $collection->query() as $item ) {
                     $fieldMap = $this->_getFieldMap( 'order_item', $item );
@@ -52,10 +52,14 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
                         'order_item_number' => "$count",
                         $fieldMap['quantity']['api'] => $fieldMap['quantity']['magento'],
                         'status' => 'accepted',
-                        'price' => $currency != null ? $converter->convertCurrency($price, $currency) : $price,
-                        'discount_price' => $currency != null ? $converter->convertCurrency($price, $currency) : $discount_price,
+                        'price' => $price,
+                        'discount_price' => $discount_price,
                         'product' => Mage::getModel('jirafe_analytics/product')->getArray(Mage::getModel('catalog/product')->load($item['product_id']), $item['attributes'])
                     );
+                    if ($helper->shouldConvertCurrency($currency)) {
+                        $fieldMap['price'] = $helper->convertCurrency($price, $currency);
+                        $fieldMap['discount_price'] = $helper->convertCurrency($price, $currency);
+                    }
                     $count++;
                 }
                 return $data;
