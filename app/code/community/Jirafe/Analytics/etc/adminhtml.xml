@@ -32,6 +32,15 @@
                 </jirafe_analytics>
             </children>
         </dashboard>
+        <system>
+            <children>
+                <jirafe_analytics_status translate="title" module="jirafe_analytics">
+                    <title>Jirafe Analytics Status</title>
+                    <action>jirafe_analytics/adminhtml_status</action>
+                    <sort_order>100</sort_order>
+                </jirafe_analytics_status>
+            </children>
+        </system>
     </menu>
     <acl>
         <resources>
@@ -68,6 +77,10 @@
                                     </jirafe_analytics>
                                 </children>
                             </config>
+                            <jirafe_analytics_status translate="title" module="jirafe_analytics">
+                                <title>Jirafe Analytics Status</title>
+                                <sort_order>100</sort_order>
+                            </jirafe_analytics_status>
                         </children>
                     </system>
                 </children>
