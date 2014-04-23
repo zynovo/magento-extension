@@ -64,53 +64,6 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract imple
     }
 
     /**
-     * Format customer data as array
-     *
-     * @param Array $data
-     * @return array
-     * @throws Exception if unable to generate customer object
-     */
-    protected function _getCustomer($data = null, $includeCookies = false)
-    {
-        try {
-            if (isset($data['customer_id']) &&  $data['customer_id']) {
-                $customer = Mage::getModel('customer/customer')->load($data['customer_id']);
-                return Mage::getModel('jirafe_analytics/customer')->getArray($customer, $includeCookies);
-            } else {
-                $guestData = array(
-                    'id' => md5("j_".$data['customer_email']),
-                    'email' => $data['customer_email'],
-                    'first_name' => $data['customer_firstname'],
-                    'last_name' => $data['customer_lastname'],
-                    'create_date' => $this->_formatDate($data['created_at']),
-                    'change_date' => $this->_formatDate($data['created_at']),
-                );
-                $this->_submitGuestData($guestData, $data);
-                return $guestData;
-            }
-        } catch (Exception $e) {
-            Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
-            return false;
-        }
-    }
-
-    /**
-     * Required to submit Guest data as customer data
-     * @param $guestData
-     * @param $orderData
-     */
-    protected function _submitGuestData($guestData, $orderData)
-    {
-        $guestData['name'] = $guestData['first_name'] . ' ' . $guestData['last_name'];
-        $data = Mage::getModel('jirafe_analytics/data');
-        $data->setTypeId(Jirafe_Analytics_Model_Data_Type::CUSTOMER);
-        $data->setJson(json_encode($guestData));
-        $data->setWebsiteId(Mage::helper('jirafe_analytics')->getWebsiteId($orderData['store_id']));
-        $data->setCapturedDt(Mage::helper('jirafe_analytics')->getCurrentDt());
-        $data->save();
-    }
-
-    /**
      * Get items from previous instance of order from session
      *
      * @param int $quoteId
