@@ -1,3 +1,8 @@
+<?php if(!$this->helper('jirafe_analytics')->isSupportedVersion()):?>
+    <div class="message">
+        <p class="error"><?php echo $this->helper('jirafe_analytics')->getErrorMessageForVersion() ?></p>
+    </div>
+<?php endif;?>
 <?php if(!$this->hasCron()):?>
 <div class="message">
     <p class="error"><?php echo $this->__(' Currently, no cron job has been setup. Please setup cron to synchronize the data with Jirafe.') ?></p>

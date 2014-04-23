@@ -11,6 +11,9 @@
 
 class Jirafe_Analytics_Helper_Data extends Mage_Core_Helper_Abstract
 {
+    protected $_supportedVersion = null;
+    protected $_supportedMagentoVersion = null;
+
     public function getHistoricalFlag($websiteId)
     {
         return Mage::app()->getWebsite($websiteId)->getConfig('jirafe_analytics/historicalpull/active', $websiteId) == "true";
@@ -187,6 +190,94 @@ class Jirafe_Analytics_Helper_Data extends Mage_Core_Helper_Abstract
             }
         }
         return 0;
+    }
+
+    /**
+     * Check whether it is enterprise version or not
+     *
+     * @return bool
+     */
+    protected function _isEnterpriseVersion()
+    {
+        $_moduleLocation = Mage::getRoot() . DS . 'etc' . DS .'modules' . DS .'Enterprise_Enterprise.xml';
+        return file_exists($_moduleLocation);
+    }
+
+    /**
+     * Check whether it is php version supported or not
+     *
+     * @return bool
+     */
+    protected function _supportedPhpVersion()
+    {
+        return version_compare(phpversion(), '5.3.0', '>=');
+    }
+
+    /**
+     * Check whether it is magento version supported or not
+     *
+     * @return bool
+     */
+    protected function _supportMagentoVersion()
+    {
+        if (is_null($this->_supportedMagentoVersion)) {
+            $this->_supportedMagentoVersion = true;
+            $_magentoVersion = Mage::getVersion();
+            if ($this->_isEnterpriseVersion()) {
+                if (version_compare($_magentoVersion, 1.12,'<')) {
+                    //if EE version is less than 1.12
+                    $this->_supportedMagentoVersion = false;
+                }
+            } elseif (version_compare($_magentoVersion, 1.7,'<')) {
+                //if CE version is less than 1.7
+                $this->_supportedMagentoVersion = false;
+            }
+
+        }
+        return $this->_supportedMagentoVersion;
+    }
+
+
+    /**
+     * Check whether the php version and Magento version is within support
+     *
+     * @return bool
+     */
+    public function isSupportedVersion()
+    {
+        if (is_null($this->_supportedVersion)) {
+            $this->_supportedVersion = true;
+            if (!$this->_supportedPhpVersion()) {
+                $this->_supportedVersion = false;
+            }
+            if (!$this->_supportMagentoVersion()) {
+                $this->_supportedVersion = false;
+            }
+
+        }
+        return $this->_supportedVersion;
+    }
+
+    /**
+     * error messsage for support version
+     * @return string
+     */
+    public function getErrorMessageForVersion()
+    {
+        $message = '';
+        if (!$this->isSupportedVersion()) {
+            $_content = '';
+            if (!$this->_supportedPhpVersion()) {
+                $_content .= 'PHP 5.3';
+            }
+            if (!$this->_supportMagentoVersion()) {
+                $_content .= ($_content ? ' and ' : '') . 'Magento ';
+                $_content .= ($this->_isEnterpriseVersion() ? '1.12' : '1.7');
+            }
+            $message = $this->__('Jirafe Analytics requires at least ') .
+                $this->__($_content) . $this->__(', please update before you start.');
+        }
+        return $message;
     }
 }
 
