@@ -24,6 +24,7 @@
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>0</show_in_store>
+                    <frontend_model>jirafe_analytics/adminhtml_fieldset_general</frontend_model>
                     <fields>
                         <enabled translate="label">
                             <label>Enable Module</label>
