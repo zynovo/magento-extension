@@ -409,7 +409,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 /**
                  * Attach or detach simple variants from configurable parents
                  */
-                $originalIds =  $product->getTypeInstance(true)->getUsedProductIds($product);
+                $originalIds = $product->getTypeInstance(true)->getUsedProductIds($product);
                 $newIds = array_keys($product->getConfigurableProductsData());
                 if (is_null($newIds)) {
                     $newIds = array();
