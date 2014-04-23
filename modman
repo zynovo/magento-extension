@@ -3,4 +3,4 @@ app/etc/modules/Jirafe_Analytics.xml                app/etc/modules/Jirafe_Analy
 app/etc/modules/*                                   app/etc/modules/
 app/design/frontend/base/default/layout/*           app/design/frontend/base/default/layout/
 app/design/frontend/base/default/template/*         app/design/frontend/base/default/template/
-app/design/adminhtml/default/default/template/*    app/design/adminhtml/default/default/template/
+app/design/adminhtml/default/default/template/*     app/design/adminhtml/default/default/template/
