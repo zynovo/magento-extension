@@ -48,6 +48,36 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
         }
     }
 
+    public function checkCredentials($websiteId)
+    {
+        $authenticationUrl = $this->eventApiUrl . 'v2/' . $this->_getSiteId($websiteId) . '/site_check';
+
+        Mage::helper('jirafe_analytics')->logServerLoad('Jirafe_Analytics_Model_Curl::checkCredentials');
+        $header = array('Authorization: Bearer ' . $this->_getAccessToken($websiteId));
+
+        $thread = curl_init();
+        curl_setopt($thread, CURLOPT_URL, $authenticationUrl);
+        curl_setopt($thread, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($thread, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($thread, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($thread, CURLINFO_HEADER_OUT, true);
+        curl_setopt($thread, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($thread, CURLOPT_POSTFIELDS, '{}');
+
+        if ($this->logging) {
+            curl_setopt($thread, CURLOPT_VERBOSE, true);
+        }
+
+        $response = curl_exec($thread);
+        curl_close($thread);
+
+        if (array_key_exists('success', $response)) {
+            return $response['success'] == True;
+        }
+
+        return False;
+    }
+
     public function getHistoricalPushStatus($websiteId)
     {
         // Check the auth server to see if the site is able to push historical data
