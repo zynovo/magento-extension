@@ -263,12 +263,4 @@ class Jirafe_Analytics_Helper_Data extends Mage_Core_Helper_Abstract
         }
         return $message;
     }
-
-    public function getCredentials()
-    {
-        return array('event_api_url' => Mage::getStoreConfig('jirafe_analytics/general/event_api_url'),
-                     'auth_url' => Mage::getStoreConfig('jirafe_analytics/general/auth_url'),
-                     'site_id' => Mage::app()->getWebsite($websiteId)->getConfig('jirafe_analytics/general/site_id'),
-                     'access_token' => Mage::app()->getWebsite($websiteId)->getConfig('jirafe_analytics/general/access_token'));
-    }
 }
