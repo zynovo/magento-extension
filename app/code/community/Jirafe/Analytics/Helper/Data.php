@@ -33,7 +33,7 @@ class Jirafe_Analytics_Helper_Data extends Mage_Core_Helper_Abstract
     public function fetchBaseCurrencyCode()
     {
         $store = Mage::app()->getStore();
-        $baseCurrencyCode = $store->getBaseCurrency();
+        $baseCurrencyCode = $store->getBaseCurrencyCode();
         return $baseCurrencyCode;
     }
 
