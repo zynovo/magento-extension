@@ -17,7 +17,9 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
     {
         $data = array();
         foreach ($fields as $field) {
-            if (array_key_exists($field, $fieldMap) && array_key_exists($left, $fieldMap[$field]) && array_key_exists($right, $fieldMap[$field])) {
+            if (array_key_exists($field, $fieldMap) && 
+                array_key_exists($left, $fieldMap[$field]) &&
+                array_key_exists($right, $fieldMap[$field])) {
                 $data[$fieldMap[$field][$left]] = $fieldMap[$field][$right];
             }
         }
