@@ -44,6 +44,7 @@ class Jirafe_Analytics_Model_Heartbeat extends Jirafe_Analytics_Model_Curl
                         $site[ $siteId ] = array(
                             'request' => array(
                                 'version' => strval( $version ),
+                                'platform_version' => strval( Mage::getVersion() ),
                                 'client_id' => strval( $clientId ),
                                 'site_id' => strval( $siteId ),
                                 'is_enabled' => $isEnabled ? true : false,
