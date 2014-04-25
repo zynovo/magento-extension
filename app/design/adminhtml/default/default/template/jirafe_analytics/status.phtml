@@ -8,3 +8,15 @@
     <p class="error"><?php echo $this->__(' Currently, no cron job has been setup. Please setup cron to synchronize the data with Jirafe.') ?></p>
 </div>
 <?php endif;?>
+
+<ul>
+<?php foreach($this->checkCredentials() as $id):?>
+
+<?php if($id):?>
+<li>
+    <p class="error"><?php echo $this->__(" The credentials you have supplied for website '$id' are not valid.") ?></p>
+</li>
+<?php endif;?>
+
+<?php endforeach;?>
+</ul>

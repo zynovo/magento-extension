@@ -43,4 +43,16 @@ class Jirafe_Analytics_Block_Adminhtml_Status extends Mage_Adminhtml_Block_Templ
         return false;
     }
 
+    public function checkCredentials()
+    {
+        $results = array();
+        foreach (Mage::app()->getWebsites() as $website) {
+            $enabled = $website->getConfig('jirafe_analytics/general/enabled');
+            if ($enabled) {
+                $websiteId = $website->getId();
+                $results[$websiteId] = Mage::getModel('jirafe_analytics/curl')->checkCredentials($websiteId);
+            }
+        }
+        return $results;
+    }
 }
