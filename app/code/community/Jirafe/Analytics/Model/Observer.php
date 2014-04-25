@@ -13,7 +13,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
 
     private function _getWebsiteId($storeId)
     {
-        return Mage::getModel('core/store')->load($storeId)->getWebsiteId();
+        return Mage::helper('jirafe_analytics')->getWebsiteId($storeId);
     }
 
     /**
