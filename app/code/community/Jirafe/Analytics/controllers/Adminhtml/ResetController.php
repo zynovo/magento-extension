@@ -38,17 +38,18 @@ class Jirafe_Analytics_Adminhtml_ResetController extends Mage_Adminhtml_Controll
                 $w->query('SET FOREIGN_KEY_CHECKS = 0;\nTRUNCATE TABLE '.$model->getMainTable().';\nSET FOREIGN_KEY_CHECKS = 1;');
                 Mage::helper('jirafe_analytics')->log('INFO', __METHOD__, "Done Truncating '$name'.");
             }
-        } finally {
-            Mage::getConfig()->saveConfig('jirafe_analytics/general/enabled', 1);
-            Mage::getConfig()->reinit();
-            Mage::app()->reinitStores();
-            Mage::helper('jirafe_analytics')->log('INFO', __METHOD__, 'Done Truncating Models.');
+        } catch (Exception $e) {
+            $this->log('ERROR', __METHOD__, $e->getMessage(), $e);
         }
+
+        Mage::getConfig()->saveConfig('jirafe_analytics/general/enabled', 1);
+        Mage::getConfig()->reinit();
+        Mage::app()->reinitStores();
+        Mage::helper('jirafe_analytics')->log('INFO', __METHOD__, 'Done Truncating Models.');
     }
 
     /**
      * Action of the emergency reset button.
- 
      * Truncate all Jirafe tables, with the exception of the log table.
      * Delete all jirafe config records from the magento key value store.
      *
