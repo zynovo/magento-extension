@@ -59,8 +59,8 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
                     );
                     try {
                         if ($helper->shouldConvertCurrency($currency)) {
-                            $fieldMap['price'] = $helper->convertCurrency($price, $currency);
-                            $fieldMap['discount_price'] = $helper->convertCurrency($price, $currency);
+                            $data['price'] = $helper->convertCurrency($price, $currency);
+                            $data['discount_price'] = $helper->convertCurrency($price, $currency);
                         }
                     } catch (Exception $e) {
                         Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
