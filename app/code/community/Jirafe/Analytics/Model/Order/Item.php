@@ -16,7 +16,7 @@ class Jirafe_Analytics_Model_Order_Item extends Jirafe_Analytics_Model_Order
      * @param array $items
      * @return array
      */
-    public function getItems($orderId = null, $storeId = null, $currency = null)
+    public function getItems($orderId = null, $currency = null)
     {
         try {
             if ($orderId) {
