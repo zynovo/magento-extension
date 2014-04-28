@@ -69,7 +69,7 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract imple
     {
         try {
             $helper = Mage::helper('jirafe_analytics');
-            if ($helper->shouldConvertCurrency()) {
+            if ($helper->shouldConvertCurrency($currency)) {
                 $baseCurrency = $helper->fetchBaseCurrencyCode();
                 $data[$fieldMap["currency"]["api"]] = $baseCurrency;
                 $data[$fieldMap["amount_paid"]["api"]] = $helper->convertCurrency($data[$fieldMap["amount_paid"]["api"]], $currency);
