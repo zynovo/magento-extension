@@ -57,9 +57,14 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
                         'discount_price' => $discount_price,
                         'product' => Mage::getModel('jirafe_analytics/product')->getArray(Mage::getModel('catalog/product')->load($item['product_id']), $item['attributes'])
                     );
-                    if ($helper->shouldConvertCurrency($currency) {
-                        $data['price'] = $helper->convertCurrency($price, $currency);
-                        $data['discount_price'] = $helper->convertCurrency($price, $currency);
+                    try {
+                        if ($helper->shouldConvertCurrency($currency)) {
+                            $fieldMap['price'] = $helper->convertCurrency($price, $currency);
+                            $fieldMap['discount_price'] = $helper->convertCurrency($price, $currency);
+                        }
+                    } catch (Exception $e) {
+                        Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
+                        Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, "Error converting currency: $currency");
                     }
                     $count++;
                 }
