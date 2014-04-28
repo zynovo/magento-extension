@@ -17,8 +17,8 @@ class Jirafe_Analytics_Adminhtml_ResetController extends Mage_Adminhtml_Controll
         $p = Mage::getModel("core/config")->getTablePrefix();
         $t = $p."core_config_data";
         $w = Mage::getSingleton('core/resource')->getConnection('core_write');
-        $w->query("DELETE FROM ? WHERE path LIKE '%jirafe_analytics/last_id%';", $t);
-        $w->query("DELETE FROM ? WHERE path LIKE '%jirafe_analytics/historicalpull/active%';", $t);
+        $w->query("DELETE FROM $t WHERE path LIKE '%jirafe_analytics/last_id%';");
+        $w->query("DELETE FROM $t WHERE path LIKE '%jirafe_analytics/historicalpull/active%';");
         Mage::helper('jirafe_analytics')->log('INFO', __METHOD__, 'Done Deleting Configs.');
     }
 
@@ -33,9 +33,9 @@ class Jirafe_Analytics_Adminhtml_ResetController extends Mage_Adminhtml_Controll
             $truncatable = array('batch', 'batch_data', 'data', 'data_attempt', 'data_error');
             foreach ($truncatable as $name) {
                 Mage::helper('jirafe_analytics')->log('INFO', __METHOD__, "'Truncating '$name'...'");
-                $model = Mage::getModel("jirafe_analytics/$name");
+                $model = Mage::getResourceModel("jirafe_analytics/$name");
                 $w = Mage::getSingleton('core/resource')->getConnection('core_write');
-                $w->query('SET FOREIGN_KEY_CHECKS = 0;\nTRUNCATE TABLE '.$model->getMainTable().';\nSET FOREIGN_KEY_CHECKS = 1;');
+                $w->query('SET FOREIGN_KEY_CHECKS = 0; TRUNCATE TABLE '.$model->getMainTable().'; SET FOREIGN_KEY_CHECKS = 1;');
                 Mage::helper('jirafe_analytics')->log('INFO', __METHOD__, "Done Truncating '$name'.");
             }
         } catch (Exception $e) {
