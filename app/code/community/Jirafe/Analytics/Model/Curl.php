@@ -80,12 +80,19 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
         return False;
     }
 
-    public function checkCredentials($websiteId)
+    public function checkCredentials($websiteId, $siteId = null, $accessToken = null)
     {
-        $authenticationUrl = $this->eventApiUrl . 'v2/' . $this->_getSiteId($websiteId) . '/site_check';
+        if (is_null($siteId)) {
+            $siteId =  $this->_getSiteId($websiteId);
+        }
+        if (is_null($accessToken)) {
+            $accessToken =  $this->_getAccessToken($websiteId);
+        }
+
+        $authenticationUrl = $this->eventApiUrl . $siteId . '/site_check';
 
         Mage::helper('jirafe_analytics')->logServerLoad('Jirafe_Analytics_Model_Curl::checkCredentials');
-        $header = array('Authorization: Bearer ' . $this->_getAccessToken($websiteId));
+        $header = array('Authorization: Bearer ' . $accessToken);
 
         $thread = curl_init();
         curl_setopt($thread, CURLOPT_URL, $authenticationUrl);
@@ -103,11 +110,14 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
         $response = curl_exec($thread);
         curl_close($thread);
 
-        if (array_key_exists('success', $response)) {
-            return $response['success'] == True;
+        //return value in json so need to decode first
+        $response = Mage::helper('core')->jsonDecode($response);
+
+        if (is_array($response) && array_key_exists('success', $response)) {
+            return ($response['success'] == true);
         }
 
-        return False;
+        return false;
     }
 
     public function getHistoricalPushStatus($websiteId)
