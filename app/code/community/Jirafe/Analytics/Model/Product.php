@@ -398,6 +398,10 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
                 $image = $this->_parent->getData('image');
             }
 
+            if ($image == "no_selection") {
+                return array();
+            }
+
             return array(
                 array('url' => $this->_product->getMediaConfig()->getMediaUrl($image))
             );
