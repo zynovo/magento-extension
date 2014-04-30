@@ -321,7 +321,7 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
                 $this->_submitGuestData($guestData, $storeId);
             } else {
                 $guestData = array(
-                    'id' => 0,
+                    'id' => 'anonymous',
                     'create_date' => $this->_formatDate($data['created_at']),
                     'change_date' => $this->_formatDate($data['created_at']),
                 );
