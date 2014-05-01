@@ -486,16 +486,18 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
         $result = true;
 
         foreach ($websiteIds as $websiteId) {
-            try {
-                $data = Mage::getModel('jirafe_analytics/data');
-                $data->setTypeId(Jirafe_Analytics_Model_Data_Type::PRODUCT);
-                $data->setJson(Mage::getModel('jirafe_analytics/product')->getJson($product, $attributes));
-                $data->setWebsiteId($websiteId);
-                $data->setCapturedDt(Mage::helper('jirafe_analytics')->getCurrentDt());
-                $data->save();
-            } catch (Exception $e) {
-                Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
-                $result = false;
+            if (Mage::app()->getWebsite($websiteId)->getConfig('jirafe_analytics/general/enabled')) {
+                try {
+                    $data = Mage::getModel('jirafe_analytics/data');
+                    $data->setTypeId(Jirafe_Analytics_Model_Data_Type::PRODUCT);
+                    $data->setJson(Mage::getModel('jirafe_analytics/product')->getJson($product, $attributes));
+                    $data->setWebsiteId($websiteId);
+                    $data->setCapturedDt(Mage::helper('jirafe_analytics')->getCurrentDt());
+                    $data->save();
+                } catch (Exception $e) {
+                    Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
+                    $result = false;
+                }
             }
         }
 
