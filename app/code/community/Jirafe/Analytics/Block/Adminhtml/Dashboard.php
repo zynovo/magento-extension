@@ -19,6 +19,6 @@ class Jirafe_Analytics_Block_Adminhtml_Dashboard extends Mage_Core_Block_Templat
         $this->_controller = 'adminhtml_dashboard';
         $this->_headerText = Mage::helper('jirafe_analytics')->__('Jirafe Analytics: Dashboard');
         parent::__construct();
+        $this->setTemplate('jirafe_analytics/dashboard.phtml');
     }
-
 }
