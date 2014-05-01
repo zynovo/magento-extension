@@ -81,37 +81,44 @@ class Jirafe_Analytics_Block_Adminhtml_Fieldset_General
                                 general_config_fields[general_fields[i].name] = general_fields[i].value;
                             }
                         }//end for loop
-                        if (general_config_fields) {
-                            if (general_config_fields["groups[general][fields][enabled][value]"]!==undefined) {
-                                if (general_config_fields["groups[general][fields][enabled][value]"]>0) {
-                                    //ajax request to test credentials
-                                    new Ajax.Request(
-                                        cred_check_url,
-                                        {
-                                            method:     "POST",
-                                            parameters: Form.serialize($("config_edit_form"), true),
-                                            onSuccess : function(transport) {
-                                                try{
-                                                    response = eval("(" + transport.responseText + ")");
-                                                } catch (e) {
-                                                    response = {};
-                                                }
-                                                if (response.error_message) {
-                                                    alert(response.error_message);
-                                                    return false;
-                                                }
-                                            }
+                        if (general_config_fields &&
+                            general_config_fields["groups[general][fields][enabled][value]"]!==undefined &&
+                            general_config_fields["groups[general][fields][enabled][value]"]>0
+                        ) {
+                            that = this;
+                            //ajax request to test credentials
+                            new Ajax.Request(
+                                cred_check_url,
+                                {
+                                    method:     "POST",
+                                    parameters: Form.serialize($("config_edit_form"), true),
+                                    onSuccess : function(transport) {
+                                        try{
+                                            response = eval("(" + transport.responseText + ")");
+                                        } catch (e) {
+                                            response = {};
                                         }
-                                        );
-                                    //end ajax request
+                                        if (response.error_message) {
+                                            alert(response.error_message);
+                                            return false;
+                                        } else {
+                                            if (that.isSubmitted) {
+                                                return false;
+                                            }
+                                            that.isSubmitted = true;
+                                            that._submit();
+                                        }
+                                    }
                                 }
+                            );
+                            //end ajax request
+                        } else {
+                            if (this.isSubmitted) {
+                                return false;
                             }
-                        }//end general config fields
-                        if (this.isSubmitted) {
-                            return false;
+                            this.isSubmitted = true;
+                            this._submit();
                         }
-                        this.isSubmitted = true;
-                        this._submit();
                     }
                     return false;
                 };
