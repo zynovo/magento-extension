@@ -89,6 +89,10 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
             $accessToken =  $this->_getAccessToken($websiteId);
         }
 
+        if (!$siteId) {
+            return false;
+        }
+
         $authenticationUrl = $this->eventApiUrl . $siteId . '/site_check';
 
         Mage::helper('jirafe_analytics')->logServerLoad('Jirafe_Analytics_Model_Curl::checkCredentials');
