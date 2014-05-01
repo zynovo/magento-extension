@@ -49,8 +49,10 @@ class Jirafe_Analytics_Block_Adminhtml_Status extends Mage_Adminhtml_Block_Templ
         foreach (Mage::app()->getWebsites() as $website) {
             $enabled = $website->getConfig('jirafe_analytics/general/enabled');
             if ($enabled) {
-                $websiteId = $website->getId();
-                $results[$websiteId] = Mage::getModel('jirafe_analytics/curl')->checkCredentials($websiteId);
+                $results[] = array(
+                    'success' => Mage::getModel('jirafe_analytics/curl')->checkCredentials($website->getId()),
+                    'website' => $website
+                );
             }
         }
         return $results;

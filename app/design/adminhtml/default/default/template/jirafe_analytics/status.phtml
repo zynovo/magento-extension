@@ -1,22 +1,79 @@
-<?php if(!$this->helper('jirafe_analytics')->isSupportedVersion()):?>
-    <div class="message">
-        <p class="error"><?php echo $this->helper('jirafe_analytics')->getErrorMessageForVersion() ?></p>
-    </div>
-<?php endif;?>
-<?php if(!$this->hasCron()):?>
-<div class="message">
-    <p class="error"><?php echo $this->__(' Currently, no cron job has been setup. Please setup cron to synchronize the data with Jirafe.') ?></p>
+<div class="content-header">
+    <table cellspacing="0">
+        <tbody><tr>
+            <td style="width:50%;"><h3 class="icon-head head-cache">Jirafe Analytics Status</h3></td>
+        </tr>
+    </tbody></table>
 </div>
-<?php endif;?>
 
-<ul>
-<?php foreach($this->checkCredentials() as $id):?>
-
-<?php if($id):?>
-<li>
-    <p class="error"><?php echo $this->__(" The credentials you have supplied for website '$id' are not valid.") ?></p>
-</li>
-<?php endif;?>
-
-<?php endforeach;?>
-</ul>
+<div class="grid">
+    <table cellspacing="0" class="data">
+        <colgroup>
+            <col></col>
+            <col></col>
+            <col width="250"></col>
+        </colgroup>
+        <thead>
+            <tr class="headings">
+                <th class="no-link"><span class="nobr">Status Check</span></th>
+                <th class="no-link"><span class="nobr">Description</span></th>
+                <th class="no-link"><span class="nobr">Status</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="a-left">Crons</td>
+                <td class="a-left">
+                    <?php if(!$this->hasCron()): ?>
+                        <?php echo $this->__('Currently, no cron job has been setup. Please setup cron to synchronize the data with Jirafe.') ?>
+                    <?php else: ?>
+                        <?php echo $this->__('Your cron appears to be running') ?>
+                    <?php endif; ?>
+                </td>
+                <td class="a-left">
+                    <?php if(!$this->hasCron()): ?>
+                        <span class="grid-severity-major"><span>Cron Inactive</span></span>
+                    <?php else: ?>
+                        <span class="grid-severity-notice"><span>Cron Active</span></span>
+                    <?php endif; ?>
+                </td>
+            </tr>
+            <tr>
+                <td class="a-left">Versions</td>
+                <td class="a-left">
+                    <?php if(!$this->helper('jirafe_analytics')->isSupportedVersion()):?>
+                        <?php echo $this->__($this->helper('jirafe_analytics')->getErrorMessageForVersion()) ?>
+                    <?php else: ?>
+                        <?php echo $this->__('Your php and Magento versions are correct') ?>
+                    <?php endif; ?>
+                </td>
+                <td class="a-left">
+                    <?php if(!$this->helper('jirafe_analytics')->isSupportedVersion()):?>
+                        <span class="grid-severity-major"><span>Version Problem</span></span>
+                    <?php else: ?>
+                        <span class="grid-severity-notice"><span>Versions Correct</span></span>
+                    <?php endif; ?>
+                </td>
+            </tr>
+            <?php foreach($this->checkCredentials() as $data):?>
+                <tr>
+                <td class="a-left">Credentials</td>
+                    <td class="a-left">
+                        <?php if(!$data['success']): ?>
+                            Your Jirafe credentials are incorrect for this website
+                        <?php else: ?>
+                            Correct credentials installed
+                        <?php endif; ?>
+                    </td>
+                    <td class="a-left">
+                        <?php if(!$data['success']): ?>
+                            <span class="grid-severity-major"><span><?php echo $data['website']->getName() ?></span></span>
+                        <?php else: ?>
+                            <span class="grid-severity-notice"><span><?php echo $data['website']->getName() ?></span></span>
+                        <?php endif; ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
