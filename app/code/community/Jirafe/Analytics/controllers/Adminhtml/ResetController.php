@@ -14,8 +14,7 @@ class Jirafe_Analytics_Adminhtml_ResetController extends Mage_Adminhtml_Controll
     private function deleteConfig()
     {
         Mage::helper('jirafe_analytics')->log('INFO', __METHOD__, 'Deleting Configs...');
-        $p = Mage::getModel("core/config")->getTablePrefix();
-        $t = $p."core_config_data";
+        $t = Mage::getResourceModel("core/config")->getMainTable();
         $w = Mage::getSingleton('core/resource')->getConnection('core_write');
         $w->query("DELETE FROM $t WHERE path LIKE '%jirafe_analytics/last_id%';");
         $w->query("DELETE FROM $t WHERE path LIKE '%jirafe_analytics/historicalpull/active%';");
