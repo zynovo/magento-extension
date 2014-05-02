@@ -17,7 +17,7 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
      * @param  string $storeId
      * @return mixed
      */
-    public function getItems( $quoteId = null, $storeId = null )
+    public function getItems( $quoteId = null, $storeId = null, $currency = null )
     {
         try {
             if ($quoteId) {
@@ -34,16 +34,17 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
                     ->joinLeft(array('option'=>Mage::getSingleton('core/resource')->getTableName('sales/quote_item_option')), "parent.item_id = option.item_id AND option.code = 'attributes'", array('option.value'))
                     ->reset(Zend_Db_Select::COLUMNS)
                     ->columns($columns)
-                    ->where("main_table.quote_id = $quoteId AND main_table.product_type != 'configurable' AND (parent.product_type != 'bundle' OR parent.product_type is null)")
+                    ->where("main_table.quote_id = ?", $quoteId)
+                    ->where("main_table.product_type != ? AND (parent.product_type != 'bundle' OR parent.product_type is null)", Mage_Catalog_Model_Product_Type_Configurable::TYPE_CODE)
                     ->distinct(true);
 
                 $count = 1;
                 $data = array();
-                foreach($collection->query() as $item) {
+                $helper = Mage::helper('jirafe_analytics');
 
-                    /**
-                     * Get field map array
-                     */
+                foreach($collection->query() as $item) {
+                    $price = floatval($item['row_total']);
+                    $discount_price = floatval($item['discount_amount']);
                     $fieldMap = $this->_getFieldMap( 'cart_item', $item );
 
                     $data[] = array(
@@ -52,10 +53,19 @@ class Jirafe_Analytics_Model_Cart_Item extends Jirafe_Analytics_Model_Cart
                         $fieldMap['change_date']['api'] => $fieldMap['change_date']['magento'],
                         'cart_item_number' => "$count",
                         'quantity' => intval( $item['qty'] ),
-                        'price' => floatval( $item['row_total'] ),
-                        'discount_price' => floatval( $item['discount_amount'] ),
+                        'price' => $price,
+                        'discount_price' => $discount_price,
                         'product' => Mage::getModel('jirafe_analytics/product')->getArray(Mage::getModel('catalog/product')->load($item['product_id']), $item['attributes'])
                     );
+                    try {
+                        if ($helper->shouldConvertCurrency($currency)) {
+                            $data['price'] = $helper->convertCurrency($price, $currency);
+                            $data['discount_price'] = $helper->convertCurrency($price, $currency);
+                        }
+                    } catch (Exception $e) {
+                        Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
+                        Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, "Error converting currency: $currency");
+                    }
                     $count++;
                 }
                 return $data;

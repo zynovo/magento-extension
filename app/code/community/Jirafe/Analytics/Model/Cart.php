@@ -42,10 +42,10 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract implem
             if (!$quote) {
                 return false;
             }
-
             $data = array();
-            $items = Mage::getModel('jirafe_analytics/cart_item')->getItems($quote['entity_id'], $quote['store_id']);
             $fieldMap = $this->_getFieldMap('cart', $quote);
+            $currency = $fieldMap['currency']['magento'];
+            $items = Mage::getModel('jirafe_analytics/cart_item')->getItems($quote['entity_id'], $quote['store_id'], $currency);
 
             $previousItems = $this->_getPreviousItems($quote['entity_id']);
 
@@ -57,7 +57,18 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract implem
                     'customer' => $this->_getCustomer($quote, false),
                     'previous_items' => $previousItems
                 )
-           );
+            );
+
+            $helper = Mage::helper('jirafe_analytics');
+            if ($helper->shouldConvertCurrency($currency)) {
+                $baseCurrency = $helper->fetchBaseCurrencyCode();
+                $data[$fieldMap["currency"]["api"]] = $baseCurrency;
+                $data[$fieldMap["total"]["api"]] = $helper->convertCurrency($data[$fieldMap["total"]["api"]], $currency);
+                $data[$fieldMap["total_tax"]["api"]] = $helper->convertCurrency($data[$fieldMap["total_tax"]["api"]], $currency);
+                $data[$fieldMap["total_shipping"]["api"]] = $helper->convertCurrency($data[$fieldMap["total_shipping"]["api"]], $currency);
+                $data[$fieldMap["total_payment_cost"]["api"]] = $helper->convertCurrency($data[$fieldMap["total_payment_cost"]["api"]], $currency);
+                $data[$fieldMap["total_discounts"]["api"]] = $helper->convertCurrency($data[$fieldMap["total_discounts"]["api"]], $currency);
+            }
 
             if ($isEvent && $visit = $this->_getVisit()) {
                 $data['visit'] = $visit;
@@ -132,12 +143,9 @@ class Jirafe_Analytics_Model_Cart extends Jirafe_Analytics_Model_Abstract implem
         $collection->order('main_table.entity_id ASC');
 
         if ($lastId) {
-            $collection->where("main_table.entity_id > $lastId");
+            $collection->where("main_table.entity_id > ?", $lastId);
         }
-        if($storeIds)
-        {
-            $collection->where("main_table.store_id in (?)", $storeIds);
-        }
+
         return Zend_Paginator::factory($collection);
     }
 }

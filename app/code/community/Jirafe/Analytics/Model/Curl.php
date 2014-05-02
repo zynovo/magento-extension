@@ -48,6 +48,82 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
         }
     }
 
+    public function sendInstallEvent($websiteId)
+    {
+        $authenticationUrl = $this->authenticationUrl . '/magento/install';
+
+        Mage::helper('jirafe_analytics')->logServerLoad('Jirafe_Analytics_Model_Curl::checkCredentials');
+        $header = array('Authorization: Bearer ' . $this->_getAccessToken($websiteId));
+        $siteId = $this->_getSiteId($websiteId);
+        $json = "{\"site_id\": $siteId}";
+
+        $thread = curl_init();
+        curl_setopt($thread, CURLOPT_URL, $authenticationUrl);
+        curl_setopt($thread, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($thread, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($thread, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($thread, CURLINFO_HEADER_OUT, true);
+        curl_setopt($thread, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($thread, CURLOPT_POSTFIELDS, $json);
+
+        if ($this->logging) {
+            curl_setopt($thread, CURLOPT_VERBOSE, true);
+        }
+
+        $response = curl_exec($thread);
+        curl_close($thread);
+
+        if (array_key_exists('success', $response)) {
+            return $response['success'] == True;
+        }
+
+        return False;
+    }
+
+    public function checkCredentials($websiteId, $siteId = null, $accessToken = null)
+    {
+        if (is_null($siteId)) {
+            $siteId =  $this->_getSiteId($websiteId);
+        }
+        if (is_null($accessToken)) {
+            $accessToken =  $this->_getAccessToken($websiteId);
+        }
+
+        if (!$siteId) {
+            return false;
+        }
+
+        $authenticationUrl = $this->eventApiUrl . $siteId . '/site_check';
+
+        Mage::helper('jirafe_analytics')->logServerLoad('Jirafe_Analytics_Model_Curl::checkCredentials');
+        $header = array('Authorization: Bearer ' . $accessToken);
+
+        $thread = curl_init();
+        curl_setopt($thread, CURLOPT_URL, $authenticationUrl);
+        curl_setopt($thread, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($thread, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($thread, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($thread, CURLINFO_HEADER_OUT, true);
+        curl_setopt($thread, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($thread, CURLOPT_POSTFIELDS, '{}');
+
+        if ($this->logging) {
+            curl_setopt($thread, CURLOPT_VERBOSE, true);
+        }
+
+        $response = curl_exec($thread);
+        curl_close($thread);
+
+        //return value in json so need to decode first
+        $response = Mage::helper('core')->jsonDecode($response);
+
+        if (is_array($response) && array_key_exists('success', $response)) {
+            return ($response['success'] == true);
+        }
+
+        return false;
+    }
+
     public function getHistoricalPushStatus($websiteId)
     {
         // Check the auth server to see if the site is able to push historical data

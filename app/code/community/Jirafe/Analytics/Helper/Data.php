@@ -11,6 +11,9 @@
 
 class Jirafe_Analytics_Helper_Data extends Mage_Core_Helper_Abstract
 {
+    protected $_supportedVersion = null;
+    protected $_supportedMagentoVersion = null;
+
     public function getHistoricalFlag($websiteId)
     {
         return Mage::app()->getWebsite($websiteId)->getConfig('jirafe_analytics/historicalpull/active', $websiteId) == "true";
@@ -28,6 +31,37 @@ class Jirafe_Analytics_Helper_Data extends Mage_Core_Helper_Abstract
         $config = Mage::getConfig();
         $config->saveConfig("jirafe_analytics/historicalpull/active", 'false', 'websites', $websiteId);
         $config->reinit();
+    }
+
+    public function fetchBaseCurrencyCode()
+    {
+        $store = Mage::app()->getStore();
+        $baseCurrencyCode = $store->getBaseCurrencyCode();
+        return $baseCurrencyCode;
+    }
+
+    public function shouldConvertCurrency($currency)
+    {
+        $store = Mage::app()->getStore();
+        $baseCurrency = $store->getBaseCurrency();
+        $baseCurrencyCode = $store->getBaseCurrencyCode();
+        $rate = $baseCurrency->getRate($currency);
+        return (($baseCurrencyCode != $currency) && ($rate));
+    }
+
+    /**
+     * Converts currency.
+     *
+     * There appears to be bugs in Magento Core which prevent converting from
+     * an arbitrary supported currency to the base currency.  This method
+     * attempts to work around this limitation by multiplying the amount by
+     * the inverse of the base to foreign conversion rate.
+     */
+    public function convertCurrency($amount, $currency)
+    {
+        $base = Mage::app()->getStore()->getBaseCurrency();
+        $rate = $base->getRate($currency);
+        return (1/$rate)*$amount;
     }
 
     /**
@@ -172,5 +206,108 @@ class Jirafe_Analytics_Helper_Data extends Mage_Core_Helper_Abstract
             }
         }
     }
-}
 
+    /**
+     * Retrieve Website ID for given store
+     * @param int
+     * @return int
+     */
+    public function getWebsiteId($storeId=0)
+    {
+        if ($storeId) {
+            $_store = Mage::getModel('core/store')->load($storeId);
+            if ($_store) {
+                return $_store->getWebsiteId();
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Check whether it is enterprise version or not
+     *
+     * @return bool
+     */
+    protected function _isEnterpriseVersion()
+    {
+        $_moduleLocation = Mage::getRoot() . DS . 'etc' . DS .'modules' . DS .'Enterprise_Enterprise.xml';
+        return file_exists($_moduleLocation);
+    }
+
+    /**
+     * Check whether it is php version supported or not
+     *
+     * @return bool
+     */
+    protected function _supportedPhpVersion()
+    {
+        return version_compare(phpversion(), '5.3.0', '>=');
+    }
+
+    /**
+     * Check whether it is magento version supported or not
+     *
+     * @return bool
+     */
+    protected function _supportMagentoVersion()
+    {
+        if (is_null($this->_supportedMagentoVersion)) {
+            $this->_supportedMagentoVersion = true;
+            $_magentoVersion = Mage::getVersion();
+            if ($this->_isEnterpriseVersion()) {
+                if (version_compare($_magentoVersion, 1.12,'<')) {
+                    //if EE version is less than 1.12
+                    $this->_supportedMagentoVersion = false;
+                }
+            } elseif (version_compare($_magentoVersion, 1.7,'<')) {
+                //if CE version is less than 1.7
+                $this->_supportedMagentoVersion = false;
+            }
+
+        }
+        return $this->_supportedMagentoVersion;
+    }
+
+
+    /**
+     * Check whether the php version and Magento version is within support
+     *
+     * @return bool
+     */
+    public function isSupportedVersion()
+    {
+        if (is_null($this->_supportedVersion)) {
+            $this->_supportedVersion = true;
+            if (!$this->_supportedPhpVersion()) {
+                $this->_supportedVersion = false;
+            }
+            if (!$this->_supportMagentoVersion()) {
+                $this->_supportedVersion = false;
+            }
+
+        }
+        return $this->_supportedVersion;
+    }
+
+    /**
+     * error messsage for support version
+     * @return string
+     */
+    public function getErrorMessageForVersion()
+    {
+        $message = '';
+        if (!$this->isSupportedVersion()) {
+            $_content = '';
+            if (!$this->_supportedPhpVersion()) {
+                $_content .= 'PHP 5.3';
+            }
+            if (!$this->_supportMagentoVersion()) {
+                $_content .= ($_content ? ' and ' : '') . 'Magento ';
+                $_content .= ($this->_isEnterpriseVersion() ? '1.12' : '1.7');
+            }
+            $message = $this->__('Jirafe Analytics requires at least ') .
+                $this->__($_content) . $this->__(', please update before you start.');
+        }
+        return $message;
+    }
+}

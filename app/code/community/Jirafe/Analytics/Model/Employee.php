@@ -82,7 +82,7 @@ class Jirafe_Analytics_Model_Employee extends Jirafe_Analytics_Model_Abstract im
         $employees->getSelect()->order("user_id ASC");
 
         if ($lastId) {
-            $employees->getSelect()->where("user_id > $lastId");
+            $employees->getSelect()->where("user_id > ?", $lastId);
         }
 
         return Zend_Paginator::factory($employees->getIterator());

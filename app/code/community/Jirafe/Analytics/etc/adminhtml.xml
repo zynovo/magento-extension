@@ -23,6 +23,24 @@
                 </jirafe_analytics>
             </children>
         </report>
+        <dashboard>
+            <children>
+                <jirafe_analytics translate="title" module="jirafe_analytics">
+                    <title>Jirafe Dashboard</title>
+                    <sort_order>99999</sort_order>
+                    <action>jirafe_analytics/adminhtml_dashboard</action>
+                </jirafe_analytics>
+            </children>
+        </dashboard>
+        <system>
+            <children>
+                <jirafe_analytics_status translate="title" module="jirafe_analytics">
+                    <title>Jirafe Analytics Status</title>
+                    <action>jirafe_analytics/adminhtml_status</action>
+                    <sort_order>100</sort_order>
+                </jirafe_analytics_status>
+            </children>
+        </system>
     </menu>
     <acl>
         <resources>
@@ -59,6 +77,10 @@
                                     </jirafe_analytics>
                                 </children>
                             </config>
+                            <jirafe_analytics_status translate="title" module="jirafe_analytics">
+                                <title>Jirafe Analytics Status</title>
+                                <sort_order>100</sort_order>
+                            </jirafe_analytics_status>
                         </children>
                     </system>
                 </children>

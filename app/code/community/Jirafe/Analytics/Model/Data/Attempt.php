@@ -46,14 +46,18 @@ class Jirafe_Analytics_Model_Data_Attempt extends Jirafe_Analytics_Model_Abstrac
                      ->getData();
 
 
-                 /**
-                  * Separate API responses in order of batch items
-                  */
-                 $response = array();
-
-                 foreach( json_decode($attempt['response'],true) as $key => $value) {
-                     $response = array_merge($response,$value);
-                 }
+                /**
+                 * Separate API responses in order of batch items
+                 */
+                $response = array();
+                if (isset($attempt['response'])) {
+                    $_jsonDecode = json_decode($attempt['response'],true);
+                    if ($_jsonDecode) {
+                        foreach($_jsonDecode as $key => $value) {
+                            $response = array_merge($response, $value);
+                        }
+                    }
+                }
 
                  /**
                   *  Counter var to tie order of data in response json to batch_order

@@ -63,10 +63,10 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
                 $this->_typeId =  $this->_product->getTypeId();
 
                 if ($this->_typeId == 'simple') {
-                    if ($this->_parent = $this->_getParent()) {
+                    if (!$this->_product->getRemoveVariant() && $this->_parent = $this->_getParent()) {
                         $this->_parentTypeId = $this->_parent->getTypeId();
 
-                        if ( $this->_parentTypeId == 'configurable' ) {
+                        if ( $this->_parentTypeId == Mage_Catalog_Model_Product_Type_Configurable::TYPE_CODE ) {
                             $this->_baseProducts = $this->_getBaseProducts();
                             $this->_attributes = $this->_getAttributes( $itemAttributes ) ;
                         }
@@ -115,7 +115,6 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
                 if ( $urls = $this->_getUrls() ) {
                     $element['url'] = $urls;
                 }
-
                 return $element;
             } else {
                 return array();
@@ -143,10 +142,10 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
                     return true;
                 }
                 break;
-            case 'configurable':
+            case Mage_Catalog_Model_Product_Type_Configurable::TYPE_CODE:
                 return true;
                 break;
-            case 'grouped':
+            case Mage_Catalog_Model_Product_Type_Grouped::TYPE_CODE:
                  return false;
                  break;
             case 'virtual':
@@ -180,10 +179,10 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
             case 'simple':
                 return true;
                 break;
-            case 'grouped':
+            case Mage_Catalog_Model_Product_Type_Grouped::TYPE_CODE:
                 return false;
                 break;
-            case 'configurable':
+            case Mage_Catalog_Model_Product_Type_Configurable::TYPE_CODE:
                 return false;
                 break;
             case 'virtual':
@@ -214,11 +213,15 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
         try {
              $categories = array();
 
-             foreach ($this->_product->getCategoryIds() as $catId) {
-                 if ( $category = Mage::getModel('catalog/category')->load( $catId ) ) {
-                     $categories[] = Mage::getModel('jirafe_analytics/category')->getArray($category);
-                 }
-             }
+            $_categoryIds = $this->_product->getCategoryIds();
+            if ($_categoryIds) {
+                $_categoryCollection = Mage::getModel('catalog/category')->getCollection()
+                    ->addAttributeToSelect('name')
+                    ->addFieldToFilter('entity_id', array('in' => $_categoryIds));
+                foreach ($_categoryCollection as $_category) {
+                    $categories[] = Mage::getModel('jirafe_analytics/category')->getArray($_category);
+                }
+            }
 
              if ($categories) {
                  return json_decode(json_encode($categories), FALSE);
@@ -322,29 +325,45 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
              if ($itemAttributes) {
 
                  $attributes = unserialize($itemAttributes);
-
                  foreach ($attributes as $key => $val) {
+                     /**
+                      * If attributes data is from product object
+                      * No need to have sql query since item attributes include all necessary information
+                      */
+                     if (isset($val['attribute_id']) && isset($val['values'])) {
+                        $attributeValue = $this->_product->getData($val['attribute_code']);
+                        foreach ($val['values'] as $val2) {
+                            if ($attributeValue==$val2['value_index']) {
+                                $obj[] = array(
+                                    'id' => $val['attribute_id'],
+                                    'name' => $val['attribute_code'],
+                                    'value' => $val2['label']
+                                );
+                            }
+                        }
+                     } else {
+                         $_resourceModel = Mage::getResourceModel('eav/entity_attribute_collection');
+                         $options = $_resourceModel
+                             ->getSelect()
+                             ->join(array('o'=> $_resourceModel->getTable('eav/attribute_option')),'main_table.attribute_id = o.attribute_id')
+                             ->join(array('v'=> $_resourceModel->getTable('eav/attribute_option_value')),'o.option_id = v.option_id')
+                             ->reset(Zend_Db_Select::COLUMNS)
+                             ->columns( array('main_table.attribute_id','main_table.attribute_code','v.value'))
+                             ->where("main_table.attribute_id = ? ",$key)
+                             ->where("v.option_id = ?",$val)
+                             ->limit(1)
+                             ->query();
 
-                     $options = Mage::getResourceModel('eav/entity_attribute_collection')
-                         ->getSelect()
-                         ->join(array('o'=>'eav_attribute_option'),'main_table.attribute_id = o.attribute_id')
-                         ->join(array('v'=>'eav_attribute_option_value'),'o.option_id = v.option_id')
-                         ->reset(Zend_Db_Select::COLUMNS)
-                         ->columns( array('main_table.attribute_id','main_table.attribute_code','v.value'))
-                         ->where("main_table.attribute_id = $key AND v.option_id = $val")
-                         ->limit(1)
-                         ->query();
-
-                     foreach($options as $option) {
-
-                         $obj[] = array(
-                             'id' => $option['attribute_id'],
-                             'name' => $option['attribute_code'],
-                             'value' => $option['value']
-                         );
+                         foreach($options as $option) {
+                             $obj[] = array(
+                                 'id' => $option['attribute_id'],
+                                 'name' => $option['attribute_code'],
+                                 'value' => $option['value']
+                             );
+                         }
                      }
                 }
-            } else if ( $this->_typeId === 'simple' && $this->_parentTypeId === 'configurable') {
+            } else if ( $this->_typeId === 'simple' && $this->_parentTypeId === Mage_Catalog_Model_Product_Type_Configurable::TYPE_CODE) {
 
                $attributes = $this->_parent->getTypeInstance(true)->getConfigurableAttributesAsArray($this->_parent);
 
@@ -358,7 +377,6 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
                    }
                }
             }
-
             return $obj;
         } catch (Exception $e) {
             Mage::helper('jirafe_analytics')->log('ERROR', 'Jirafe_Analytics_Model_Product::_getAttributes()', $e->getMessage(), $e);
@@ -378,6 +396,10 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
 
             if ($image == "no_selection" && $this->_parent) {
                 $image = $this->_parent->getData('image');
+            }
+
+            if ($image == "no_selection") {
+                return array();
             }
 
             return array(
@@ -413,7 +435,7 @@ class Jirafe_Analytics_Model_Product extends Jirafe_Analytics_Model_Abstract imp
             ->order('e.entity_id ASC');
 
         if (is_numeric($lastId)) {
-            $collection->where("e.entity_id > $lastId");
+            $collection->where("e.entity_id > ?",$lastId);
         }
 
         return Zend_Paginator::factory($collection);
