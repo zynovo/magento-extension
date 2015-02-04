@@ -13,7 +13,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
 
     private function _getWebsiteId($storeId)
     {
-        return Mage::getModel('core/store')->load($storeId)->getWebsiteId();
+        return Mage::helper('jirafe_analytics')->getWebsiteId($storeId);
     }
 
     /**
@@ -409,16 +409,18 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                 /**
                  * Attach or detach simple variants from configurable parents
                  */
-                $originalIds = Mage::getModel('catalog/product_type_configurable')->getUsedProductIds($product);
+                $originalIds = $product->getTypeInstance(true)->getUsedProductIds($product);
                 $newIds = array_keys($product->getConfigurableProductsData());
                 if (is_null($newIds)) {
                     $newIds = array();
                 }
 
-                /**
+               /**
                  * Get product attributes from parent configurable
+                 * Here cannot use $product->getTypeInstance(true)->getConfigurableAttributesAsArray
+                 * Since configurable attribuates are not saved. getConfigurableAttributesAsArray will use collection to load data
                  */
-                if ($options = $product->getTypeInstance(true)->getConfigurableAttributesAsArray($product)) {
+                if ($options = $product->getConfigurableAttributesData()) {
                     $attributes = serialize($options);
                 } else {
                     $attributes = null;
@@ -434,6 +436,7 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                             ->addAttributeToSelect('name')
                             ->addFieldToFilter('entity_id', array('in' => $_idsNotInNewIds));
                         foreach ($_productCollection as $_product) {
+                            $_product->setRemoveVariant(true);
                             $this->_productSave($_product, $attributes);
                         }
                     }
@@ -446,8 +449,16 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
                     $_idsNotInOrigIds = array_diff($newIds,$originalIds);
                     if ($_idsNotInOrigIds) {
                         $_productCollection = Mage::getModel('catalog/product')->getcollection()
-                            ->addAttributeToSelect('name')
-                            ->addFieldToFilter('entity_id', array('in' => $_idsNotInOrigIds));
+                            ->addAttributeToSelect('name');
+                        /**
+                         * need to join attribute select for variant for new added products
+                         */
+                        if ($options) {
+                            foreach($options as $option) {
+                                $_productCollection->addAttributeToSelect($option['attribute_code']);
+                            }
+                        }
+                        $_productCollection->addFieldToFilter('entity_id', array('in' => $_idsNotInOrigIds));
                         foreach ($_productCollection as $_product) {
                             $this->_productSave($_product, $attributes);
                         }
@@ -475,16 +486,18 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
         $result = true;
 
         foreach ($websiteIds as $websiteId) {
-            try {
-                $data = Mage::getModel('jirafe_analytics/data');
-                $data->setTypeId(Jirafe_Analytics_Model_Data_Type::PRODUCT);
-                $data->setJson(Mage::getModel('jirafe_analytics/product')->getJson($product, $attributes));
-                $data->setWebsiteId($websiteId);
-                $data->setCapturedDt(Mage::helper('jirafe_analytics')->getCurrentDt());
-                $data->save();
-            } catch (Exception $e) {
-                Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
-                $result = false;
+            if (Mage::app()->getWebsite($websiteId)->getConfig('jirafe_analytics/general/enabled')) {
+                try {
+                    $data = Mage::getModel('jirafe_analytics/data');
+                    $data->setTypeId(Jirafe_Analytics_Model_Data_Type::PRODUCT);
+                    $data->setJson(Mage::getModel('jirafe_analytics/product')->getJson($product, $attributes));
+                    $data->setWebsiteId($websiteId);
+                    $data->setCapturedDt(Mage::helper('jirafe_analytics')->getCurrentDt());
+                    $data->save();
+                } catch (Exception $e) {
+                    Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
+                    $result = false;
+                }
             }
         }
 

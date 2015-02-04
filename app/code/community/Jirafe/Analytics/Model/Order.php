@@ -22,6 +22,7 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract imple
     {
         try {
             $fieldMap = $this->_getFieldMap('order', $order);
+            $currency = $fieldMap['currency']['magento'];
 
             $data = null;
             if ($order['jirafe_status'] == 'cancelled') {
@@ -31,7 +32,7 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract imple
                     $fieldMap['cancel_date']['api'] => $this->_formatDate( $order['updated_at'] )
                 );
             } else if ($isEvent || in_array($order['status'], $this->getAllStatuses())) {
-                $items = Mage::getModel('jirafe_analytics/order_item')->getItems($order['entity_id']);
+                $items = Mage::getModel('jirafe_analytics/order_item')->getItems($order['entity_id'], $currency);
                 $previousItems = $isEvent ? $this->_getPreviousItems($order['entity_id']) : null;
                 $data = array(
                     $fieldMap['order_number']['api']    => $fieldMap['order_number']['magento'],
@@ -55,12 +56,35 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract imple
                 Mage::getSingleton('core/session')->setJirafePrevOrderId($order['entity_id']);
                 Mage::getSingleton('core/session')->setJirafePrevOrderItems($items);
             }
+            $data = $this->_convertCurrency($fieldMap, $data, $currency);
             return $data;
 
         } catch (Exception $e) {
             Mage::helper('jirafe_analytics')->log("ERROR", __METHOD__, $e->getMessage());
             return false;
         }
+    }
+
+    protected function _convertCurrency($fieldMap, $data, $currency)
+    {
+        try {
+            $helper = Mage::helper('jirafe_analytics');
+            if ($helper->shouldConvertCurrency($currency)) {
+                $baseCurrency = $helper->fetchBaseCurrencyCode();
+                $data[$fieldMap["currency"]["api"]] = $baseCurrency;
+                $data[$fieldMap["amount_paid"]["api"]] = $helper->convertCurrency($data[$fieldMap["amount_paid"]["api"]], $currency);
+                $data[$fieldMap["amount_authorized"]["api"]] = $helper->convertCurrency($data[$fieldMap["amount_authorized"]["api"]], $currency);
+                $data[$fieldMap["total"]["api"]] = $helper->convertCurrency($data[$fieldMap["total"]["api"]], $currency);
+                $data[$fieldMap["subtotal"]["api"]] = $helper->convertCurrency($data[$fieldMap["subtotal"]["api"]], $currency);
+                $data[$fieldMap["total_tax"]["api"]] = $helper->convertCurrency($data[$fieldMap["total_tax"]["api"]], $currency);
+                $data[$fieldMap["total_shipping"]["api"]] = $helper->convertCurrency($data[$fieldMap["total_shipping"]["api"]], $currency);
+                $data[$fieldMap["total_discounts"]["api"]] = $helper->convertCurrency($data[$fieldMap["total_discounts"]["api"]], $currency);
+            }
+        } catch (Exception $e) {
+            Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
+            Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, "Error converting currency: $currency");
+        }
+        return $data;
     }
 
     /**

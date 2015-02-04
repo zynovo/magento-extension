@@ -17,7 +17,9 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
     {
         $data = array();
         foreach ($fields as $field) {
-            if (array_key_exists($field, $fieldMap) && array_key_exists($left, $fieldMap[$field]) && array_key_exists($right, $fieldMap[$field])) {
+            if (array_key_exists($field, $fieldMap) && 
+                array_key_exists($left, $fieldMap[$field]) &&
+                array_key_exists($right, $fieldMap[$field])) {
                 $data[$fieldMap[$field][$left]] = $fieldMap[$field][$right];
             }
         }
@@ -300,42 +302,51 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
      */
     protected function _getCustomer($data = null, $includeCookies = false)
     {
+        $guestData = array();
         try {
             $customerId = $this->_getCustomerId($data);
-
-            if (is_numeric($customerId)) {
+            if ($customerId) {
                 $customer = Mage::getModel('customer/customer')->load($customerId);
                 return Mage::getModel('jirafe_analytics/customer')->getArray($customer, $includeCookies);
+            } elseif(isset($data['customer_email']) && $data['customer_email']) {
+                $guestData = array(
+                    'id' => md5("j_".$data['customer_email']),
+                    'email' => $data['customer_email'],
+                    'first_name' => $data['customer_firstname'],
+                    'last_name' => $data['customer_lastname'],
+                    'create_date' => $this->_formatDate($data['created_at']),
+                    'change_date' => $this->_formatDate($data['created_at']),
+                );
+                $storeId = isset($data['store_id']) ? $data['store_id'] : 0;
+                $this->_submitGuestData($guestData, $storeId);
             } else {
-                $customer = Mage::getSingleton('core/session')->getVisitorData();
-                $customerId = $this->_getVisitorId($customer, $data);
-
-                if ($this->_validateArray($data, array('created_at','customer_email','customer_firstname','customer_lastname'))) {
-                    return array(
-                        'id' =>  "$customerId",
-                        'create_date' => $this->_formatDate($data['created_at']),
-                        'change_date' => $this->_formatDate($data['created_at']),
-                        'email' => $data['customer_email'],
-                        'first_name' => $data['customer_firstname'],
-                        'last_name' => $data['customer_lastname']
-                   );
-                } else {
-                    $changeDate = $this->_getVisitDate($customer, $data, 'last_visit_at', 'updated_at');
-                    $createDate = $this->_getVisitDate($customer, $data, 'first_visit_at', 'updated_at');
-                    return array(
-                        'id' =>  "$customerId",
-                        'create_date' => $this->_formatDate($createDate),
-                        'change_date' => $this->_formatDate($changeDate),
-                        'email' => '',
-                        'first_name' => 'GUEST',
-                        'last_name' => 'USER'
-                   );
-                }
+                $guestData = array(
+                    'id' => 'anonymous',
+                    'create_date' => $this->_formatDate($data['created_at']),
+                    'change_date' => $this->_formatDate($data['created_at']),
+                );
             }
         } catch (Exception $e) {
             Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
             return false;
         }
+        return $guestData;
+    }
+
+    /**
+     * Required to submit Guest data as customer data
+     * @param array $guestData
+     * @param int $storeId
+     */
+    protected function _submitGuestData($guestData, $storeId)
+    {
+        $guestData['name'] = $guestData['first_name'] . ' ' . $guestData['last_name'];
+        $data = Mage::getModel('jirafe_analytics/data');
+        $data->setTypeId(Jirafe_Analytics_Model_Data_Type::CUSTOMER);
+        $data->setJson(json_encode($guestData));
+        $data->setWebsiteId(Mage::helper('jirafe_analytics')->getWebsiteId($storeId));
+        $data->setCapturedDt(Mage::helper('jirafe_analytics')->getCurrentDt());
+        $data->save();
     }
 
     /**

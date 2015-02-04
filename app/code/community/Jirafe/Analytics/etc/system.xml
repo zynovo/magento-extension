@@ -24,6 +24,7 @@
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>0</show_in_store>
+                    <frontend_model>jirafe_analytics/adminhtml_fieldset_general</frontend_model>
                     <fields>
                         <enabled translate="label">
                             <label>Enable Module</label>
@@ -198,6 +199,7 @@
                 </curl>
                 <historicalpull>
                     <label>Historical Data Sync</label>
+		    <comment><![CDATA[<div class="custom-options"><p>You <strong>must</strong> ensure that crons are enabled before pressing the Historical Sync button.</p><p>To enable crons, follow <a href="http://www.magentocommerce.com/wiki/1_-_installation_and_configuration/how_to_setup_a_cron_job">these instructions.</a></p></div>]]></comment>
                     <frontend_type>text</frontend_type>
                     <sort_order>55</sort_order>
                     <show_in_default>0</show_in_default>
@@ -292,6 +294,30 @@
                         </status_complete>
                     </fields>
                 </advanced>
+                <emergencyreset>
+                    <label>Emergency Reset Button</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>1000</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>0</show_in_website>
+                    <show_in_store>0</show_in_store>
+			<comment><![CDATA[
+			<p>
+				<strong>Do not press this button without explicit instructions from Jirafe.</strong>
+			</p>
+			]]></comment>
+                    <fields>
+                        <run translate="label">
+                           <label>Emergency Reset Button</label>
+                           <frontend_type>button</frontend_type>
+                           <frontend_model>jirafe_analytics/reset</frontend_model>
+                           <sort_order>1000</sort_order>
+                           <show_in_default>1</show_in_default>
+                           <show_in_website>0</show_in_website>
+                           <show_in_store>0</show_in_store>
+                        </run>
+                    </fields>
+                </emergencyreset>
             </groups>
         </jirafe_analytics>
     </sections>

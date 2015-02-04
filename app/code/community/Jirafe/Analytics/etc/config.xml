@@ -2,7 +2,7 @@
 <config>
     <modules>
         <Jirafe_Analytics>
-            <version>1.2.0</version>
+            <version>1.3.0</version>
         </Jirafe_Analytics>
     </modules>
     <global>
@@ -37,9 +37,6 @@
                     <data_type>
                         <table>jirafe_analytics_data_type</table>
                     </data_type>
-                    <install>
-                        <table>jirafe_analytics_install</table>
-                    </install>
                     <log>
                         <table>jirafe_analytics_log</table>
                     </log>
@@ -48,11 +45,6 @@
                     </map>
                 </entities>
             </jirafe_analytics_resource>
-            <admin>
-                <rewrite>
-                    <user>Jirafe_Analytics_Model_Admin_User</user>
-                </rewrite>
-            </admin>
         </models>
         <helpers>
             <jirafe_analytics>
@@ -266,6 +258,13 @@
                 </observers>
             </sales_order_place_after>
         </events>
+        <layout>
+            <updates>
+                <jirafe_analytics>
+                    <file>jirafe_analytics.xml</file>
+                </jirafe_analytics>
+            </updates>
+        </layout>
     </adminhtml>
      <crontab>
         <jobs>
@@ -301,14 +300,6 @@
                     <model>jirafe_analytics/historicalBatchCreate::create</model>
                 </run>
             </jirafe_analytics_batch_create>
-            <jirafe_analytics_installer>
-                <schedule>
-                    <cron_expr>*/5 * * * *</cron_expr>
-                </schedule>
-                <run>
-                    <model>jirafe_analytics/install::run</model>
-                </run>
-            </jirafe_analytics_installer>
         </jobs>
     </crontab>
     <default>
@@ -342,19 +333,6 @@
                 <memory_limit></memory_limit>
                 <proc_nice></proc_nice>
             </php>
-            <installer>
-                <admin_role>Jirafe</admin_role>
-                <api2_role>Jirafe</api2_role>
-                <oauth_consumer>Jirafe</oauth_consumer>
-                <admin_username>jirafe</admin_username>
-                <admin_firstname>Jirafe</admin_firstname>
-                <admin_lastname>Jirafe</admin_lastname>
-                <admin_email>jirafe@jirafe.com</admin_email>
-                <admin_is_active>1</admin_is_active>
-                <max_records>5000</max_records>
-                <max_execution_time>1800</max_execution_time>
-                <memory_limit>2048M</memory_limit>
-            </installer>
             <historicalpull>
                 <active>false</active>
                 <duration>300</duration>
