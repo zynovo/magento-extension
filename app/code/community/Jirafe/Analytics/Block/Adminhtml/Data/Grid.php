@@ -35,7 +35,7 @@ class Jirafe_Analytics_Block_Adminhtml_Data_Grid extends Mage_Adminhtml_Block_Wi
         
         $this->setCollection($collection);
         $collection->addFilterToMap('id', 'main_table.id');
-        
+
         parent::_prepareCollection();
         return $this;
     }
@@ -79,11 +79,12 @@ class Jirafe_Analytics_Block_Adminhtml_Data_Grid extends Mage_Adminhtml_Block_Wi
         $this->addColumn(
             'captured_dt',
             array(
-                'header'    => Mage::helper('jirafe_analytics')->__('CAPTURED (UTC)'),
-                'align'     => 'left',
-                'width'     => '150px',
-                'type'      => 'datetime',
-                'index'     => 'captured_dt'
+                'header'        => Mage::helper('jirafe_analytics')->__('CAPTURED (UTC)'),
+                'align'         => 'left',
+                'width'         => '150px',
+                'type'          => 'datetime',
+                'filter_index'  => 'main_table.captured_dt',
+                'index'         => 'captured_dt'
             )
         );
         

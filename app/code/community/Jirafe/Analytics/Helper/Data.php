@@ -310,4 +310,30 @@ class Jirafe_Analytics_Helper_Data extends Mage_Core_Helper_Abstract
         }
         return $message;
     }
+
+    /**
+     * checking cron is enable or not
+     */
+    public function hasCron()
+    {
+        $_resource = Mage::getResourceModel('cron/schedule');
+        $_readAdapter = $_resource->getReadConnection();
+        $_select = $_readAdapter->select()
+            ->from($_resource->getMainTable(), 'created_at')
+            ->order('schedule_id ' . Zend_Db_Select::SQL_DESC)
+            ->limit(1);
+        $_createdAt = $_readAdapter->fetchOne($_select);
+        if ($_createdAt) {
+            $_twoDays = 2 * 24 * 60 * 60;//in seconds
+            $_now = time();
+            $_time = strtotime($_createdAt);
+            /**
+             * if latest cron time is within 2 days
+             */
+            if ($_time > $_now - $_twoDays) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

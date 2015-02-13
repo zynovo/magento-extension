@@ -31,7 +31,7 @@
                     <?php endif; ?>
                 </td>
                 <td class="a-left">
-                    <?php if(!$this->hasCron()): ?>
+                    <?php if(!$this->helper('jirafe_analytics')->hasCron()): ?>
                         <span class="grid-severity-major"><span>Cron Inactive</span></span>
                     <?php else: ?>
                         <span class="grid-severity-notice"><span>Cron Active</span></span>

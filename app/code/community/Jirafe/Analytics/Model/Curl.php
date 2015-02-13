@@ -264,7 +264,7 @@ class Jirafe_Analytics_Model_Curl extends Jirafe_Analytics_Model_Abstract
 
                     // Process using standard single threaded cURL.
                     foreach($data as $row) {
-                        $websiteId = $row['store_id'];
+                        $websiteId = isset($row['store_id']) ? $row['store_id'] : $row['website_id'];
 
                         if ($this->_isEnabled($websiteId)) {
                             $item = array(

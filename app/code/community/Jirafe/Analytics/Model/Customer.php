@@ -18,8 +18,9 @@ class Jirafe_Analytics_Model_Customer extends Jirafe_Analytics_Model_Abstract im
         $data = array();
         if ($addressId = $magentoCustomer->getDefaultBilling()) {
             $address = Mage::getModel('customer/address')->load($addressId);
+            $customerData = $magentoCustomer->getData();
             foreach ($address->getData() as $key => $value) {
-                if (!array_key_exists ($key, $magentoCustomer)) {
+                if (!array_key_exists ($key, $customerData)) {
                     $data[$key] = $value;
                 }
             }

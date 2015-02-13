@@ -312,8 +312,8 @@ abstract class Jirafe_Analytics_Model_Abstract extends Mage_Core_Model_Abstract
                 $guestData = array(
                     'id' => md5("j_".$data['customer_email']),
                     'email' => $data['customer_email'],
-                    'first_name' => $data['customer_firstname'],
-                    'last_name' => $data['customer_lastname'],
+                    'first_name' => is_null($data['customer_firstname']) ? '' : $data['customer_firstname'],
+                    'last_name' => is_null($data['customer_lastname']) ? '' : $data['customer_lastname'],
                     'create_date' => $this->_formatDate($data['created_at']),
                     'change_date' => $this->_formatDate($data['created_at']),
                 );
