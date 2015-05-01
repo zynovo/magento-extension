@@ -84,6 +84,9 @@ class Jirafe_Analytics_Model_Order extends Jirafe_Analytics_Model_Abstract imple
             Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
             Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, "Error converting currency: $currency");
         }
+        if(isset($data['total_discounts']) && $data['total_discounts']<0) {
+            $data['total_discounts'] = -1 * $data['total_discounts'];
+        }
         return $data;
     }
 
