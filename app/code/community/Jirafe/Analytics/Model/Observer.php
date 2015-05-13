@@ -267,39 +267,56 @@ class Jirafe_Analytics_Model_Observer extends Jirafe_Analytics_Model_Abstract
     public function orderAccepted(Varien_Event_Observer $observer)
     {
         try {
-            //To fire the event only when order is placed and not every time order save
-            if (!Mage::getSingleton('core/session')->getProcessOrder()) {
-                return false;
-            }
-            Mage::getSingleton('core/session')->setProcessOrder(false);
-            $order = $observer->getOrder();
-
-            if (!$order->getEntityId()) {
-                Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, ' There is an error in accepting order');
-                return false;
-            }
-
-            /**
-             * Save order number to session for beacon
-             */
-            Mage::getSingleton('core/session')->setJirafeOrderNumber($order->getIncrementId());
-            $orderNumber = Mage::getSingleton('core/session')->getJirafeOrderNumber();
-            if (Mage::getStoreConfig('jirafe_analytics/general/enabled', $order->getStoreId())) {
-                $data = $order->getData();
-                $payment = $order->getPayment();
-                $data['amount_paid'] = $payment->getAmountPaid();
-                $data['amount_authorized'] = $payment->getAmountAuthorized();
-                $data['jirafe_status'] = 'accepted';
-                $this->_orderSave($data);
-                return true;
-            } else {
-                return false;
-            }
+            $order = $observer->getEvent()->getData('order');
+            return $this->_pushOrder($order);
 
         } catch (Exception $e) {
             Mage::helper('jirafe_analytics')->log('ERROR', __METHOD__, $e->getMessage(), $e);
             return false;
         }
+    }
+
+    protected function _pushOrder($order)
+    {
+        if (!$order) {
+            return false;
+        }
+        /**
+         * Save order number to session for beacon
+         */
+        Mage::getSingleton('core/session')->setJirafeOrderNumber($order->getIncrementId());
+        $orderNumber = Mage::getSingleton('core/session')->getJirafeOrderNumber();
+        if (Mage::getStoreConfig('jirafe_analytics/general/enabled', $order->getStoreId())) {
+            $data = $order->getData();
+            $payment = $order->getPayment();
+            $data['amount_paid'] = $payment->getAmountPaid();
+            $data['amount_authorized'] = $payment->getAmountAuthorized();
+            $data['jirafe_status'] = 'accepted';
+            $this->_orderSave($data);
+            Mage::getSingleton('core/session')->setProcessOrder(true);
+            return true;
+        }
+        return false;
+    }
+
+    public function orderAcceptedSuccess(Varien_Event_Observer $observer)
+    {
+        $orderIds = $observer->getEvent()->getOrderIds();
+        if (empty($orderIds) || !is_array($orderIds)) {
+            return;
+        }
+        $_process = Mage::getSingleton('core/session')->getProcessOrder();
+        /**
+         * if the order is not process because of paypal express payment
+         */
+        if (!$_process) {
+            $collection = Mage::getResourceModel('sales/order_collection')
+                ->addFieldToFilter('entity_id', array('in' => $orderIds));
+            foreach ($collection as $order) {
+                $this->_pushOrder($order);
+            }
+        }
+        Mage::getSingleton('core/session')->setProcessOrder(false);
     }
 
     /**
